@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const gravatar = require("gravatar");
-const { User } = require("../../models/user");
+const { User } = require("../../models/MainUser");
 const {HttpError, ctrlWrapper, sendEmail} = require("../../helpers/index");
 const crypto = require("node:crypto");
 require("dotenv").config();
@@ -10,14 +10,14 @@ const {
     BASE_URL,
     ADMIN_EMAIL, 
     ADMIN_PASSWORD,
-    SUBADMIN_EMAIL,
-    SUBADMIN_PASSWORD,
+    MANAGER_EMAIL,
+    MANAGER_PASSWORD,
     DEVELOPER_EMAIL,
     DEVELOPER_PASSWORD,
 } = process.env;
 
 
-const register = async(req, res) => {
+const extrenalRegister = async(req, res) => {
     const {username, email, password} = req.body;
     const user = await User.findOne({email});
     let role;
@@ -34,17 +34,20 @@ const register = async(req, res) => {
     });
     const verificationToken = crypto.randomUUID();
 
+
     if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-        role = 'administrator';
+        role = 'Administrator';
     } else if (email === DEVELOPER_EMAIL && password === DEVELOPER_PASSWORD) {
-        role = 'developer';
-    } else if (email === SUBADMIN_EMAIL && password === SUBADMIN_PASSWORD){
-        role = 'sub-administrator'
+        role = 'Developer';
+    } else if (email === MANAGER_EMAIL && password === MANAGER_PASSWORD){
+        role = 'Manager'
     } else {
-        role = 'guest';
+        throw HttpError(400, "Invalid credentials");
     }
 
+
     const newUser = await User.create({...req.body, password: hashPassword, avatarURL, verificationToken, role });
+
 
     const verifyEmail = {
         to: email,
@@ -61,7 +64,6 @@ const register = async(req, res) => {
     }
     await sendEmail(verifyEmail);
 
-
     res.status(201).send({
         username: newUser.username,
         email: newUser.email,
@@ -71,5 +73,5 @@ const register = async(req, res) => {
 
 
 module.exports = {
-    register: ctrlWrapper(register)
+    extrenalRegister: ctrlWrapper(extrenalRegister)
 };

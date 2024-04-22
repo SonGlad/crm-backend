@@ -41,9 +41,24 @@ const userSchema = new Schema ({
     },
     role: {
         type: String,
-        enum: ['guest', 'user', 'administrator', 'sub-administrator', 'developer'],
-        default: 'guest'
-    } 
+        enum: ['CRM Manager', 'Retention Agent', 'Conversion Agent', 'Retention Manager', 'Conversion Manager'],
+        default: null,
+        required: [true, "User Role is Required"]
+    },
+    branch: {
+        type: String,
+        default: 'Office1',
+        required: [true, "User branch is Required"]
+    },
+    createdBy: {
+        ownerId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        userName: String,
+        userRole: String,
+        userBranch: String,
+    }
 
 }, {versionKey:false, timestamps: true});
 
@@ -65,6 +80,12 @@ const registerSchema = Joi.object({
         "string.min": "Password must be at least 8 characters long.",
         "any.required": "Password is required.",
     }),
+    role: Joi.string().required().messages({
+        "any.required": "User Role is Required",
+    }),
+    branch: Joi.string().required().messages({
+        "any.required": "User Branch is Required",
+    })
 });
 
 
@@ -96,7 +117,7 @@ const userResetPasswordSchema = Joi.object({
 });
 
 
-const validateUpdateInfoSchema = Joi.object({
+const updateUserInfoSchema = Joi.object({
     password: Joi.string().min(8).required().messages({
         "string.min": "Password must be at least 8 characters long.",
         "any.required": "Password is required.",
@@ -109,14 +130,14 @@ const validateUpdateInfoSchema = Joi.object({
 
 
 
-const schemas = { 
+const Office1UserSchemas = { 
     registerSchema, 
     loginSchema, 
     verifySchema, 
     userResetPasswordSchema,
-    validateUpdateInfoSchema,
+    updateUserInfoSchema,
 };
-const User = model("users", userSchema);
+const Office1User = model("Office1_Users", userSchema);
 
 
-module.exports = {schemas, User};
+module.exports = {Office1UserSchemas, Office1User};

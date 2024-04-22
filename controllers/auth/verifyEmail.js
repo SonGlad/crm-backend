@@ -1,18 +1,33 @@
 const {ctrlWrapper, HttpError} = require("../../helpers/index");
-const { User } = require("../../models/user");
+const { User } = require("../../models/MainUser");
+const { Office1User } = require("../../models/Office1User");
+const { Office2User } = require("../../models/Office2User");
+
  
 
 const verifyEmail = async(req, res) => {
     const {verificationToken} = req.params;
-    const user = await User.findOne({verificationToken});
+    let user;
 
-    if(!user) {
-        throw HttpError(404, "User not found");
+    user = await User.findOne({verificationToken});
+    if (user) {
+        await User.findByIdAndUpdate(user._id, { verify: true, verificationToken: "" });
+        return res.status(200).send({ message: 'Verification successful' });
     }
 
-    await User.findByIdAndUpdate(user._id, {verify: true, verificationToken: ""});
+    user = await Office1User.findOne({ verificationToken });
+    if (user) {
+        await Office1User.findByIdAndUpdate(user._id, { verify: true, verificationToken: "" });
+        return res.status(200).send({ message: 'Verification successful' });
+    }
 
-    res.status(200).send({ message: 'Verification successful'});
+    user = await Office2User.findOne({ verificationToken });
+    if (user) {
+        await Office2User.findByIdAndUpdate(user._id, { verify: true, verificationToken: "" });
+        return res.status(200).send({ message: 'Verification successful' });
+    }
+
+    throw HttpError(404, "User not found");
 };
 
 

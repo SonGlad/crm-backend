@@ -1,41 +1,58 @@
 const express = require("express");
-
-
 const router = express.Router();
-const {validateBody, authenticate, updateAvatarM} = require("../../middlewares/index");
-const  { schemas }  = require("../../models/user");
-const { register,
+const {
+    validateBody, 
+    validRegisterSchema,
+    validLoginSchema,
+    validUpdateUserInfoSchema, 
+    authenticate, 
+    updateAvatarM
+} = require("../../middlewares/index");
+const { MainUserSchemas }  = require("../../models/MainUser");
+
+const { 
+    extrenalRegister,
+    internalRegister,
     verifyEmail,
-    resendVerifyEmail,
     login,
     getCurrent,
     logout,
     updateAvatar,
     updateInfo,
-    forgotPassword,
-} = require("../../controllers/auth/index")
+    // resendVerifyEmail,
+    // forgotPassword,
+} = require("../../controllers/auth/index");
 
 
-router.post("/register", validateBody(
-    schemas.registerSchema), register.register);
+router.post("/exregister", validateBody(
+    MainUserSchemas.registerSchema
+), extrenalRegister.extrenalRegister);
+
+
+router.post("/inregister", authenticate, validRegisterSchema, internalRegister.internalRegister);
+
 
 router.get("/verify/:verificationToken", verifyEmail.verifyEmail);
 
-router.post("/verify", validateBody(
-    schemas.verifySchema), resendVerifyEmail.resendVerifyEmail );
 
-router.post("/login", validateBody(
-    schemas.loginSchema), login.login);
+router.post("/login", validLoginSchema, login.login);
+
     
 router.get("/current", authenticate, getCurrent.getCurrent);
 
+
 router.post("/logout", authenticate, logout.logout);
+
 
 router.patch("/avatars", authenticate, updateAvatarM.single("avatarURL"), updateAvatar.updateAvatar);
 
-router.put("/update", authenticate, validateBody(schemas.validateUpdateInfoSchema), updateInfo.updateInfo);
 
-router.post("/forgotPassword", validateBody(schemas.userResetPasswordSchema), forgotPassword.forgotPassword);
+router.put("/update", authenticate, validUpdateUserInfoSchema, updateInfo.updateInfo);
+
+    
+// router.post("/verify", validateBody(
+//     schemas.verifySchema), resendVerifyEmail.resendVerifyEmail );
+// router.post("/forgotPassword", validateBody(schemas.userResetPasswordSchema), forgotPassword.forgotPassword);
 
 
 
