@@ -29,11 +29,15 @@ const validLoginSchema = async(req, res, next) => {
     };
     
 
-    if (schema) {
-        validateBody(schema)(req, res, next);
-    } else {
-        throw HttpError(401, "User Email not found");
-    };
+    try {
+        if (schema) {
+            validateBody(schema)(req, res, next);
+        } else {
+            throw HttpError(401, "User Email not found");
+        }
+    } catch (error) {
+        next(error);
+    }
 };
 
 

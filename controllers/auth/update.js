@@ -10,7 +10,9 @@ const updateInfo = async(req, res) => {
     const {role: authRole, branch: authBranch} = req.auth;
     const { _id: userId, role, branch } = req.user;
 
+
     let user;
+    
 
     if (authRole !== role || authBranch !== branch) {
         return res.status(403).send({ message: 'Forbidden: Access denied' });

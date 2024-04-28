@@ -8,7 +8,7 @@ const getCurrent = async(req, res) => {
 
     if (authRole !== role || authBranch !== branch) {
         return res.status(403).send({ message: 'Forbidden: Access denied' });
-    }
+    };
 
     res.send({
         username, 

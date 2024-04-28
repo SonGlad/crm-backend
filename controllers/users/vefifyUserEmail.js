@@ -5,7 +5,7 @@ const { Office2User } = require("../../models/Office2User");
 
  
 
-const verifyEmail = async(req, res) => {
+const verifyUserEmail = async(req, res) => {
     const { verificationToken } = req.params;
 
     
@@ -16,24 +16,27 @@ const verifyEmail = async(req, res) => {
     if (user) {
         await User.findByIdAndUpdate(user._id, { verify: true, verificationToken: "" });
         return res.status(200).send({ message: 'Verification successful' });
-    }
+    };
+
 
     user = await Office1User.findOne({ verificationToken });
     if (user) {
         await Office1User.findByIdAndUpdate(user._id, { verify: true, verificationToken: "" });
         return res.status(200).send({ message: 'Verification successful' });
-    }
+    };
+
 
     user = await Office2User.findOne({ verificationToken });
     if (user) {
         await Office2User.findByIdAndUpdate(user._id, { verify: true, verificationToken: "" });
         return res.status(200).send({ message: 'Verification successful' });
-    }
+    };
+    
 
     throw HttpError(404, "User not found");
 };
 
 
 module.exports = {
-    verifyEmail: ctrlWrapper(verifyEmail)
+    verifyUserEmail: ctrlWrapper(verifyUserEmail)
 };

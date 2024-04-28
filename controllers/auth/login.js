@@ -2,8 +2,9 @@ const bcrypt = require("bcryptjs");
 const { User } = require("../../models/MainUser");
 const { Office1User } = require("../../models/Office1User");
 const { Office2User } = require("../../models/Office2User");
-const {HttpError, ctrlWrapper} = require("../../helpers/index");
+const { HttpError, ctrlWrapper } = require("../../helpers/index");
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 
 const { SECRET_KEY } = process.env;
