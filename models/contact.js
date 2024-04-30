@@ -192,4 +192,5 @@ const schemas = {
     updateNewContactSchema,
 };
 
+
 module.exports = {Contact, schemas};

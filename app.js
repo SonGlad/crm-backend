@@ -8,7 +8,7 @@ dotenv.config();
 const app = express();
 const authRouter = require("./routes/api/auth");
 const usersRouter = require("./routes/api/users");
-const contactsRouter = require('./routes/api/contacts');
+const leadsRouter = require('./routes/api/leads');
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
 
 
@@ -19,8 +19,8 @@ app.use(express.json());
 
 
 app.use('/auth', authRouter);
-app.use('/users', usersRouter)
-app.use('/contacts', contactsRouter);
+app.use('/users', usersRouter);
+app.use('/leads', leadsRouter);
 
 
 app.use((req, res) => {
