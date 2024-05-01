@@ -1,4 +1,4 @@
-const { Contact } = require("../../models/contact");
+const { Contact } = require("../../models/Office1Leads");
 const { ctrlWrapper } = require("../../helpers/index");
 
 

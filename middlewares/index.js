@@ -9,6 +9,7 @@ const isValidUserId = require("./isValidUserId");
 const upload = require("./upload");
 const updateAvatarM = require("./updateAvatarM");
 const validateBodyExternal = require("./leads/validateBodyExternal");
+const validOfficeAssignedSchema = require("./leads/validOfficeAssignedSchema");
 
 
 module.exports =  { 
@@ -23,4 +24,5 @@ module.exports =  {
     updateAvatarM,
     upload, 
     validateBodyExternal,
+    validOfficeAssignedSchema
 };

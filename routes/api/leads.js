@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const {
-    externalLead, 
+    externalLead,
+    leadAssign, 
     // getAll,
     // getAllByResource,
     // getById, 
@@ -11,19 +12,23 @@ const {
     // updateNewContactById,
 } = require("../../controllers/leads/index");
 const {
-    validateBodyExternal, 
+    validateBodyExternal,
+    authenticate,
+    validOfficeAssignedSchema, 
     // validateBody, 
     // isValidContactId, 
     // authenticate
 } = require("../../middlewares/index");
 const  { 
     externalLeadsSchemas 
-}  = require("../../models/externalLead");
+}  = require("../../models/ExternalLead");
 
 
 
 router.post('/external',validateBodyExternal(
     externalLeadsSchemas.addExternalLeadSchema), externalLead.externalLead);
+
+router.post('/assign', authenticate, validOfficeAssignedSchema, leadAssign.leadAssign)
 
 // router.get('/all', authenticate, getAll.getAll);
 
