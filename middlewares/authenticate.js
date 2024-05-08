@@ -41,7 +41,7 @@ const authenticate = async (req, res, next) => {
             default:
                 next(HttpError(401));
                 return;
-        }
+        };
 
         
         if (user && user.token === token) {
@@ -50,12 +50,12 @@ const authenticate = async (req, res, next) => {
             return next();
         } else {
             return next(HttpError(401));
-        }
+        };
         
 
     } catch (error) {
         return next(HttpError(401));
-    }
+    };
 };
 
 

@@ -5,21 +5,45 @@ const validateBody = require("../validateBody");
 
 
 const validOfficeAssignedSchema = async (req, res, next) => {
-    const { branch: authBranch } = req.auth;
+    const { branch: authBranch, role: authRole } = req.auth;
     const { branch: reqBranch } = req.body;
 
 
-    let schema;
-
+    let schema1;
+ 
 
     switch(authBranch){
         case 'Main':
-            switch(reqBranch ){
+            switch(reqBranch){
                 case 'Office1':
-                    schema = Office1Schemas.addOffice1LeadSchema;
+                    schema1 = Office1Schemas.addOffice1LeadSchema;
                     break;
                 case 'Office2':
-                    schema = Office2Schemas.addOffice2LeadSchema;
+                    schema1 = Office2Schemas.addOffice2LeadSchema;
+                    break;
+                default:
+                    return next(HttpError(400, "Invalid branch provided"));
+            };
+            break;
+        case "Office1":
+            switch(authRole){
+                case "CRM Manager":
+                    schema1 = Office1Schemas.office1ConManagerSchema;
+                    break;
+                case "Conversion Manager":
+                    schema1 = Office1Schemas.office1ConAgentSchema;
+                    break;
+                default:
+                    return next(HttpError(400, "Invalid branch provided"));
+            };
+            break;
+        case "Office2":
+            switch(authRole){
+                case "CRM Manager":
+                    schema1 = Office2Schemas.office2ConManagerSchema;
+                    break;
+                case "Conversion Manager":
+                    schema1 = Office2Schemas.office2ConAgentSchema;
                     break;
                 default:
                     return next(HttpError(400, "Invalid branch provided"));
@@ -30,7 +54,7 @@ const validOfficeAssignedSchema = async (req, res, next) => {
     };
 
 
-    validateBody(schema)(req, res, next);
+    validateBody(schema1)(req, res, next);
 };
 
 

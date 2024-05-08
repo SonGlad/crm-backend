@@ -10,19 +10,19 @@ const phoneRegexp = /^[0-9()+\s-]+$/;
 const leadsSchema = new Schema({
     name: {
         type: String,
-        required: [true, 'Set name for contact'],
+        required: [true, 'Set name for lead'],
     },
     lastName: {
         type: String,
-        required: [true, 'Set name for contact'],
+        required: [true, 'Set name for lead'],
     },
     email: {
         type: String,
-        required: [true, 'Set email for contact'],
+        required: [true, 'Set email for lead'],
     },
     phone: {
         type: String,
-        required: [true, 'Set phone for contact'],
+        required: [true, 'Set phone for lead'],
     },
     resource: {
         type: String,
@@ -31,7 +31,54 @@ const leadsSchema = new Schema({
     newContact: {
         type: Boolean,
         default: true,
-    }
+        required: false,
+    },
+    assigned: {
+        type: Boolean,
+        default: false,
+    },
+    assignedOffice: {
+        type: String,
+        enum: ['Office1', 'Office2', 'Not Assigned'],
+        require: false,
+        default: 'Not Assigned',
+    },
+    crmManager: {
+        name: {
+            type: String,
+            required: [false, 'Set CRM Manager Name for lead'],
+            default: '',
+        },
+        email: {
+            type: String,
+            required: false,
+            default: '',
+        }
+    },
+    conManager: {
+        name: {
+            type: String,
+            required: false,
+            default: '',
+        },
+        email: {
+            type: String,
+            required: false,
+            default: '',
+        }
+    },
+    conAgent: {
+        name: {
+            type: String,
+            required: false,
+            default: '',
+        },
+        email: {
+            type: String,
+            required: false,
+            default: '',
+        }
+    },
 }, {versionKey: false, timestamps: true});
 
 
@@ -60,18 +107,15 @@ const addExternalLeadSchema = Joi.object({
     resource: Joi.string().required().messages({
         "resource": "Should show where the contact was created",
     }),
-});
-
-
-const updateNewLeadSchema = Joi.object({
-    newContact: Joi.boolean().required(),
+    assignedOffice: Joi.string().optional().messages({
+        "any.required": "Assigned Office is requiered",
+    }),
 });
 
 
 const Leads = model("external_leads", leadsSchema);
 const externalLeadsSchemas = { 
     addExternalLeadSchema,
-    updateNewLeadSchema,
 };
 
 

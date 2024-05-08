@@ -102,7 +102,7 @@ const internalRegister = async (req, res, next) => {
             break;
         default:
             throw HttpError(400, "Invalid branch provided");
-    }
+    };
 
 
     // Отправка письма с подтверждением регистрации

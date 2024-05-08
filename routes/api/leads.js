@@ -28,7 +28,8 @@ const  {
 router.post('/external',validateBodyExternal(
     externalLeadsSchemas.addExternalLeadSchema), externalLead.externalLead);
 
-router.post('/assign', authenticate, validOfficeAssignedSchema, leadAssign.leadAssign)
+router.post('/assign/:leadId', authenticate, validOfficeAssignedSchema, 
+leadAssign.leadAssign);
 
 // router.get('/all', authenticate, getAll.getAll);
 

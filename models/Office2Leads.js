@@ -39,12 +39,32 @@ const leadsSchema = new Schema({
         default: "CRM Manager",
         required: false,
     },
-    owner: {
+    managerId: {
         type: Schema.Types.ObjectId,
-        ref: "Office2User",
+        ref: "Office1_Users",
+        required: false,
+    },
+    conManagerId: {
+        type: Schema.Types.ObjectId,
+        ref: "Office1_Users",
+        required: false,
+    },
+    conAgentId: {
+        type: Schema.Types.ObjectId,
+        ref: "Office1_Users",
         required: false,
     },
     assigned: {
+        type: Boolean,
+        default: false,
+        required: false,
+    },
+    externalLeadId: {
+        type: Schema.Types.ObjectId,
+        ref: "external_leads",
+        required: false,
+    },
+    selfCreated: {
         type: Boolean,
         default: false,
         required: false,
@@ -115,29 +135,35 @@ const leadsSchema = new Schema({
             default: 'conservative',
         }
     }, 
-    comments: [{
-        action: {
-            type: String,
-            required: true
+    latestComment: {
+        createdBy: {
+            username: {
+                type: String,
+                required: false
+            },
+            email: {
+                type: String,
+                required: false
+            },
+            role:{
+                type: String,
+                required: false
+            },
+            branch: {
+                type: String,
+                required: false
+            }
         },
-        date: {
+        createdAt: {
             type: Date,
-            default: Date.now(),
-            required: true
+            default: Date.now
         },
-        performedBy: {
-            type: Schema.Types.ObjectId,
-            ref: "Office1User",
-            required: true
+        comment: {
+            type: String,
+            required: false
         },
-        changes: {
-            type: Map,
-            of: String
-        }
-    }]
-
-
-
+    }
+    
 }, {versionKey: false, timestamps: true});
 
 
@@ -173,10 +199,20 @@ const addOffice2LeadSchema = Joi.object({
     role: Joi.string().optional().valid('CRM Manager', 'Conversion Manager', 'Conversion Agent').messages({
         "any.only": "Invalid role provided."
     }),
-    owner: Joi.string().optional().messages({
-        "any.only": "Invalid owner provided."
+    managerId: Joi.string().optional().messages({
+        "any.only": "Invalid managerId provided."
+    }),
+    conManagerId: Joi.string().optional().messages({
+        "any.only": "Invalid managerId provided."
+    }),
+    conAgentId: Joi.string().optional().messages({
+        "any.only": "Invalid managerId provided."
+    }),
+    externalLeadId: Joi.string().optional().messages({
+        "any.only": "External Lead Id is required."
     }),
     assigned: Joi.boolean().optional(),
+    selfCreated: Joi.boolean().optional(),
     clientId: Joi.number().optional().messages({
         "any.only": "Invalid id provided."
     }),
@@ -220,13 +256,31 @@ const addOffice2LeadSchema = Joi.object({
     }).optional().messages({
         "any.only": "Invalid KYC."
     }),
-    comments: Joi.array().items(Joi.object({
-        action: Joi.string().required(),
-        date: Joi.date().default(Date.now()).required(),
-        performedBy: Joi.string().required(),
-        changes: Joi.object().pattern(Joi.string(), Joi.string())
-    })).messages({"any.only": "Comment is required."})
+    latesComment: Joi.object({
+        createdBy: Joi.object({
+            username: Joi.string().optional(),
+            email: Joi.string().email().optional(),
+            role: Joi.string().optional(),
+            branch: Joi.string().optional()
+        }),
+        createdAt: Joi.date().default(Date.now()).optional(),
+        comment: Joi.string().optional()
+    }).messages({"any.only": "Comment is required."}),
 
+});
+
+
+const office2ConManagerSchema = Joi.object({
+    conManagerId: Joi.string().optional().messages({
+        "any.only": "Invalid managerId provided."
+    }),
+});
+
+
+const office2ConAgentSchema = Joi.object({
+    conAgentId: Joi.string().optional().messages({
+        "any.only": "Invalid managerId provided."
+    }),
 });
 
 
@@ -234,6 +288,8 @@ const addOffice2LeadSchema = Joi.object({
 const Office2Leads = model("office2_leads", leadsSchema);
 const Office2Schemas = { 
     addOffice2LeadSchema,
+    office2ConManagerSchema,
+    office2ConAgentSchema 
 };
 
 

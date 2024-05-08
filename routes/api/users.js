@@ -32,7 +32,7 @@ router.get("/verify/:verificationToken", verifyUserEmail.verifyUserEmail);
 
 router.post("/resetPassword/:userId", authenticate, isValidUserId, resetUserPassword.resetUserPassword);
 
-router.delete("/:userId", authenticate, isValidUserId, deleteUserById.deleteUserById)
+router.delete("/:userId", authenticate, isValidUserId, deleteUserById.deleteUserById);
 
 
 module.exports = router;
