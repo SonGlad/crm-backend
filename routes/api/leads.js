@@ -3,10 +3,10 @@ const router = express.Router();
 const {
     externalLead,
     leadAssign, 
-    // getAll,
+    getAll,
+    // addNewContact,
     // getAllByResource,
     // getById, 
-    // addNewContact,
     // updateById, 
     // deleteById,
     // updateNewContactById,
@@ -15,9 +15,8 @@ const {
     validateBodyExternal,
     authenticate,
     validOfficeAssignedSchema, 
+    isValidLeadId, 
     // validateBody, 
-    // isValidContactId, 
-    // authenticate
 } = require("../../middlewares/index");
 const  { 
     externalLeadsSchemas 
@@ -28,17 +27,20 @@ const  {
 router.post('/external',validateBodyExternal(
     externalLeadsSchemas.addExternalLeadSchema), externalLead.externalLead);
 
-router.post('/assign/:leadId', authenticate, validOfficeAssignedSchema, 
-leadAssign.leadAssign);
+router.get('/all', authenticate, getAll.getAll);
 
-// router.get('/all', authenticate, getAll.getAll);
+router.post('/assign/:leadId', authenticate, validOfficeAssignedSchema, 
+    isValidLeadId, leadAssign.leadAssign);
+
+
+// router.post('/',authenticate, validateBody(
+//     schemas.addAdminPanelContactSchema), addNewContact.addNewContact);
+
 
 // router.get('/allbyresource', authenticate, getAllByResource.getAllByResource);
 
 // router.get('/:contactId', authenticate, isValidContactId, getById.getById);
 
-// router.post('/',authenticate, validateBody(
-//     schemas.addAdminPanelContactSchema), addNewContact.addNewContact);
 
 // router.patch('/:contactId',authenticate, isValidContactId, validateBody(
 //     schemas.updateSchema), updateById.updateById);

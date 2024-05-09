@@ -1,5 +1,5 @@
 const validateBody = require("./validateBody");
-const isValidContactId = require("./isValidContactId");
+const isValidLeadId = require("./isValidLeadId");
 const authenticate = require("./authenticate");
 const validRegisterSchema = require("./validRegisterSchema");
 const validLoginSchema = require("./validLoginSchema");
@@ -14,7 +14,7 @@ const validOfficeAssignedSchema = require("./leads/validOfficeAssignedSchema");
 
 module.exports =  { 
     validateBody, 
-    isValidContactId, 
+    isValidLeadId, 
     authenticate,
     validRegisterSchema,
     validLoginSchema,

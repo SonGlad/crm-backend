@@ -1,6 +1,6 @@
 const externalLead = require("./externalLead");
 const leadAssign = require("./leadAssign");
-// const getAll = require("./getAll");
+const getAll = require("./getAll");
 // const getAllByResource = require("./getAllByResouce");
 // const getById = require("./getById");
 // const addNewContact = require("./addNewContact");
@@ -12,7 +12,7 @@ const leadAssign = require("./leadAssign");
 module.exports = {
     externalLead,
     leadAssign,
-    // getAll,
+    getAll,
     // getAllByResource,
     // getById,
     // addNewContact,
