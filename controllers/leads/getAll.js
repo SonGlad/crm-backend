@@ -36,19 +36,19 @@ const getAll = async (req, res) => {
         case "Office1":
             switch(authRole){
                 case "CRM Manager":
-                    result = await Office1Leads.find({managerId: authId})
-                    .skip(parseInt(skip))
-                    .limit(parseInt(limit));
+                    result = await Office1Leads.find({
+                        $or: [{managerId: authId}, {'owner.id': authId }]
+                    }).skip(parseInt(skip)).limit(parseInt(limit));
                     break;
                 case "Conversion Manager":
-                    result = await Office1Leads.find({conManagerId: authId})
-                    .skip(parseInt(skip))
-                    .limit(parseInt(limit));
+                    result = await Office1Leads.find({
+                        $or: [{conManagerId: authId}, {'owner.id': authId}]
+                    }).skip(parseInt(skip)).limit(parseInt(limit));
                     break;
                 case "Conversion Agent":
-                    result = await Office1Leads.find({conAgentId: authId})
-                    .skip(parseInt(skip))
-                    .limit(parseInt(limit));
+                    result = await Office1Leads.find({
+                        $or: [{conAgentId: authId}, {'owner.id': authId}]
+                    }).skip(parseInt(skip)).limit(parseInt(limit));
                     break;
                 default:
                     return res.status(400).send({ message: 'Authorization role is invalid' });
@@ -57,19 +57,19 @@ const getAll = async (req, res) => {
         case "Office2":
             switch(authRole){
                 case "CRM Manager":
-                    result = await Office2Leads.find({managerId: authId})
-                    .skip(parseInt(skip))
-                    .limit(parseInt(limit));
+                    result = await Office2Leads.find({
+                        $or: [{managerId: authId}, {'owner.id': authId }]
+                    }).skip(parseInt(skip)).limit(parseInt(limit));
                     break;
                 case "Conversion Manager":
-                    result = await Office2Leads.find({conManagerId: authId})
-                    .skip(parseInt(skip))
-                    .limit(parseInt(limit));
+                    result = await Office2Leads.find({
+                        $or: [{conManagerId: authId}, {'owner.id': authId}]
+                    }).skip(parseInt(skip)).limit(parseInt(limit));
                     break;
                 case "Conversion Agent":
-                    result = await Office2Leads.find({conAgentId: authId})
-                    .skip(parseInt(skip))
-                    .limit(parseInt(limit));
+                    result = await Office2Leads.find({
+                        $or: [{conAgentId: authId}, {'owner.id': authId}]
+                    }).skip(parseInt(skip)).limit(parseInt(limit));
                     break;
                 default:
                     return res.status(400).send({ message: 'Authorization role is invalid' });

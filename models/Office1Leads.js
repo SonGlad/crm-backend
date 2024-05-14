@@ -54,6 +54,24 @@ const leadsSchema = new Schema({
         ref: "Office1_Users",
         required: false,
     },
+    owner:{
+        username: {
+            type: String,
+            required: false,
+        },
+        email: {
+            type: String,
+            required: false,
+        },
+        id: {
+            type: Schema.Types.ObjectId,
+            required: false,
+        },
+        role: {
+            type: String,
+            required: false,
+        },
+    },
     externalLeadId: {
         type: Schema.Types.ObjectId,
         ref: "external_leads",
@@ -207,6 +225,20 @@ const addOffice1LeadSchema = Joi.object({
     }),
     conAgentId: Joi.string().optional().messages({
         "any.only": "Invalid managerId provided."
+    }),
+    owner: Joi.object({
+        username: Joi.string().optional().messages({
+            "any.only": "Owner User Name is required."
+        }),
+        email: Joi.string().optional().messages({
+            "any.only": "Owner User Email is required."
+        }),
+        id: Joi.string().optional().messages({
+            "any.only": "Owner User Id is required."
+        }),
+        role: Joi.string().optional().messages({
+            "any.only": "Owner User Role is required."
+        }),
     }),
     externalLeadId: Joi.string().optional().messages({
         "any.only": "External Lead Id is required."

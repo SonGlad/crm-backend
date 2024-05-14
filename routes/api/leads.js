@@ -4,18 +4,17 @@ const {
     externalLead,
     leadAssign, 
     getAll,
-    // addNewContact,
-    // getAllByResource,
+    addNewLead,
     // getById, 
     // updateById, 
     // deleteById,
-    // updateNewContactById,
 } = require("../../controllers/leads/index");
 const {
     validateBodyExternal,
     authenticate,
     validOfficeAssignedSchema, 
     isValidLeadId, 
+    addNewLeadSchema
     // validateBody, 
 } = require("../../middlewares/index");
 const  { 
@@ -32,21 +31,13 @@ router.get('/all', authenticate, getAll.getAll);
 router.post('/assign/:leadId', authenticate, validOfficeAssignedSchema, 
     isValidLeadId, leadAssign.leadAssign);
 
+router.post('/',authenticate, addNewLeadSchema, addNewLead.addNewLead);
 
-// router.post('/',authenticate, validateBody(
-//     schemas.addAdminPanelContactSchema), addNewContact.addNewContact);
-
-
-// router.get('/allbyresource', authenticate, getAllByResource.getAllByResource);
 
 // router.get('/:contactId', authenticate, isValidContactId, getById.getById);
 
-
 // router.patch('/:contactId',authenticate, isValidContactId, validateBody(
 //     schemas.updateSchema), updateById.updateById);
-
-// router.patch('/:contactId/newContact', authenticate, isValidContactId, validateBody(
-//     schemas.updateNewContactSchema), updateNewContactById.updateNewContactById);
 
 // router.delete("/:contactId",authenticate, isValidContactId, deleteById.deleteById);
 

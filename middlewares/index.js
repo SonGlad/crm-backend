@@ -10,6 +10,7 @@ const upload = require("./upload");
 const updateAvatarM = require("./updateAvatarM");
 const validateBodyExternal = require("./leads/validateBodyExternal");
 const validOfficeAssignedSchema = require("./leads/validOfficeAssignedSchema");
+const addNewLeadSchema = require("./leads/addNewLeadSchema");
 
 
 module.exports =  { 
@@ -24,5 +25,6 @@ module.exports =  {
     updateAvatarM,
     upload, 
     validateBodyExternal,
-    validOfficeAssignedSchema
+    validOfficeAssignedSchema,
+    addNewLeadSchema,
 };
