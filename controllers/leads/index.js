@@ -3,6 +3,7 @@ const leadAssign = require("./leadAssign");
 const getAll = require("./getAll");
 const addNewLead = require("./addNewLead");
 const leadReAssign = require("./leadReAssign")
+const changeBaseInfo = require("./changeBaseInfo"); 
 
 // const getById = require("./getById");
 // const updateById = require("./updateById");
@@ -15,6 +16,7 @@ module.exports = {
     getAll,
     addNewLead,
     leadReAssign,
+    changeBaseInfo,
     // getById,
     // updateById,
     // deleteById,

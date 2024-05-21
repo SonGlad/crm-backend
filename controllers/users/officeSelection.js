@@ -6,7 +6,7 @@ const getOffice = async(req, res) => {
     const {role: authRole, branch: authBranch} = req.auth;
 
     
-    let responce;
+    let response;
 
 
     if (authRole !== role || authBranch !== branch) {
@@ -18,23 +18,23 @@ const getOffice = async(req, res) => {
         authRole === "Administrator" || 
         authRole === "Manager") && 
         authBranch === "Main"){
-            responce = [{office: 'Office1'}, {office: 'Office2'}];
+            response = [{office: 'Office1'}, {office: 'Office2'}];
     } else if((authRole === "CRM Manager" ||
         authRole === "Retention Manager" ||
         authRole === "Conversion Manager") && 
         authBranch === "Office1"){
-        responce = [{office1: 'Office1'}];
+        response = [{office1: 'Office1'}];
     } else if((authRole === "CRM Manager" ||
         authRole === "Retention Manager" ||
         authRole === "Conversion Manager") && 
         authBranch === "Office2"){
-        responce = [{office2: "Office2"}];
+        response = [{office2: "Office2"}];
     } else {
-        responce = [];
+        response = [];
     };
 
 
-    res.send(responce);
+    res.send(response);
 
 };
 

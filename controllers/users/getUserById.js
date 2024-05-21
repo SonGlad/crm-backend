@@ -1,5 +1,7 @@
 const { Office1User } = require("../../models/Office1User");
 const { Office2User } = require("../../models/Office2User");
+const { Office1Leads } = require("../../models/Office1Leads");
+const { Office2Leads } = require("../../models/Office2Leads");
 const { ctrlWrapper, HttpError } = require("../../helpers/index");
 
 
@@ -15,18 +17,34 @@ const getUserById = async(req, res) => {
     };
 
 
-    let user;
+    let selfCreatedLeads;
+    let assignedLeads;
+    let userInfo;
 
 
     switch(authBranch){
         case "Main":
             switch (reqBranch) {
                 case 'Office1':
-                    user = await Office1User.findOne({ _id: userId})
+                    selfCreatedLeads = await Office1Leads.find({'owner.id': userId});
+                    assignedLeads = await Office1Leads.find({    
+                        $or: [
+                        { managerId: userId },
+                        { conManagerId: userId },
+                        { conAgentId: userId }
+                    ]});
+                    userInfo = await Office1User.findOne({ _id: userId})
                     .select("-password -token -avatarURL -verificationToken");
                     break;
                 case 'Office2':
-                    user = await Office2User.findOne({ _id: userId})
+                    selfCreatedLeads = await Office2Leads.find({'owner.id': userId});
+                    assignedLeads = await Office2Leads.find({    
+                        $or: [
+                        { managerId: userId },
+                        { conManagerId: userId },
+                        { conAgentId: userId }
+                    ]});
+                    userInfo = await Office2User.findOne({ _id: userId})
                     .select("-password -token -avatarURL -verificationToken");
                     break;
                 default:
@@ -34,11 +52,25 @@ const getUserById = async(req, res) => {
             };
             break;
         case "Office1":
-            user = await Office1User.findOne({ _id: userId})
+            selfCreatedLeads = await Office1Leads.find({'owner.id': userId});
+            assignedLeads = await Office1Leads.find({    
+                $or: [
+                { managerId: userId },
+                { conManagerId: userId },
+                { conAgentId: userId }
+            ]});
+            userInfo = await Office1User.findOne({ _id: userId})
             .select("-password -token -avatarURL -verificationToken");
             break;
         case "Office2":
-            user = await Office2User.findOne({ _id: userId})
+            selfCreatedLeads = await Office2Leads.find({'owner.id': userId});
+            assignedLeads = await Office2Leads.find({    
+                $or: [
+                { managerId: userId },
+                { conManagerId: userId },
+                { conAgentId: userId }
+            ]});
+            userInfo = await Office2User.findOne({ _id: userId})
             .select("-password -token -avatarURL -verificationToken");
             break;
         default: 
@@ -46,8 +78,15 @@ const getUserById = async(req, res) => {
     };
 
 
-    if(!user) {
+    if(!userInfo) {
         throw HttpError(404, "User was not found");
+    };
+
+
+    const user = userInfo.toObject();
+    user.leads = {
+        selfCreated: selfCreatedLeads.length,
+        assigned: assignedLeads.length
     };
 
 

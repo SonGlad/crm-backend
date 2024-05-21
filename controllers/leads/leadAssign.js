@@ -75,55 +75,88 @@ const leadAssign = async (req, res) => {
     case "Main":
       switch (branch) {
         case "Office1":
-          mainUser = await User.findOne({ _id: authId });
-          managerId = await Office1User.findOne({ role: "CRM Manager" });
-          clientId = generateClientId();
-          newLead = await Office1Leads.create({
-            name,
-            lastName,
-            email,
-            phone,
-            resource,
-            branch,
-            externalLeadId: leadId,
-            managerId: managerId._id,
-            clientId,
-            latestComment: {
-              createdBy: {
-                username: mainUser.username,
-                email: mainUser.email,
-                branch: authBranch,
-                role: authRole,
-              },
-              createdAt: Date.now(),
-              comment: `Lead created & Assigned to Office 1 CRM Manager ${managerId.username}`,
-            },
-          });
-          await AllCommentsSchema.create({
-            ownerLeadId_office1: newLead._id,
-            createdBy: {
-              username: mainUser.username,
-              email: mainUser.email,
-              branch: authBranch,
-              role: authRole,
-            },
-            createdAt: Date.now(),
-            comment: `Lead created & Assigned to Office 1 CRM Manager ${managerId.username}`,
-          });
-          await Leads.findByIdAndUpdate(
-            leadId,
-            {
-              newContact: false,
-              assigned: true,
-              assignedOffice: branch,
-              crmManager: {
-                name: managerId.username,
-                email: managerId.email,
-              },
-            },
-            { new: true }
-          );
-          break;
+            switch(authRole){
+                case "CRM Manager":
+                    officeUser = await Office1User.findById({_id: authId});
+                    conversionManagerId = await Office1User.findById({_id: conManagerId});
+                    lead = await Office1Leads.findById(leadId);
+                    if(lead.selfCreated !== true){
+                        assignedLead = await Office1Leads.findByIdAndUpdate(leadId, {
+                            conManagerId: conversionManagerId,
+                            latestComment: {
+                                createdBy: {
+                                    username: officeUser.username,
+                                    email: officeUser.email,
+                                    branch: authBranch,
+                                    role: authRole,
+                                },
+                                createdAt: Date.now(),
+                                comment: `Lead Assigned to Office 1 Conversion Manager ${conversionManagerId.username}`
+                            } 
+                        }, { new: true });
+                        await AllCommentsSchema.create({
+                            ownerLeadId_office1: leadId,
+                            createdBy: {
+                                username: officeUser.username,
+                                email: officeUser.email,
+                                branch: authBranch,
+                                role: authRole,
+                            },
+                            createdAt: Date.now(),
+                            comment: `Lead Assigned to Office 1 Conversion Manager ${conversionManagerId.username}`
+                        });
+                        await Leads.findByIdAndUpdate(assignedLead.externalLeadId, {
+                            conManager: {
+                              name: conversionManagerId.username,
+                              email: conversionManagerId.email
+                            },
+                        }, { new: true });
+                    } else {
+                        return res.status(403).send({ message: 'You are not allowed for this type of action' });
+                    };
+                    break;
+
+
+                case "Conversion Manager":
+                    officeUser = await Office1User.findById({_id: authId});
+                    conversionAgentId = await Office1User.findById({_id: conAgentId});
+                    assignedLead = await Office1Leads.findByIdAndUpdate(leadId, {
+                        conAgentId: conversionAgentId,
+                        assigned: true,
+                        latestComment: {
+                            createdBy: {
+                                username: officeUser.username,
+                                email: officeUser.email,
+                                branch: authBranch,
+                                role: authRole,
+                            },
+                            createdAt: Date.now(),
+                            comment: `Lead Assigned to Office 1 Conversion Agent ${conversionAgentId.username}`
+                        } 
+                    });
+                    await AllCommentsSchema.create({
+                        ownerLeadId_office1: leadId,
+                        createdBy: {
+                            username: officeUser.username,
+                            email: officeUser.email,
+                            branch: authBranch,
+                            role: authRole,
+                        },
+                        createdAt: Date.now(),
+                        comment: `Lead Assigned to Office 1 Conversion Agent ${conversionAgentId.username}`
+                    });
+                    await Leads.findByIdAndUpdate(assignedLead.externalLeadId, {
+                        conAgent: {
+                          name: conversionAgentId.username,
+                          email: conversionAgentId.email
+                        }
+                      }, { new: true });
+                    break;
+                default:
+                    return res.status(400).send({ message: 'Invalid authorization role specified' });
+            };
+            break;
+
 
         case "Office2":
           mainUser = await User.findOne({ _id: authId });
@@ -232,44 +265,46 @@ const leadAssign = async (req, res) => {
           }
           break;
 
-        case "Conversion Manager":
-          officeUser = await Office1User.findById({ _id: authId });
-          conversionAgentId = await Office1User.findById({ _id: conAgentId });
-          assignedLead = await Office1Leads.findByIdAndUpdate(leadId, {
-            conAgentId: conversionAgentId,
-            latestComment: {
-              createdBy: {
-                username: officeUser.username,
-                email: officeUser.email,
-                branch: authBranch,
-                role: authRole,
-              },
-              createdAt: Date.now(),
-              comment: `Lead Assigned to Office 1 Conversion Agent ${conversionAgentId.username}`,
-            },
-          });
-          await AllCommentsSchema.create({
-            ownerLeadId_office1: leadId,
-            createdBy: {
-              username: officeUser.username,
-              email: officeUser.email,
-              branch: authBranch,
-              role: authRole,
-            },
-            createdAt: Date.now(),
-            comment: `Lead Assigned to Office 1 Conversion Agent ${conversionAgentId.username}`,
-          });
-          await Leads.findByIdAndUpdate(
-            assignedLead.externalLeadId,
-            {
-              conAgent: {
-                name: conversionAgentId.username,
-                email: conversionAgentId.email,
-              },
-            },
-            { new: true }
-          );
-          break;
+                case "Conversion Manager":
+                    officeUser = await Office2User.findById({_id: authId});
+                    conversionAgentId = await Office2User.findById({_id: conAgentId});
+                    assignedLead = await Office2Leads.findByIdAndUpdate(leadId, {
+                        conAgentId: conversionAgentId,
+                        assigned: true,
+                        latestComment: {
+                            createdBy: {
+                                username: officeUser.username,
+                                email: officeUser.email,
+                                branch: authBranch,
+                                role: authRole,
+                            },
+                            createdAt: Date.now(),
+                            comment: `Lead Assigned to Office 2 Conversion Agent ${conversionAgentId.username}`
+                        } 
+                    });
+                    await AllCommentsSchema.create({
+                        ownerLeadId_office2: leadId,
+                        createdBy: {
+                            username: officeUser.username,
+                            email: officeUser.email,
+                            branch: authBranch,
+                            role: authRole,
+                        },
+                        createdAt: Date.now(),
+                        comment: `Lead Assigned to Office 2 Conversion Agent ${conversionAgentId.username}`
+                    });
+                    await Leads.findByIdAndUpdate(assignedLead.externalLeadId, {
+                        conAgent: {
+                          name: conversionAgentId.username,
+                          email: conversionAgentId.email
+                        }
+                      }, { new: true });
+                    break;
+                default:
+                    return res.status(400).send({ message: 'Invalid authorization role specified' });
+            };
+            break;
+
         default:
           return res
             .status(400)

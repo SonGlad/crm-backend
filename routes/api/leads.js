@@ -17,6 +17,23 @@ const {
   isValidLeadId,
     addNewLeadSchema,
   // validateBody,
+    externalLead,
+    leadAssign, 
+    getAll,
+    addNewLead,
+    changeBaseInfo,
+    // getById, 
+    // updateById, 
+    // deleteById,
+} = require("../../controllers/leads/index");
+const {
+    validateBodyExternal,
+    authenticate,
+    validOfficeAssignedSchema, 
+    isValidLeadId, 
+    addNewLeadSchema,
+    chnageBaseInfoSchema,
+    // validateBody, 
 } = require("../../middlewares/index");
 const { externalLeadsSchemas } = require("../../models/ExternalLead");
 
@@ -44,6 +61,12 @@ router.put(
       isValidLeadId,
   leadReAssign.leadReAssign
 );
+
+
+router.patch('/:leadId', authenticate, chnageBaseInfoSchema, 
+    isValidLeadId, changeBaseInfo.changeBaseInfo
+);
+
 
 // router.get('/:contactId', authenticate, isValidContactId, getById.getById);
 
