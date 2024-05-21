@@ -1,6 +1,22 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const {
+  externalLead,
+  leadAssign,
+  getAll,
+  addNewLead,
+  leadReAssign,
+  // getById,
+  // updateById,
+  // deleteById,
+} = require("../../controllers/leads/index");
+const {
+  validateBodyExternal,
+  authenticate,
+  validOfficeAssignedSchema,
+  isValidLeadId,
+    addNewLeadSchema,
+  // validateBody,
     externalLead,
     leadAssign, 
     getAll,
@@ -19,23 +35,33 @@ const {
     chnageBaseInfoSchema,
     // validateBody, 
 } = require("../../middlewares/index");
-const  { 
-    externalLeadsSchemas 
-}  = require("../../models/ExternalLead");
+const { externalLeadsSchemas } = require("../../models/ExternalLead");
 
-
-
-router.post('/external',validateBodyExternal(
-    externalLeadsSchemas.addExternalLeadSchema), externalLead.externalLead
+router.post(
+  "/external",
+  validateBodyExternal(externalLeadsSchemas.addExternalLeadSchema),
+  externalLead.externalLead
 );
 
-router.get('/all', authenticate, getAll.getAll);
+router.get("/all", authenticate, getAll.getAll);
 
-router.post('/assign/:leadId', authenticate, validOfficeAssignedSchema, 
-    isValidLeadId, leadAssign.leadAssign
+router.post(
+  "/assign/:leadId",
+  authenticate,
+  validOfficeAssignedSchema,
+  isValidLeadId,
+  leadAssign.leadAssign
 );
 
-router.post('/',authenticate, addNewLeadSchema, addNewLead.addNewLead);
+router.post("/", authenticate, addNewLeadSchema, addNewLead.addNewLead);
+
+router.put(
+  "/reassign/:leadId",
+    authenticate,
+      isValidLeadId,
+  leadReAssign.leadReAssign
+);
+
 
 router.patch('/:leadId', authenticate, chnageBaseInfoSchema, 
     isValidLeadId, changeBaseInfo.changeBaseInfo
@@ -49,7 +75,4 @@ router.patch('/:leadId', authenticate, chnageBaseInfoSchema,
 
 // router.delete("/:contactId",authenticate, isValidContactId, deleteById.deleteById);
 
-
-
 module.exports = router;
-
