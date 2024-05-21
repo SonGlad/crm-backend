@@ -1,38 +1,49 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const {
-    externalLead,
-    leadAssign, 
-    getAll,
-    addNewLead,
-    // getById, 
-    // updateById, 
-    // deleteById,
+  externalLead,
+  leadAssign,
+  getAll,
+  addNewLead,
+  leadReAssign,
+  // getById,
+  // updateById,
+  // deleteById,
 } = require("../../controllers/leads/index");
 const {
-    validateBodyExternal,
-    authenticate,
-    validOfficeAssignedSchema, 
-    isValidLeadId, 
-    addNewLeadSchema
-    // validateBody, 
+  validateBodyExternal,
+  authenticate,
+  validOfficeAssignedSchema,
+  isValidLeadId,
+    addNewLeadSchema,
+  // validateBody,
 } = require("../../middlewares/index");
-const  { 
-    externalLeadsSchemas 
-}  = require("../../models/ExternalLead");
+const { externalLeadsSchemas } = require("../../models/ExternalLead");
 
+router.post(
+  "/external",
+  validateBodyExternal(externalLeadsSchemas.addExternalLeadSchema),
+  externalLead.externalLead
+);
 
+router.get("/all", authenticate, getAll.getAll);
 
-router.post('/external',validateBodyExternal(
-    externalLeadsSchemas.addExternalLeadSchema), externalLead.externalLead);
+router.post(
+  "/assign/:leadId",
+  authenticate,
+  validOfficeAssignedSchema,
+  isValidLeadId,
+  leadAssign.leadAssign
+);
 
-router.get('/all', authenticate, getAll.getAll);
+router.post("/", authenticate, addNewLeadSchema, addNewLead.addNewLead);
 
-router.post('/assign/:leadId', authenticate, validOfficeAssignedSchema, 
-    isValidLeadId, leadAssign.leadAssign);
-
-router.post('/',authenticate, addNewLeadSchema, addNewLead.addNewLead);
-
+router.put(
+  "/reassign/:leadId",
+    authenticate,
+      isValidLeadId,
+  leadReAssign.leadReAssign
+);
 
 // router.get('/:contactId', authenticate, isValidContactId, getById.getById);
 
@@ -41,7 +52,4 @@ router.post('/',authenticate, addNewLeadSchema, addNewLead.addNewLead);
 
 // router.delete("/:contactId",authenticate, isValidContactId, deleteById.deleteById);
 
-
-
 module.exports = router;
-
