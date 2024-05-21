@@ -5,6 +5,7 @@ const {
     leadAssign, 
     getAll,
     addNewLead,
+    changeBaseInfo,
     // getById, 
     // updateById, 
     // deleteById,
@@ -14,7 +15,8 @@ const {
     authenticate,
     validOfficeAssignedSchema, 
     isValidLeadId, 
-    addNewLeadSchema
+    addNewLeadSchema,
+    chnageBaseInfoSchema,
     // validateBody, 
 } = require("../../middlewares/index");
 const  { 
@@ -24,14 +26,20 @@ const  {
 
 
 router.post('/external',validateBodyExternal(
-    externalLeadsSchemas.addExternalLeadSchema), externalLead.externalLead);
+    externalLeadsSchemas.addExternalLeadSchema), externalLead.externalLead
+);
 
 router.get('/all', authenticate, getAll.getAll);
 
 router.post('/assign/:leadId', authenticate, validOfficeAssignedSchema, 
-    isValidLeadId, leadAssign.leadAssign);
+    isValidLeadId, leadAssign.leadAssign
+);
 
 router.post('/',authenticate, addNewLeadSchema, addNewLead.addNewLead);
+
+router.patch('/:leadId', authenticate, chnageBaseInfoSchema, 
+    isValidLeadId, changeBaseInfo.changeBaseInfo
+);
 
 
 // router.get('/:contactId', authenticate, isValidContactId, getById.getById);

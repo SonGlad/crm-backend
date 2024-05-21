@@ -10,6 +10,8 @@ const {
     getRole,
     getAllUsers,
     getUserById,
+    getSelfCreatedLeads,
+    getAssignedLeads,
     resendUserVerifyEmail,
     verifyUserEmail,
     resetUserPassword,
@@ -25,6 +27,10 @@ router.get("/role", authenticate, getRole.getRole);
 router.get("/all", authenticate, getAllUsers.getAllUsers);
 
 router.get('/:userId', authenticate, isValidUserId, getUserById.getUserById);
+
+router.get('/assignedLeads/:userId', authenticate, isValidUserId, getAssignedLeads.getAssignedLeads);
+
+router.get('/selfCreatedLeads/:userId', authenticate, isValidUserId, getSelfCreatedLeads.getSelfCreatedLeads);
 
 router.post("/verify/:userId", authenticate, isValidUserId, validVerifySchema, resendUserVerifyEmail.resendUserVerifyEmail);
 

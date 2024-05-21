@@ -202,6 +202,7 @@ const leadAssign = async (req, res) => {
                     conversionAgentId = await Office1User.findById({_id: conAgentId});
                     assignedLead = await Office1Leads.findByIdAndUpdate(leadId, {
                         conAgentId: conversionAgentId,
+                        assigned: true,
                         latestComment: {
                             createdBy: {
                                 username: officeUser.username,
@@ -285,6 +286,7 @@ const leadAssign = async (req, res) => {
                     conversionAgentId = await Office2User.findById({_id: conAgentId});
                     assignedLead = await Office2Leads.findByIdAndUpdate(leadId, {
                         conAgentId: conversionAgentId,
+                        assigned: true,
                         latestComment: {
                             createdBy: {
                                 username: officeUser.username,

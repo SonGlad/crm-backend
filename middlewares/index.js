@@ -11,6 +11,7 @@ const updateAvatarM = require("./updateAvatarM");
 const validateBodyExternal = require("./leads/validateBodyExternal");
 const validOfficeAssignedSchema = require("./leads/validOfficeAssignedSchema");
 const addNewLeadSchema = require("./leads/addNewLeadSchema");
+const chnageBaseInfoSchema = require("./leads/chnageBaseInfoSchema");
 
 
 module.exports =  { 
@@ -27,4 +28,5 @@ module.exports =  {
     validateBodyExternal,
     validOfficeAssignedSchema,
     addNewLeadSchema,
+    chnageBaseInfoSchema,
 };

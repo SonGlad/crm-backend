@@ -316,12 +316,35 @@ const office1ConAgentSchema = Joi.object({
 });
 
 
+const office1ChnageBaseInfoSchema = Joi.object({
+    name: Joi.string().min(2).max(30).required().messages({
+        "string.min": "Name must be at least 2 characters long.",
+        "string.max": "Name must be at most 30 characters long.",
+        "any.required": "Name is required.",
+    }),
+    lastName: Joi.string().min(2).max(30).required().messages({
+        "string.min": "Last name must be at least 2 characters long.",
+        "string.max": "Last name must be at most 30 characters long.",
+        "any.required": "Last name is required.",
+    }),
+    email: Joi.string().pattern(emailRegexp).required().messages({
+        "string.pattern.base": "Invalid email address.",
+        "any.required": "Email is required.",
+    }),
+    phone: Joi.string().pattern(phoneRegexp).required().messages({
+        "string.pattern.base": "Invalid phone number",
+        "any.required": "phone number is required.",
+    }),
+});
+
+
 
 const Office1Leads = model("office1_leads", leadsSchema);
 const Office1Schemas = { 
     addOffice1LeadSchema,
     office1ConManagerSchema,
     office1ConAgentSchema,
+    office1ChnageBaseInfoSchema,
 };
 
 

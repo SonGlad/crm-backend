@@ -111,7 +111,7 @@ const addNewLead =  async (req, res) => {
                     managerId = await Office2User.findOne({ role: "CRM Manager" });
                     clientId = generateClientId();
                     newLead = await Office2Leads.create({ ...leadData,
-                        managerId: managerId._id, clientId, selfCreated: true,
+                        managerId: managerId._id, clientId, selfCreated: true, 
                         owner: {
                             username: mainUser.username,
                             email: mainUser.email,
@@ -150,7 +150,7 @@ const addNewLead =  async (req, res) => {
             managerId = await Office1User.findOne({ role: "CRM Manager" });
             clientId = generateClientId();
             newLead = await Office1Leads.create({ ...leadData,
-                managerId: managerId._id, clientId, selfCreated: true,
+                managerId: managerId._id, clientId, selfCreated: true, assigned: true,
                 owner: {
                     username: officeUser.username,
                     email: officeUser.email,
@@ -187,7 +187,7 @@ const addNewLead =  async (req, res) => {
             managerId = await Office2User.findOne({ role: "CRM Manager" });
             clientId = generateClientId();
             newLead = await Office2Leads.create({ ...leadData,
-                managerId: managerId._id, clientId, selfCreated: true,
+                managerId: managerId._id, clientId, selfCreated: true, assigned: true,
                 owner: {
                     username: officeUser.username,
                     email: officeUser.email,

@@ -66,6 +66,25 @@ const internalRegister = async (req, res, next) => {
     };
 
 
+    // // Проверка отсутствия пользователя с ролью "CRM Manager" в базе данных
+    let CrmManagerExists;
+    switch(branch){
+        case "Office1":
+            CrmManagerExists = await Office1User.findOne({role: "CRM Manager"});
+            break;
+        case "Office2":
+            CrmManagerExists = await Office2User.findOne({role: "CRM Manager"});
+            break;
+        default:
+            throw new HttpError(400, "Unknown branch specified");
+    };
+
+
+    if (CrmManagerExists) {
+        throw HttpError(409, "You are allowed to create only 1 CRM Manager per Office");
+    };
+
+
     const hashPassword = await bcrypt.hash(password, 10);
     const avatarURL = gravatar.url(email, {
         s: '250',
