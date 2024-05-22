@@ -12,20 +12,20 @@ const {
   // deleteById,
 } = require("../../controllers/leads/index");
 const {
-    validateBodyExternal,
-    authenticate,
-    validOfficeAssignedSchema, 
-    isValidLeadId, 
-    addNewLeadSchema,
-    chnageBaseInfoSchema,
-    // validateBody, 
+  validateBodyExternal,
+  authenticate,
+  validOfficeAssignedSchema, 
+  isValidLeadId, 
+  addNewLeadSchema,
+  chnageBaseInfoSchema,
+  // validateBody, 
 } = require("../../middlewares/index");
 const { externalLeadsSchemas } = require("../../models/ExternalLead");
 
 
 
 router.post("/external",  validateBodyExternal(
-    externalLeadsSchemas.addExternalLeadSchema),  externalLead.externalLead
+  externalLeadsSchemas.addExternalLeadSchema),  externalLead.externalLead
 );
 
 router.get("/all", authenticate, getAll.getAll);
@@ -45,7 +45,7 @@ router.put("/reassign/:leadId", authenticate, isValidLeadId,
 
 
 router.patch('/:leadId', authenticate, chnageBaseInfoSchema, 
-    isValidLeadId, changeBaseInfo.changeBaseInfo
+  isValidLeadId, changeBaseInfo.changeBaseInfo
 );
 
 
