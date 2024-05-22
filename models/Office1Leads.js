@@ -329,6 +329,13 @@ const office1ChnageBaseInfoSchema = Joi.object({
 });
 
 
+const office1CoutrySchema = Joi.object({
+    country: Joi.string().required().messages({
+        "any.only": "Invalid country provided."
+    }),
+});
+
+
 
 const Office1Leads = model("office1_leads", leadsSchema);
 const Office1Schemas = { 
@@ -336,6 +343,7 @@ const Office1Schemas = {
     office1ConManagerSchema,
     office1ConAgentSchema,
     office1ChnageBaseInfoSchema,
+    office1CoutrySchema,
 };
 
 

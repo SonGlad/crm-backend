@@ -12,6 +12,7 @@ const validateBodyExternal = require("./leads/validateBodyExternal");
 const validOfficeAssignedSchema = require("./leads/validOfficeAssignedSchema");
 const addNewLeadSchema = require("./leads/addNewLeadSchema");
 const chnageBaseInfoSchema = require("./leads/chnageBaseInfoSchema");
+const validLeadCountry = require("./leads/validLeadCountry")
 
 
 module.exports =  { 
@@ -29,4 +30,5 @@ module.exports =  {
     validOfficeAssignedSchema,
     addNewLeadSchema,
     chnageBaseInfoSchema,
+    validLeadCountry,
 };

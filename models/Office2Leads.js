@@ -329,13 +329,21 @@ const office2ChnageBaseInfoSchema = Joi.object({
 });
 
 
+const office2CoutrySchema = Joi.object({
+    country: Joi.string().required().messages({
+        "any.only": "Invalid country provided."
+    }),
+});
+
+
 
 const Office2Leads = model("office2_leads", leadsSchema);
 const Office2Schemas = { 
     addOffice2LeadSchema,
     office2ConManagerSchema,
     office2ConAgentSchema,
-    office2ChnageBaseInfoSchema  
+    office2ChnageBaseInfoSchema,
+    office2CoutrySchema,  
 };
 
 

@@ -7,6 +7,7 @@ const {
   addNewLead,
   leadReAssign,
   changeBaseInfo,
+  updateLeadCountry,
   // getById,
   // updateById,
   // deleteById,
@@ -18,6 +19,7 @@ const {
   isValidLeadId, 
   addNewLeadSchema,
   chnageBaseInfoSchema,
+  validLeadCountry,
   // validateBody, 
 } = require("../../middlewares/index");
 const { externalLeadsSchemas } = require("../../models/ExternalLead");
@@ -46,6 +48,11 @@ router.put("/reassign/:leadId", authenticate, isValidLeadId,
 
 router.patch('/:leadId', authenticate, chnageBaseInfoSchema, 
   isValidLeadId, changeBaseInfo.changeBaseInfo
+);
+
+
+router.patch("/country/:leadId", authenticate, isValidLeadId, 
+  validLeadCountry, updateLeadCountry.updateLeadCountry 
 );
 
 
