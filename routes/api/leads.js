@@ -6,25 +6,10 @@ const {
   getAll,
   addNewLead,
   leadReAssign,
+  changeBaseInfo,
   // getById,
   // updateById,
   // deleteById,
-} = require("../../controllers/leads/index");
-const {
-  validateBodyExternal,
-  authenticate,
-  validOfficeAssignedSchema,
-  isValidLeadId,
-    addNewLeadSchema,
-  // validateBody,
-    externalLead,
-    leadAssign, 
-    getAll,
-    addNewLead,
-    changeBaseInfo,
-    // getById, 
-    // updateById, 
-    // deleteById,
 } = require("../../controllers/leads/index");
 const {
     validateBodyExternal,
@@ -37,28 +22,24 @@ const {
 } = require("../../middlewares/index");
 const { externalLeadsSchemas } = require("../../models/ExternalLead");
 
-router.post(
-  "/external",
-  validateBodyExternal(externalLeadsSchemas.addExternalLeadSchema),
-  externalLead.externalLead
+
+
+router.post("/external",  validateBodyExternal(
+    externalLeadsSchemas.addExternalLeadSchema),  externalLead.externalLead
 );
 
 router.get("/all", authenticate, getAll.getAll);
 
-router.post(
-  "/assign/:leadId",
-  authenticate,
-  validOfficeAssignedSchema,
-  isValidLeadId,
-  leadAssign.leadAssign
+
+router.post("/assign/:leadId", authenticate,  validOfficeAssignedSchema,
+  isValidLeadId,  leadAssign.leadAssign
 );
+
 
 router.post("/", authenticate, addNewLeadSchema, addNewLead.addNewLead);
 
-router.put(
-  "/reassign/:leadId",
-    authenticate,
-      isValidLeadId,
+
+router.put("/reassign/:leadId", authenticate, isValidLeadId,
   leadReAssign.leadReAssign
 );
 

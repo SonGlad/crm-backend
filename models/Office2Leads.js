@@ -33,12 +33,6 @@ const leadsSchema = new Schema({
         default: 'Office1',
         required: false,
     },
-    role: {
-        type: String,
-        enum: ['CRM Manager', 'Conversion Manager', 'Conversion Agent'],
-        default: "CRM Manager",
-        required: false,
-    },
     managerId: {
         type: Schema.Types.ObjectId,
         ref: "Office1_Users",
@@ -213,9 +207,6 @@ const addOffice2LeadSchema = Joi.object({
     branch: Joi.string().required().messages({
         "string.pattern.base": "Invalid branch provided.",
         "any.required": "Branch is required.",
-    }),
-    role: Joi.string().optional().valid('CRM Manager', 'Conversion Manager', 'Conversion Agent').messages({
-        "any.only": "Invalid role provided."
     }),
     managerId: Joi.string().optional().messages({
         "any.only": "Invalid managerId provided."
