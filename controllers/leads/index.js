@@ -3,6 +3,8 @@ const leadAssign = require("./leadAssign");
 const getAll = require("./getAll");
 const addNewLead = require("./addNewLead");
 const leadReAssign = require("./leadReAssign")
+const getAllStatus = require("./getAllStatus")
+const updateStatus = require("./updateStatus")
 const changeBaseInfo = require("./changeBaseInfo");
 const updateLeadCountry  = require("./updateLeadCountry"); 
 const updateLeadCity = require("./updateLeadCity");
@@ -18,6 +20,8 @@ module.exports = {
     addNewLead,
     leadReAssign,
     changeBaseInfo,
+    getAllStatus,
+    updateStatus,
     updateLeadCountry,
     updateLeadCity,
     updateLeadRegion,

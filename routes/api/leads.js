@@ -6,12 +6,13 @@ const {
   getAll,
   addNewLead,
   leadReAssign,
+  getAllStatus,
+  updateStatus,
   changeBaseInfo,
   updateLeadCountry,
   updateLeadCity,
   updateLeadRegion,
   // getById,
-  // updateById,
   // deleteById,
 } = require("../../controllers/leads/index");
 const {
@@ -20,6 +21,7 @@ const {
   validOfficeAssignedSchema, 
   isValidLeadId, 
   addNewLeadSchema,
+  updateLeadStatus,
   chnageBaseInfoSchema,
   validLeadCountry,
   validLeadRegion,
@@ -33,6 +35,7 @@ const { externalLeadsSchemas } = require("../../models/ExternalLead");
 router.post("/external",  validateBodyExternal(
   externalLeadsSchemas.addExternalLeadSchema),  externalLead.externalLead
 );
+
 
 router.get("/all", authenticate, getAll.getAll);
 
@@ -52,6 +55,14 @@ router.put("/reassign/:leadId", authenticate, isValidLeadId,
 
 router.patch('/:leadId', authenticate, chnageBaseInfoSchema, 
   isValidLeadId, changeBaseInfo.changeBaseInfo
+);
+
+
+router.get("/allstatus", authenticate, getAllStatus.getAllStatus);
+
+
+router.post("/status/:leadId", authenticate, updateLeadStatus, 
+  isValidLeadId, updateStatus.updateStatus
 );
 
 

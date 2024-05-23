@@ -330,6 +330,28 @@ const office2ChnageBaseInfoSchema = Joi.object({
 });
 
 
+const statusValues = [
+  "New",
+  "N/A",
+  "Wrong Number",
+  "Wrong Person",
+  "Potential",
+  "Not Interested",
+  "In the Money",
+  "Call Back 1",
+  "Call Back 2",
+  "Call Back 3",
+  "Not Potential",
+  "Reassign",
+  "Never Answer",
+];
+
+const office2UpdateLeadStatus = Joi.object({
+  status: Joi.string().valid(...statusValues).required().messages({
+    "any.only": "Status must be one of the allowed values.",
+    "any.required": "Status is required.",
+  }),
+
 const office2CoutrySchema = Joi.object({
     country: Joi.string().pattern(textRegexp).required().messages({
         "any.only": "Invalid country provided."
@@ -358,6 +380,7 @@ const Office2Schemas = {
     office2ConManagerSchema,
     office2ConAgentSchema,
     office2ChnageBaseInfoSchema,
+    office2UpdateLeadStatus,
     office2CoutrySchema,
     office2RegionSchema,
     office2CitySchema  
