@@ -72,9 +72,6 @@ router.patch("/city/:leadId", authenticate, isValidLeadId,
 
 // router.get('/:contactId', authenticate, isValidContactId, getById.getById);
 
-// router.patch('/:contactId',authenticate, isValidContactId, validateBody(
-//     schemas.updateSchema), updateById.updateById);
-
 // router.delete("/:contactId",authenticate, isValidContactId, deleteById.deleteById);
 
 module.exports = router;

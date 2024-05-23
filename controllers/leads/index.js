@@ -8,7 +8,6 @@ const updateLeadCountry  = require("./updateLeadCountry");
 const updateLeadCity = require("./updateLeadCity");
 const updateLeadRegion = require("./updateLeadRegion");
 // const getById = require("./getById");
-// const updateById = require("./updateById");
 // const deleteById = require("./deleteById");
 
 
@@ -23,6 +22,5 @@ module.exports = {
     updateLeadCity,
     updateLeadRegion,
     // getById,
-    // updateById,
     // deleteById,
 };
