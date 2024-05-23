@@ -12,6 +12,8 @@ const {
   updateLeadCountry,
   updateLeadCity,
   updateLeadRegion,
+  updateLeadComment,
+  updateLeadKYC,
   // getById,
   // deleteById,
 } = require("../../controllers/leads/index");
@@ -26,6 +28,7 @@ const {
   validLeadCountry,
   validLeadRegion,
   validLeadCity,
+  validLeadKYC,
   // validateBody, 
 } = require("../../middlewares/index");
 const { externalLeadsSchemas } = require("../../models/ExternalLead");
@@ -61,7 +64,7 @@ router.patch('/:leadId', authenticate, chnageBaseInfoSchema,
 router.get("/allstatus", authenticate, getAllStatus.getAllStatus);
 
 
-router.post("/status/:leadId", authenticate, updateLeadStatus, 
+router.patch("/status/:leadId", authenticate, updateLeadStatus, 
   isValidLeadId, updateStatus.updateStatus
 );
 
@@ -78,6 +81,16 @@ router.patch("/region/:leadId", authenticate, isValidLeadId,
 
 router.patch("/city/:leadId", authenticate, isValidLeadId, 
   validLeadCity, updateLeadCity.updateLeadCity
+);
+
+
+router.patch("/comment/:leadId", authenticate, isValidLeadId, 
+  updateLeadComment.updateLeadComment
+);
+
+
+router.patch("/kyc/:leadId", authenticate, isValidLeadId, 
+  validLeadKYC, updateLeadKYC.updateLeadKYC
 );
 
 

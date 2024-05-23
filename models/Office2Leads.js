@@ -446,6 +446,43 @@ const office2CitySchema = Joi.object({
 });
 
 
+const office2KYCSchema = Joi.object({
+    KYC: Joi.object({
+      trading: Joi.boolean().optional(),
+      expirience: Joi.string()
+        .valid("beginner", "novice", "intermediate", "advanced", "expert")
+        .optional()
+        .messages({
+          "any.only": "Invalid experience level.",
+        }),
+      investment: Joi.string()
+        .valid("0-500", "500-2500", "2500-5000", "5000-10000", "10000+")
+        .optional()
+        .messages({
+          "any.only": "Invalid investment range.",
+        }),
+      time: Joi.string()
+        .valid("0-5", "5-10", "10-15", "15-20", "20+")
+        .optional()
+        .messages({
+          "any.only": "Invalid time range.",
+        }),
+      riskTolerance: Joi.string()
+        .valid("low", "medium", "high")
+        .optional()
+        .messages({
+          "any.only": "Invalid risk tolerance level.",
+        }),
+      profitGoal: Joi.string()
+        .valid("conservative", "moderate", "aggressive")
+        .optional()
+        .messages({
+          "any.only": "Invalid profit goal.",
+        }),
+    }).optional()
+  });
+
+
 
 const Office2Leads = model("office2_leads", leadsSchema);
 const Office2Schemas = { 
@@ -456,7 +493,8 @@ const Office2Schemas = {
     office2UpdateLeadStatus,
     office2CoutrySchema,
     office2RegionSchema,
-    office2CitySchema  
+    office2CitySchema,
+    office2KYCSchema,  
 };
 
 
