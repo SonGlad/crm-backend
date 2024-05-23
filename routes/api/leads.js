@@ -8,6 +8,8 @@ const {
   leadReAssign,
   changeBaseInfo,
   updateLeadCountry,
+  updateLeadCity,
+  updateLeadRegion,
   // getById,
   // updateById,
   // deleteById,
@@ -20,6 +22,8 @@ const {
   addNewLeadSchema,
   chnageBaseInfoSchema,
   validLeadCountry,
+  validLeadRegion,
+  validLeadCity,
   // validateBody, 
 } = require("../../middlewares/index");
 const { externalLeadsSchemas } = require("../../models/ExternalLead");
@@ -51,8 +55,18 @@ router.patch('/:leadId', authenticate, chnageBaseInfoSchema,
 );
 
 
-router.patch("/country/:leadId", authenticate, isValidLeadId, 
-  validLeadCountry, updateLeadCountry.updateLeadCountry 
+router.patch("/country/:leadId", authenticate, validLeadCountry, 
+  isValidLeadId, updateLeadCountry.updateLeadCountry 
+);
+
+
+router.patch("/region/:leadId", authenticate, isValidLeadId, 
+  validLeadRegion, updateLeadRegion.updateLeadRegion
+);
+
+
+router.patch("/city/:leadId", authenticate, isValidLeadId, 
+  validLeadCity, updateLeadCity.updateLeadCity
 );
 
 

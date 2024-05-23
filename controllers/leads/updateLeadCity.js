@@ -7,9 +7,9 @@ const { Office1User } = require("../../models/Office1User");
 const { Office2User } = require("../../models/Office2User");
 
 
-const updateLeadCountry = async(req, res) => {
+const updateLeadCity = async(req, res) => {
     const { leadId } = req.params;
-    const { country: bodyCountry } = req.body;
+    const { city: bodyCity } = req.body;
     const {role: userRole, branch: userBranch,} = req.user;
     const {role: authRole, branch: authBranch, id: authId} = req.auth;
 
@@ -46,7 +46,7 @@ const updateLeadCountry = async(req, res) => {
                         return res.status(404).send({ message: 'Lead not found' });
                     }
                     updatedLead = await Office1Leads.findOneAndUpdate({_id: leadId}, {
-                        country: bodyCountry,
+                        city: bodyCity,
                         latestComment: {
                             createdBy: {
                                 username: user.username,
@@ -55,7 +55,7 @@ const updateLeadCountry = async(req, res) => {
                                 role: authRole,
                             },
                             createdAt: Date.now(),
-                            comment: `The lead country was changed from ${prevLead.country} to ${bodyCountry} by the user ${user.username}`
+                            comment: `The lead city was changed from ${prevLead.city} to ${bodyCity} by the user ${user.username}`
                         } 
                     }, { new: true });
                     await AllCommentsSchema.create({
@@ -67,7 +67,7 @@ const updateLeadCountry = async(req, res) => {
                             role: authRole,
                         },
                         createdAt: Date.now(),
-                        comment: `The lead country was changed from ${prevLead.country} to ${bodyCountry} by user ${user.username}`
+                        comment: `The lead city was changed from ${prevLead.city} to ${bodyCity} by user ${user.username}`
                     });
                     break;
 
@@ -78,7 +78,7 @@ const updateLeadCountry = async(req, res) => {
                         return res.status(404).send({ message: 'Lead not found' });
                     }
                     updatedLead = await Office2Leads.findOneAndUpdate({_id: leadId}, {
-                        country: bodyCountry,
+                        city: bodyCity,
                         latestComment: {
                             createdBy: {
                                 username: user.username,
@@ -87,7 +87,7 @@ const updateLeadCountry = async(req, res) => {
                                 role: authRole,
                             },
                             createdAt: Date.now(),
-                            comment: `The lead country was changed from ${prevLead.country} to ${bodyCountry} by user ${user.username}`
+                            comment: `The lead city was changed from ${prevLead.city} to ${bodyCity} by user ${user.username}`
                         } 
                     }, { new: true });
                     await AllCommentsSchema.create({
@@ -99,7 +99,7 @@ const updateLeadCountry = async(req, res) => {
                             role: authRole,
                         },
                         createdAt: Date.now(),
-                        comment: `The lead country was changed from ${prevLead.country} to ${bodyCountry} by the user ${user.username}`
+                        comment: `The lead city was changed from ${prevLead.city} to ${bodyCity} by the user ${user.username}`
                     });
                     break;
                 default:
@@ -118,7 +118,7 @@ const updateLeadCountry = async(req, res) => {
                 return res.status(404).send({ message: 'Lead not found' });
             }
             updatedLead = await Office1Leads.findOneAndUpdate({_id: leadId}, {
-                country: bodyCountry,
+                city: bodyCity,
                 latestComment: {
                     createdBy: {
                         username: user.username,
@@ -127,7 +127,7 @@ const updateLeadCountry = async(req, res) => {
                         role: authRole,
                     },
                     createdAt: Date.now(),
-                    comment: `The lead country was changed from ${prevLead.country} to ${bodyCountry} by the user ${user.username}`
+                    comment: `The lead city was changed from ${prevLead.city} to ${bodyCity} by the user ${user.username}`
                 } 
             }, { new: true });
             await AllCommentsSchema.create({
@@ -139,7 +139,7 @@ const updateLeadCountry = async(req, res) => {
                     role: authRole,
                 },
                 createdAt: Date.now(),
-                comment: `The lead country was changed from ${prevLead.country} to ${bodyCountry} by user ${user.username}`
+                comment: `The lead city was changed from ${prevLead.city} to ${bodyCity} by user ${user.username}`
             });
             break;
 
@@ -154,7 +154,7 @@ const updateLeadCountry = async(req, res) => {
                 return res.status(404).send({ message: 'Lead not found' });
             }
             updatedLead = await Office2Leads.findOneAndUpdate({_id: leadId}, {
-                country: bodyCountry,
+                city: bodyCity,
                 latestComment: {
                     createdBy: {
                         username: user.username,
@@ -163,7 +163,7 @@ const updateLeadCountry = async(req, res) => {
                         role: authRole,
                     },
                     createdAt: Date.now(),
-                    comment: `The lead country was changed from ${prevLead.country} to ${bodyCountry} by user ${user.username}`
+                    comment: `The lead city was changed from ${prevLead.city} to ${bodyCity} by user ${user.username}`
                 } 
             }, { new: true });
             await AllCommentsSchema.create({
@@ -175,7 +175,7 @@ const updateLeadCountry = async(req, res) => {
                     role: authRole,
                 },
                 createdAt: Date.now(),
-                comment: `The lead country was changed from ${prevLead.country} to ${bodyCountry} by the user ${user.username}`
+                comment: `The lead city was changed from ${prevLead.city} to ${bodyCity} by the user ${user.username}`
             });
             break;
         default:
@@ -194,5 +194,5 @@ const updateLeadCountry = async(req, res) => {
 
 
 module.exports = {
-    updateLeadCountry : ctrlWrapper(updateLeadCountry )
+    updateLeadCity : ctrlWrapper(updateLeadCity)
 };
