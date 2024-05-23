@@ -5,6 +5,7 @@ const { handleMongooseError } = require("../helpers/index");
 
 const emailRegexp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegexp = /^[0-9()+\s-]+$/;
+const textRegexp = /^[\p{L}\s]+$/u;
 
 
 const leadsSchema = new Schema({
@@ -350,6 +351,25 @@ const office2UpdateLeadStatus = Joi.object({
     "any.only": "Status must be one of the allowed values.",
     "any.required": "Status is required.",
   }),
+
+const office2CoutrySchema = Joi.object({
+    country: Joi.string().pattern(textRegexp).required().messages({
+        "any.only": "Invalid country provided."
+    }),
+});
+
+
+const office2RegionSchema = Joi.object({
+    region: Joi.string().pattern(textRegexp).required().messages({
+        "any.only": "Invalid country provided."
+    }),
+});
+
+
+const office2CitySchema = Joi.object({
+    city: Joi.string().pattern(textRegexp).required().messages({
+        "any.only": "Invalid country provided."
+    }),
 });
 
 
@@ -361,6 +381,9 @@ const Office2Schemas = {
     office2ConAgentSchema,
     office2ChnageBaseInfoSchema,
     office2UpdateLeadStatus,
+    office2CoutrySchema,
+    office2RegionSchema,
+    office2CitySchema  
 };
 
 

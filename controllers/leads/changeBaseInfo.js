@@ -244,7 +244,7 @@ const changeBaseInfo = async(req, res) => {
             };
             break;
         default:
-            return res.status(400).send({ message: 'Authorization role is invalid' });
+            return res.status(400).send({ message: 'Authorization branch is invalid' });
     };
 
 

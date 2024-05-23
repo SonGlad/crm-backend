@@ -13,6 +13,9 @@ const validOfficeAssignedSchema = require("./leads/validOfficeAssignedSchema");
 const addNewLeadSchema = require("./leads/addNewLeadSchema");
 const chnageBaseInfoSchema = require("./leads/chnageBaseInfoSchema");
 const updateLeadStatus =require("./leads/updateLeadStatus")
+const validLeadCountry = require("./leads/validLeadCountry");
+const validLeadRegion = require("./leads/validLeadRegion");
+const validLeadCity = require("./leads/validLeadCity");
 
 
 module.exports =  { 
@@ -31,4 +34,7 @@ module.exports =  {
     addNewLeadSchema,
     chnageBaseInfoSchema,
     updateLeadStatus,
+    validLeadCountry,
+    validLeadRegion,
+    validLeadCity
 };

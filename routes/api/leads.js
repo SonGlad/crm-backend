@@ -6,11 +6,13 @@ const {
   getAll,
   addNewLead,
   leadReAssign,
-    changeBaseInfo,
-    getAllStatus,
+  getAllStatus,
   updateStatus,
+  changeBaseInfo,
+  updateLeadCountry,
+  updateLeadCity,
+  updateLeadRegion,
   // getById,
-  // updateById,
   // deleteById,
 } = require("../../controllers/leads/index");
 const {
@@ -19,8 +21,11 @@ const {
   validOfficeAssignedSchema, 
   isValidLeadId, 
   addNewLeadSchema,
-    chnageBaseInfoSchema,
-    updateLeadStatus,
+  updateLeadStatus,
+  chnageBaseInfoSchema,
+  validLeadCountry,
+  validLeadRegion,
+  validLeadCity,
   // validateBody, 
 } = require("../../middlewares/index");
 const { externalLeadsSchemas } = require("../../models/ExternalLead");
@@ -30,6 +35,7 @@ const { externalLeadsSchemas } = require("../../models/ExternalLead");
 router.post("/external",  validateBodyExternal(
   externalLeadsSchemas.addExternalLeadSchema),  externalLead.externalLead
 );
+
 
 router.get("/all", authenticate, getAll.getAll);
 
@@ -51,15 +57,31 @@ router.patch('/:leadId', authenticate, chnageBaseInfoSchema,
   isValidLeadId, changeBaseInfo.changeBaseInfo
 );
 
-router.get("/allstatus", authenticate, getAllStatus.getAllStatus)
 
-router.post("/status/:leadId", authenticate, updateLeadStatus, updateStatus.updateStatus)
+router.get("/allstatus", authenticate, getAllStatus.getAllStatus);
+
+
+router.post("/status/:leadId", authenticate, updateLeadStatus, 
+  isValidLeadId, updateStatus.updateStatus
+);
+
+
+router.patch("/country/:leadId", authenticate, validLeadCountry, 
+  isValidLeadId, updateLeadCountry.updateLeadCountry 
+);
+
+
+router.patch("/region/:leadId", authenticate, isValidLeadId, 
+  validLeadRegion, updateLeadRegion.updateLeadRegion
+);
+
+
+router.patch("/city/:leadId", authenticate, isValidLeadId, 
+  validLeadCity, updateLeadCity.updateLeadCity
+);
 
 
 // router.get('/:contactId', authenticate, isValidContactId, getById.getById);
-
-// router.patch('/:contactId',authenticate, isValidContactId, validateBody(
-//     schemas.updateSchema), updateById.updateById);
 
 // router.delete("/:contactId",authenticate, isValidContactId, deleteById.deleteById);
 

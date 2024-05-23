@@ -4,6 +4,7 @@ const { handleMongooseError } = require("../helpers/index");
 
 const emailRegexp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegexp = /^[0-9()+\s-]+$/;
+const textRegexp = /^[\p{L}\s]+$/u;
 
 const leadsSchema = new Schema(
   {
@@ -440,13 +441,39 @@ const office1UpdateLeadStatus = Joi.object({
   }),
 });
 
+
+const office1CoutrySchema = Joi.object({
+    country: Joi.string().pattern(textRegexp).required().messages({
+        "any.only": "Invalid country provided."
+    }),
+});
+
+
+const office1RegionSchema = Joi.object({
+    region: Joi.string().pattern(textRegexp).required().messages({
+        "any.only": "Invalid country provided."
+    }),
+});
+
+
+const office1CitySchema = Joi.object({
+    city: Joi.string().pattern(textRegexp).required().messages({
+        "any.only": "Invalid country provided."
+    }),
+});
+
+
+
 const Office1Leads = model("office1_leads", leadsSchema);
-const Office1Schemas = {
-  addOffice1LeadSchema,
-  office1ConManagerSchema,
-  office1ConAgentSchema,
-  office1ChnageBaseInfoSchema,
-  office1UpdateLeadStatus,
+const Office1Schemas = { 
+    addOffice1LeadSchema,
+    office1ConManagerSchema,
+    office1ConAgentSchema,
+    office1ChnageBaseInfoSchema,
+    office1CoutrySchema,
+    office1RegionSchema,
+    office1CitySchema,
+    office1UpdateLeadStatus,
 };
 
 module.exports = { Office1Leads, Office1Schemas };
