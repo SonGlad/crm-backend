@@ -2,53 +2,190 @@ const { Schema, model } = require("mongoose");
 const Joi = require("joi");
 const { handleMongooseError } = require("../helpers/index");
 
+
 const emailRegexp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegexp = /^[0-9()+\s-]+$/;
 const textRegexp = /^[\p{L}\s]+$/u;
 
-const leadsSchema = new Schema(
-  {
-    name: {
+
+const leadsSchema = new Schema({
+  name: {
+    type: String,
+    required: [true, "Set name for contact"],
+  },
+  lastName: {
+    type: String,
+    required: [true, "Set name for contact"],
+  },
+  email: {
+    type: String,
+    required: [true, "Set email for contact"],
+  },
+  phone: {
+    type: String,
+    required: [true, "Set phone for contact"],
+  },
+  resource: {
+    type: String,
+    required: true,
+  },
+  branch: {
+    type: String,
+    default: "Office1",
+    required: false,
+  },
+  managerId: {
+    type: Schema.Types.ObjectId,
+    ref: "Office1_Users",
+    required: false,
+  },
+  conManagerId: {
+    type: Schema.Types.ObjectId,
+    ref: "Office1_Users",
+    required: false,
+  },
+  conAgentId: {
+    type: Schema.Types.ObjectId,
+    ref: "Office1_Users",
+    required: false,
+  },
+  owner: {
+    username: {
       type: String,
-      required: [true, "Set name for contact"],
-    },
-    lastName: {
-      type: String,
-      required: [true, "Set name for contact"],
+      required: false,
     },
     email: {
       type: String,
-      required: [true, "Set email for contact"],
-    },
-    phone: {
-      type: String,
-      required: [true, "Set phone for contact"],
-    },
-    resource: {
-      type: String,
-      required: true,
-    },
-    branch: {
-      type: String,
-      default: "Office1",
       required: false,
     },
-    managerId: {
+    id: {
       type: Schema.Types.ObjectId,
-      ref: "Office1_Users",
       required: false,
     },
-    conManagerId: {
-      type: Schema.Types.ObjectId,
-      ref: "Office1_Users",
+    role: {
+      type: String,
       required: false,
     },
-    conAgentId: {
-      type: Schema.Types.ObjectId,
-      ref: "Office1_Users",
-      required: false,
+  },
+  externalLeadId: {
+    type: Schema.Types.ObjectId,
+    ref: "external_leads",
+    required: false,
+  },
+  assigned: {
+    type: Boolean,
+    default: false,
+    required: false,
+  },
+  selfCreated: {
+    type: Boolean,
+    default: false,
+    required: false,
+  },
+  clientId: {
+    type: Number,
+    required: false,
+  },
+  status: {
+    type: String,
+    enum: [
+      "New",
+      "N/A",
+      "Wrong Number",
+      "Wrong Person",
+      "Potential",
+      "Not Interested",
+      "In the Money",
+      "Call Back 1",
+      "Call Back 2",
+      "Call Back 3",
+      "Not Potential",
+      "Reassign",
+      "Never Answer",
+    ],
+    default: "New",
+    required: false,
+  },
+  country: {
+    type: String,
+    default: "",
+    required: false,
+  },
+  region: {
+    type: String,
+    default: "",
+    required: false,
+  },
+  city: {
+    type: String,
+    default: "",
+    required: false,
+  },
+  timeZone: {
+    type: Number,
+    enum: [
+      -12,
+      -11,
+      -10,
+      -9,
+      -8,
+      -7,
+      -6,
+      -5,
+      -4,
+      -3,
+      -2,
+      -1,
+      0,
+      +1,
+      +2,
+      +3,
+      +4,
+      +5,
+      +6,
+      +7,
+      +8,
+      +9,
+      +10,
+      +11,
+      +12,
+    ],
+    default: 0,
+    required: false,
+  },
+  KYC: {
+    trading: {
+      type: Boolean,
+      default: false,
     },
-    owner: {
+    expirience: {
+      type: String,
+      enum: ["beginner", "novice", "intermediate", "advanced", "expert"],
+      default: "beginner",
+    },
+    investment: {
+      type: String,
+      enum: ["0-500", "500-2500", "2500-5000", "5000-10000", "10000+"],
+      default: "0-500",
+    },
+    time: {
+      type: String,
+      enum: ["0-5", "5-10", "10-15", "15-20", "20+"],
+      default: "0-5",
+    },
+    riskTolerance: {
+      type: String,
+      enum: ["low", "medium", "high"],
+      default: "low",
+    },
+    profitGoal: {
+      type: String,
+      enum: ["conservative", "moderate", "aggressive"],
+      default: "conservative",
+    },
+  },
+  latestComment: {
+    createdBy: {
       username: {
         type: String,
         required: false,
@@ -57,165 +194,29 @@ const leadsSchema = new Schema(
         type: String,
         required: false,
       },
-      id: {
-        type: Schema.Types.ObjectId,
-        required: false,
-      },
       role: {
         type: String,
         required: false,
       },
-    },
-    externalLeadId: {
-      type: Schema.Types.ObjectId,
-      ref: "external_leads",
-      required: false,
-    },
-    assigned: {
-      type: Boolean,
-      default: false,
-      required: false,
-    },
-    selfCreated: {
-      type: Boolean,
-      default: false,
-      required: false,
-    },
-    clientId: {
-      type: Number,
-      required: false,
-    },
-    status: {
-      type: String,
-      enum: [
-        "New",
-        "N/A",
-        "Wrong Number",
-        "Wrong Person",
-        "Potential",
-        "Not Interested",
-        "In the Money",
-        "Call Back 1",
-        "Call Back 2",
-        "Call Back 3",
-        "Not Potential",
-        "Reassign",
-        "Never Answer",
-      ],
-      default: "New",
-      required: false,
-    },
-    country: {
-      type: String,
-      default: "",
-      required: false,
-    },
-    region: {
-      type: String,
-      default: "",
-      required: false,
-    },
-    city: {
-      type: String,
-      default: "",
-      required: false,
-    },
-    timeZone: {
-      type: Number,
-      enum: [
-        -12,
-        -11,
-        -10,
-        -9,
-        -8,
-        -7,
-        -6,
-        -5,
-        -4,
-        -3,
-        -2,
-        -1,
-        0,
-        +1,
-        +2,
-        +3,
-        +4,
-        +5,
-        +6,
-        +7,
-        +8,
-        +9,
-        +10,
-        +11,
-        +12,
-      ],
-      default: 0,
-      required: false,
-    },
-    KYC: {
-      trading: {
-        type: Boolean,
-        default: false,
-      },
-      expirience: {
-        type: String,
-        enum: ["beginner", "novice", "intermediate", "advanced", "expert"],
-        default: "beginner",
-      },
-      investment: {
-        type: String,
-        enum: ["0-500", "500-2500", "2500-5000", "5000-10000", "10000+"],
-        default: "0-500",
-      },
-      time: {
-        type: String,
-        enum: ["0-5", "5-10", "10-15", "15-20", "20+"],
-        default: "0-5",
-      },
-      riskTolerance: {
-        type: String,
-        enum: ["low", "medium", "high"],
-        default: "low",
-      },
-      profitGoal: {
-        type: String,
-        enum: ["conservative", "moderate", "aggressive"],
-        default: "conservative",
-      },
-    },
-    latestComment: {
-      createdBy: {
-        username: {
-          type: String,
-          required: false,
-        },
-        email: {
-          type: String,
-          required: false,
-        },
-        role: {
-          type: String,
-          required: false,
-        },
-        branch: {
-          type: String,
-          required: false,
-        },
-      },
-      createdAt: {
-        type: Date,
-        default: Date.now,
-      },
-      comment: {
+      branch: {
         type: String,
         required: false,
       },
     },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    comment: {
+      type: String,
+      required: false,
+    },
   },
-  { versionKey: false, timestamps: true }
-);
+}, { versionKey: false, timestamps: true });
+
 
 leadsSchema.post("save", handleMongooseError);
+
 
 const addOffice1LeadSchema = Joi.object({
   name: Joi.string().min(2).max(30).required().messages({
@@ -274,9 +275,7 @@ const addOffice1LeadSchema = Joi.object({
   clientId: Joi.number().optional().messages({
     "any.only": "Invalid id provided.",
   }),
-  status: Joi.string()
-    .optional()
-    .valid(
+  status: Joi.string().optional().valid(
       "New",
       "N/A",
       "Wrong Number",
@@ -290,8 +289,7 @@ const addOffice1LeadSchema = Joi.object({
       "Not Potential",
       "Reassign",
       "Never Answer"
-    )
-    .messages({
+    ).messages({
       "any.only": "Invalid status provided.",
     }),
   country: Joi.string().optional().messages({
@@ -303,38 +301,35 @@ const addOffice1LeadSchema = Joi.object({
   city: Joi.string().optional().messages({
     "any.only": "Invalid city provided.",
   }),
-  timeZone: Joi.number()
-    .valid(
-      -12,
-      -11,
-      -10,
-      -9,
-      -8,
-      -7,
-      -6,
-      -5,
-      -4,
-      -3,
-      -2,
-      -1,
-      0,
-      +1,
-      +2,
-      +3,
-      +4,
-      +5,
-      +6,
-      +7,
-      +8,
-      +9,
-      +10,
-      +11,
-      +12
-    )
-    .optional()
-    .messages({
-      "any.only": "Invalid time zone provided.",
-    }),
+  timeZone: Joi.number().valid(
+    -12,
+    -11,
+    -10,
+    -9,
+    -8,
+    -7,
+    -6,
+    -5,
+    -4,
+    -3,
+    -2,
+    -1,
+    0,
+    +1,
+    +2,
+    +3,
+    +4,
+    +5,
+    +6,
+    +7,
+    +8,
+    +9,
+    +10,
+    +11,
+    +12
+  ).optional().messages({
+    "any.only": "Invalid time zone provided.",
+  }),
   KYC: Joi.object({
     trading: Joi.boolean().optional(),
     expirience: Joi.string()
@@ -434,6 +429,7 @@ const statusValues = [
   "Never Answer",
 ];
 
+
 const office1UpdateLeadStatus = Joi.object({
   status: Joi.string().valid(...statusValues).required().messages({
     "any.only": "Status must be one of the allowed values.",
@@ -443,37 +439,37 @@ const office1UpdateLeadStatus = Joi.object({
 
 
 const office1CoutrySchema = Joi.object({
-    country: Joi.string().pattern(textRegexp).required().messages({
-        "any.only": "Invalid country provided."
-    }),
+  country: Joi.string().pattern(textRegexp).required().messages({
+    "any.only": "Invalid country provided."
+  }),
 });
 
 
 const office1RegionSchema = Joi.object({
-    region: Joi.string().pattern(textRegexp).required().messages({
-        "any.only": "Invalid country provided."
-    }),
+  region: Joi.string().pattern(textRegexp).required().messages({
+    "any.only": "Invalid country provided."
+  }),
 });
 
 
 const office1CitySchema = Joi.object({
-    city: Joi.string().pattern(textRegexp).required().messages({
-        "any.only": "Invalid country provided."
-    }),
+  city: Joi.string().pattern(textRegexp).required().messages({
+    "any.only": "Invalid country provided."
+  }),
 });
 
 
 
 const Office1Leads = model("office1_leads", leadsSchema);
 const Office1Schemas = { 
-    addOffice1LeadSchema,
-    office1ConManagerSchema,
-    office1ConAgentSchema,
-    office1ChnageBaseInfoSchema,
-    office1CoutrySchema,
-    office1RegionSchema,
-    office1CitySchema,
-    office1UpdateLeadStatus,
+  addOffice1LeadSchema,
+  office1ConManagerSchema,
+  office1ConAgentSchema,
+  office1ChnageBaseInfoSchema,
+  office1CoutrySchema,
+  office1RegionSchema,
+  office1CitySchema,
+  office1UpdateLeadStatus,
 };
 
 module.exports = { Office1Leads, Office1Schemas };

@@ -88,10 +88,21 @@ const leadsSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['New', 'N/A', 'Wrong Number', 'Wrong Person', 
-        'Potential', 'Not Interested', 'In the Money', 
-        'Call Back 1', 'Call Back 2', 'Call Back 3', 
-        'Not Potential', 'Reassign', 'Never Answer'],
+        enum: [
+            'New', 
+            'N/A', 
+            'Wrong Number', 
+            'Wrong Person', 
+            'Potential', 
+            'Not Interested', 
+            'In the Money', 
+            'Call Back 1', 
+            'Call Back 2', 
+            'Call Back 3', 
+            'Not Potential', 
+            'Reassign', 
+            'Never Answer'
+        ],
         default: 'New',
         required: false
     },
@@ -112,8 +123,33 @@ const leadsSchema = new Schema({
     },
     timeZone: {
         type: Number,
-        enum: [-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 
-        +1, +2, +3, +4, +5, +6, +7, +8, +9, +10, +11, +12],
+        enum: [
+            -12, 
+            -11, 
+            -10, 
+            -9, 
+            -8, 
+            -7, 
+            -6, 
+            -5, 
+            -4, 
+            -3, 
+            -2, 
+            -1, 
+            0, 
+            +1, 
+            +2, 
+            +3, 
+            +4, 
+            +5, 
+            +6, 
+            +7, 
+            +8, 
+            +9, 
+            +10, 
+            +11, 
+            +12
+        ],
         default: 0,
         required: false
     },
@@ -175,8 +211,7 @@ const leadsSchema = new Schema({
             type: String,
             required: false
         },
-    }
-    
+    }, 
 }, {versionKey: false, timestamps: true});
 
 
@@ -241,10 +276,20 @@ const addOffice2LeadSchema = Joi.object({
         "any.only": "Invalid id provided."
     }),
     status: Joi.string().optional().valid(
-    'New', 'N/A', 'Wrong Number', 'Wrong Person', 
-    'Potential', 'Not Interested', 'In the Money', 
-    'Call Back 1', 'Call Back 2', 'Call Back 3', 
-    'Not Potential', 'Reassign', 'Never Answer').messages({
+        'New', 
+        'N/A', 
+        'Wrong Number', 
+        'Wrong Person', 
+        'Potential', 
+        'Not Interested', 
+        'In the Money', 
+        'Call Back 1', 
+        'Call Back 2', 
+        'Call Back 3', 
+        'Not Potential', 
+        'Reassign', 
+        'Never Answer'
+    ).messages({
         "any.only": "Invalid status provided."
     }),
     country: Joi.string().optional().messages({
@@ -256,8 +301,33 @@ const addOffice2LeadSchema = Joi.object({
     city: Joi.string().optional().messages({
         "any.only": "Invalid city provided."
     }),
-    timeZone: Joi.number().valid(-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 
-        +1, +2, +3, +4, +5, +6, +7, +8, +9, +10, +11, +12).optional().messages({
+    timeZone: Joi.number().valid(
+        -12, 
+        -11, 
+        -10, 
+        -9, 
+        -8, 
+        -7, 
+        -6, 
+        -5, 
+        -4, 
+        -3, 
+        -2, 
+        -1, 
+        0, 
+        +1, 
+        +2, 
+        +3, 
+        +4, 
+        +5, 
+        +6, 
+        +7, 
+        +8, 
+        +9, 
+        +10, 
+        +11, 
+        +12
+    ).optional().messages({
         "any.only": "Invalid time zone provided."
     }),
     KYC: Joi.object({
@@ -346,11 +416,14 @@ const statusValues = [
   "Never Answer",
 ];
 
+
 const office2UpdateLeadStatus = Joi.object({
   status: Joi.string().valid(...statusValues).required().messages({
-    "any.only": "Status must be one of the allowed values.",
-    "any.required": "Status is required.",
-  }),
+        "any.only": "Status must be one of the allowed values.",
+        "any.required": "Status is required.",
+    }),
+});
+
 
 const office2CoutrySchema = Joi.object({
     country: Joi.string().pattern(textRegexp).required().messages({
