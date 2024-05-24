@@ -445,6 +445,12 @@ const office2CitySchema = Joi.object({
     }),
 });
 
+const office2TimeZoneSchema = Joi.object({
+  timeZone: Joi.number().required().messages({
+    "any.only": "Invalid time zone provided."
+  }),
+});
+
 
 
 const Office2Leads = model("office2_leads", leadsSchema);
@@ -456,7 +462,8 @@ const Office2Schemas = {
     office2UpdateLeadStatus,
     office2CoutrySchema,
     office2RegionSchema,
-    office2CitySchema  
+    office2CitySchema,
+    office2TimeZoneSchema
 };
 
 
