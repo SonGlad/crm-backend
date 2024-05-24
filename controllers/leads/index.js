@@ -9,6 +9,8 @@ const changeBaseInfo = require("./changeBaseInfo");
 const updateLeadCountry  = require("./updateLeadCountry"); 
 const updateLeadCity = require("./updateLeadCity");
 const updateLeadRegion = require("./updateLeadRegion");
+const getAllTimeZone = require("./getAllTimeZone");
+const updateLeadTimeZone = require("./updateLeadTimeZone")
 const updateLeadComment = require("./updateLeadComment");
 const updateLeadKYC = require("./updateLeadKYC");
 // const getById = require("./getById");
@@ -27,6 +29,8 @@ module.exports = {
     updateLeadCountry,
     updateLeadCity,
     updateLeadRegion,
+    getAllTimeZone,
+    updateLeadTimeZone,
     updateLeadComment,
     updateLeadKYC,
     // getById,

@@ -12,6 +12,8 @@ const {
   updateLeadCountry,
   updateLeadCity,
   updateLeadRegion,
+  getAllTimeZone,
+  updateLeadTimeZone,
   updateLeadComment,
   updateLeadKYC,
   // getById,
@@ -20,31 +22,31 @@ const {
 const {
   validateBodyExternal,
   authenticate,
-  validOfficeAssignedSchema, 
-  isValidLeadId, 
+  validOfficeAssignedSchema,
+  isValidLeadId,
   addNewLeadSchema,
   updateLeadStatus,
   chnageBaseInfoSchema,
   validLeadCountry,
   validLeadRegion,
+  updateTimeZone,
   validLeadCity,
   validLeadKYC,
   // validateBody, 
 } = require("../../middlewares/index");
 const { externalLeadsSchemas } = require("../../models/ExternalLead");
 
-
-
-router.post("/external",  validateBodyExternal(
-  externalLeadsSchemas.addExternalLeadSchema),  externalLead.externalLead
+router.post(
+  "/external",
+  validateBodyExternal(externalLeadsSchemas.addExternalLeadSchema),
+  externalLead.externalLead
 );
-
 
 router.get("/all", authenticate, getAll.getAll);
 
 
-router.post("/assign/:leadId", authenticate,  validOfficeAssignedSchema,
-  isValidLeadId,  leadAssign.leadAssign
+router.post("/assign/:leadId", authenticate, validOfficeAssignedSchema,
+  isValidLeadId, leadAssign.leadAssign
 );
 
 
@@ -56,31 +58,37 @@ router.put("/reassign/:leadId", authenticate, isValidLeadId,
 );
 
 
-router.patch('/:leadId', authenticate, chnageBaseInfoSchema, 
+router.patch("/:leadId", authenticate, chnageBaseInfoSchema,
   isValidLeadId, changeBaseInfo.changeBaseInfo
 );
-
 
 router.get("/allstatus", authenticate, getAllStatus.getAllStatus);
 
 
-router.patch("/status/:leadId", authenticate, updateLeadStatus, 
+router.patch("/status/:leadId", authenticate, updateLeadStatus,
   isValidLeadId, updateStatus.updateStatus
 );
 
 
-router.patch("/country/:leadId", authenticate, validLeadCountry, 
-  isValidLeadId, updateLeadCountry.updateLeadCountry 
+router.patch("/country/:leadId", authenticate, validLeadCountry,
+  isValidLeadId, updateLeadCountry.updateLeadCountry
 );
 
 
-router.patch("/region/:leadId", authenticate, isValidLeadId, 
+router.patch("/region/:leadId", authenticate, isValidLeadId,
   validLeadRegion, updateLeadRegion.updateLeadRegion
 );
 
 
-router.patch("/city/:leadId", authenticate, isValidLeadId, 
+router.patch("/city/:leadId", authenticate, isValidLeadId,
   validLeadCity, updateLeadCity.updateLeadCity
+);
+
+router.get("/alltimezone", authenticate, getAllTimeZone.getAllTimeZone);
+
+
+router.patch("/timezone/:leadId", authenticate, updateTimeZone,
+  isValidLeadId, updateLeadTimeZone.updateLeadTimeZone
 );
 
 
@@ -95,7 +103,6 @@ router.patch("/kyc/:leadId", authenticate, isValidLeadId,
 
 
 // router.get('/:contactId', authenticate, isValidContactId, getById.getById);
-
 // router.delete("/:contactId",authenticate, isValidContactId, deleteById.deleteById);
 
 module.exports = router;

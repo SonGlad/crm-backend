@@ -445,6 +445,12 @@ const office2CitySchema = Joi.object({
     }),
 });
 
+const office2TimeZoneSchema = Joi.object({
+  timeZone: Joi.number().required().messages({
+    "any.only": "Invalid time zone provided."
+  }),
+});
+
 
 const office2KYCSchema = Joi.object({
     KYC: Joi.object({
@@ -494,6 +500,7 @@ const Office2Schemas = {
     office2CoutrySchema,
     office2RegionSchema,
     office2CitySchema,
+    office2TimeZoneSchema,
     office2KYCSchema,  
 };
 
