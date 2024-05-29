@@ -85,7 +85,7 @@ const leadAssign = async (req, res) => {
                 role: authRole,
               },
               createdAt: Date.now(),
-              comment: `Lead created & Assigned to Office 1 CRM Manager ${managerId.username}`,
+              comment: `Lead created & Assigned to Office 1 CRM Manager: ${managerId.username}`,
             },
           });
           await AllCommentsSchema.create({
@@ -97,7 +97,7 @@ const leadAssign = async (req, res) => {
               role: authRole,
             },
             createdAt: Date.now(),
-            comment: `Lead created & Assigned to Office 1 CRM Manager ${managerId.username}`,
+            comment: `Lead created & Assigned to Office 1 CRM Manager: ${managerId.username}`,
           });
           await Leads.findByIdAndUpdate(leadId, {
             newContact: false,
@@ -125,7 +125,7 @@ const leadAssign = async (req, res) => {
                 branch: authBranch,
               },
               createdAt: Date.now(),
-              comment: "Lead created & Assigned to Office 2 CRM Manager",
+              comment: `Lead created & Assigned to Office 2 CRM Manager: ${managerId.username}`,
             },
           });
           await AllCommentsSchema.create({
@@ -136,7 +136,7 @@ const leadAssign = async (req, res) => {
               branch: authBranch,
             },
             createdAt: Date.now(),
-            comment: "Lead created & Assigned to Office 2 CRM Manager",
+            comment: `Lead created & Assigned to Office 2 CRM Manager: ${managerId.username}`,
           });
           await Leads.findByIdAndUpdate(leadId, {
             newContact: false, assigned: true, assignedOffice: branch,
@@ -169,7 +169,7 @@ const leadAssign = async (req, res) => {
                   role: authRole,
                 },
                 createdAt: Date.now(),
-                comment: `Lead Assigned to Office 1 Conversion Manager ${conversionManagerId.username}`,
+                comment: `Lead Assigned to Office 1 Conversion Manager: ${conversionManagerId.username}`,
               },
             }, { new: true });
             await AllCommentsSchema.create({
@@ -181,7 +181,7 @@ const leadAssign = async (req, res) => {
                 role: authRole,
               },
               createdAt: Date.now(),
-              comment: `Lead Assigned to Office 1 Conversion Manager ${conversionManagerId.username}`,
+              comment: `Lead Assigned to Office 1 Conversion Manager: ${conversionManagerId.username}`,
             });
             await Leads.findByIdAndUpdate(assignedLead.externalLeadId, {
               conManager: {
@@ -208,7 +208,7 @@ const leadAssign = async (req, res) => {
                 role: authRole,
               },
               createdAt: Date.now(),
-              comment: `Lead Assigned to Office 1 Conversion Agent ${conversionAgentId.username}`
+              comment: `Lead Assigned to Office 1 Conversion Agent: ${conversionAgentId.username}`
             } 
           }, {new: true});
           await AllCommentsSchema.create({
@@ -220,7 +220,7 @@ const leadAssign = async (req, res) => {
               role: authRole,
             },
             createdAt: Date.now(),
-            comment: `Lead Assigned to Office 1 Conversion Agent ${conversionAgentId.username}`
+            comment: `Lead Assigned to Office 1 Conversion Agent: ${conversionAgentId.username}`
           });
           await Leads.findByIdAndUpdate(assignedLead.externalLeadId, {
             conAgent: {
@@ -252,7 +252,7 @@ const leadAssign = async (req, res) => {
                   role: authRole,
                 },
                 createdAt: Date.now(),
-                comment: `Lead Assigned to Office 2 Conversion Manager ${conversionManagerId.username}`,
+                comment: `Lead Assigned to Office 2 Conversion Manager: ${conversionManagerId.username}`,
               },
             },{ new: true });
             await AllCommentsSchema.create({
@@ -264,7 +264,7 @@ const leadAssign = async (req, res) => {
                 role: authRole,
               },
               createdAt: Date.now(),
-              comment: `Lead Assigned to Office 2 Conversion Manager ${conversionManagerId.username}`,
+              comment: `Lead Assigned to Office 2 Conversion Manager: ${conversionManagerId.username}`,
             });
             await Leads.findByIdAndUpdate(assignedLead.externalLeadId, {
               conManager: {
@@ -291,7 +291,7 @@ const leadAssign = async (req, res) => {
                 role: authRole,
               },
               createdAt: Date.now(),
-              comment: `Lead Assigned to Office 2 Conversion Agent ${conversionAgentId.username}`,
+              comment: `Lead Assigned to Office 2 Conversion Agent: ${conversionAgentId.username}`,
             },
           }, {new: true});
           await AllCommentsSchema.create({
@@ -303,7 +303,7 @@ const leadAssign = async (req, res) => {
               role: authRole,
             },
             createdAt: Date.now(),
-            comment: `Lead Assigned to Office 2 Conversion Agent ${conversionAgentId.username}`,
+            comment: `Lead Assigned to Office 2 Conversion Agent: ${conversionAgentId.username}`,
           });
           await Leads.findByIdAndUpdate(assignedLead.externalLeadId, {
             conAgent: {

@@ -18,8 +18,9 @@ const {
   updateLeadKYC,
   updateLeadLastCall,
   updateLeadNextCall,
-  // getById,
-  // deleteById,
+  getLeadById,
+  getAllLeadComments,
+  deleteLeadById,
 } = require("../../controllers/leads/index");
 const {
   validateBodyExternal,
@@ -36,14 +37,12 @@ const {
   validLeadKYC,
   updateLastCall,
   updateNextCall,
-  // validateBody, 
 } = require("../../middlewares/index");
 const { externalLeadsSchemas } = require("../../models/ExternalLead");
 
-router.post(
-  "/external",
-  validateBodyExternal(externalLeadsSchemas.addExternalLeadSchema),
-  externalLead.externalLead
+
+router.post("/external", validateBodyExternal(
+  externalLeadsSchemas.addExternalLeadSchema), externalLead.externalLead
 );
 
 router.get("/all", authenticate, getAll.getAll);
@@ -65,6 +64,7 @@ router.put("/reassign/:leadId", authenticate, isValidLeadId,
 router.patch("/:leadId", authenticate, chnageBaseInfoSchema,
   isValidLeadId, changeBaseInfo.changeBaseInfo
 );
+
 
 router.get("/allstatus", authenticate, getAllStatus.getAllStatus);
 
@@ -88,6 +88,7 @@ router.patch("/city/:leadId", authenticate, isValidLeadId,
   validLeadCity, updateLeadCity.updateLeadCity
 );
 
+
 router.get("/alltimezone", authenticate, getAllTimeZone.getAllTimeZone);
 
 
@@ -105,13 +106,24 @@ router.patch("/kyc/:leadId", authenticate, isValidLeadId,
   validLeadKYC, updateLeadKYC.updateLeadKYC
 );
 
-router.patch("/lastcall/:leadId", authenticate, isValidLeadId, updateLastCall, updateLeadLastCall.updateLeadLastCall);
 
-router.patch("/nextcall/:leadId", authenticate, isValidLeadId, updateNextCall, updateLeadNextCall.updateLeadNextCall);
+router.patch("/lastcall/:leadId", authenticate, isValidLeadId, 
+  updateLastCall, updateLeadLastCall.updateLeadLastCall
+);
 
 
+router.patch("/nextcall/:leadId", authenticate, isValidLeadId, 
+  updateNextCall, updateLeadNextCall.updateLeadNextCall
+);
 
-// router.get('/:contactId', authenticate, isValidContactId, getById.getById);
-// router.delete("/:contactId",authenticate, isValidContactId, deleteById.deleteById);
+
+router.get('/:leadId', authenticate, isValidLeadId, getLeadById.getLeadById);
+
+
+router.get('/allComments/:leadId', authenticate, isValidLeadId, getAllLeadComments.getAllLeadComments);
+
+
+router.delete("/:leadId",authenticate, isValidLeadId, deleteLeadById.deleteLeadById);
+
 
 module.exports = router;

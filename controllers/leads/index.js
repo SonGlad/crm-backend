@@ -15,8 +15,9 @@ const updateLeadComment = require("./updateLeadComment");
 const updateLeadKYC = require("./updateLeadKYC");
 const updateLeadLastCall = require("./updateLeadLastCall")
 const updateLeadNextCall = require("./updateLeadNextCall")
-// const getById = require("./getById");
-// const deleteById = require("./deleteById");
+const getLeadById = require("./getLeadById");
+const getAllLeadComments = require("./getAllLeadComments");
+const deleteLeadById = require("./deleteLeadById");
 
 
 module.exports = {
@@ -36,7 +37,8 @@ module.exports = {
     updateLeadComment,
     updateLeadKYC,
     updateLeadLastCall,
-     updateLeadNextCall,
-    // getById,
-    // deleteById,
+    updateLeadNextCall,
+    getLeadById,
+    getAllLeadComments,
+    deleteLeadById,
 };
