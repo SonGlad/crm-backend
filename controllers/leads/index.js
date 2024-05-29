@@ -13,6 +13,8 @@ const getAllTimeZone = require("./getAllTimeZone");
 const updateLeadTimeZone = require("./updateLeadTimeZone")
 const updateLeadComment = require("./updateLeadComment");
 const updateLeadKYC = require("./updateLeadKYC");
+const updateLeadLastCall = require("./updateLeadLastCall")
+const updateLeadNextCall = require("./updateLeadNextCall")
 // const getById = require("./getById");
 // const deleteById = require("./deleteById");
 
@@ -33,6 +35,8 @@ module.exports = {
     updateLeadTimeZone,
     updateLeadComment,
     updateLeadKYC,
+    updateLeadLastCall,
+     updateLeadNextCall,
     // getById,
     // deleteById,
 };

@@ -18,6 +18,8 @@ const validLeadRegion = require("./leads/validLeadRegion");
 const validLeadCity = require("./leads/validLeadCity");
 const updateTimeZone = require("./leads/updateTimeZone")
 const validLeadKYC = require("./leads/validLeadKYCSchema");
+const updateLastCall = require("./leads/updateLastCall");
+const updateNextCall = require("./leads/updateNextCall");
 
 
 module.exports =  { 
@@ -41,4 +43,6 @@ module.exports =  {
     validLeadCity,
     updateTimeZone,
     validLeadKYC,
+    updateLastCall,
+    updateNextCall,
 };
