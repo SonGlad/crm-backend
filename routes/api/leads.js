@@ -16,6 +16,8 @@ const {
   updateLeadTimeZone,
   updateLeadComment,
   updateLeadKYC,
+  updateLeadLastCall,
+  updateLeadNextCall,
   getLeadById,
   getAllLeadComments,
   deleteLeadById,
@@ -33,6 +35,8 @@ const {
   updateTimeZone,
   validLeadCity,
   validLeadKYC,
+  updateLastCall,
+  updateNextCall,
 } = require("../../middlewares/index");
 const { externalLeadsSchemas } = require("../../models/ExternalLead");
 
@@ -100,6 +104,16 @@ router.patch("/comment/:leadId", authenticate, isValidLeadId,
 
 router.patch("/kyc/:leadId", authenticate, isValidLeadId, 
   validLeadKYC, updateLeadKYC.updateLeadKYC
+);
+
+
+router.patch("/lastcall/:leadId", authenticate, isValidLeadId, 
+  updateLastCall, updateLeadLastCall.updateLeadLastCall
+);
+
+
+router.patch("/nextcall/:leadId", authenticate, isValidLeadId, 
+  updateNextCall, updateLeadNextCall.updateLeadNextCall
 );
 
 

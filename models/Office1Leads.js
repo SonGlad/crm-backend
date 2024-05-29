@@ -212,6 +212,14 @@ const leadsSchema = new Schema({
       required: false,
     },
   },
+      lastCall: {
+      type: String,
+      required: false,
+  },
+            nextCall: {
+      type: String,
+      required: false,
+    },
 }, { versionKey: false, timestamps: true });
 
 
@@ -377,6 +385,8 @@ const addOffice1LeadSchema = Joi.object({
     createdAt: Joi.date().default(Date.now()).optional(),
     comment: Joi.string().optional(),
   }).messages({ "any.only": "Comment is required." }),
+  lastCall: Joi.string().optional(),
+  nextCall: Joi.string().optional(),
 });
 
 const office1ConManagerSchema = Joi.object({
@@ -501,6 +511,18 @@ const office1KYCSchema = Joi.object({
   }).optional()
 });
 
+const office1LastCallSchema = Joi.object({
+  lastCall: Joi.string().required().messages({
+    "any.only": "Invalid last call provided."
+  }),
+});
+
+const office1NextCallSchema = Joi.object({
+  nextCall: Joi.string().required().messages({
+    "any.only": "Invalid last call provided."
+  }),
+});
+
 
 
 const Office1Leads = model("office1_leads", leadsSchema);
@@ -515,6 +537,8 @@ const Office1Schemas = {
   office1TimeZoneSchema,
   office1UpdateLeadStatus,
   office1KYCSchema,
+  office1LastCallSchema,
+  office1NextCallSchema,
 };
 
 module.exports = { Office1Leads, Office1Schemas };
