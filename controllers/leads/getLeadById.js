@@ -28,20 +28,20 @@ const getLeadById = async (req, res) => {
     case "Main":
       switch(branch){
         case "Office1":
-          lead = await Office1Leads.findOne({_id: leadId});
+          lead = await Office1Leads.findById(leadId);
           break;
         case "Office2":
-          lead = await Office2Leads.findOne({_id: leadId});
+          lead = await Office2Leads.findById(leadId);
           break;
         default:
-          lead = await Leads.findOne({_id: leadId});
+          lead = await Leads.findById(leadId);
       };
       break;
     case "Office1":
-      lead = await Office1Leads.findOne({_id: leadId});
+      lead = await Office1Leads.findById(leadId);
       break;
     case "Office2":
-      lead = await Office2Leads.findOne({_id: leadId});
+      lead = await Office2Leads.findById(leadId);
       break;
     default:
       return res.status(400).send({ message: 'Authorization branch is invalid' });

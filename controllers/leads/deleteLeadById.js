@@ -1,4 +1,4 @@
-const {HttpError, ctrlWrapper} = require("../../helpers/index");
+const {ctrlWrapper} = require("../../helpers/index");
 const { Leads } = require("../../models/ExternalLead");
 const { Office1Leads } = require("../../models/Office1Leads");
 const { Office2Leads } = require("../../models/Office2Leads");
@@ -23,6 +23,8 @@ const deleteLeadById = async (req, res) => {
   let leadComments;
   let deletedComments;
   let deletedOfficeLeads;
+  let messages;
+  
 
 
   switch(authBranch){
@@ -42,7 +44,7 @@ const deleteLeadById = async (req, res) => {
         }
       };
       if(!branchLead){
-        return res.status(404).send({ message: 'Lead not found' });
+        return res.status(404).send({ message: 'Lead was not found' });
       };
 
 
@@ -126,7 +128,7 @@ const deleteLeadById = async (req, res) => {
     case "Office1":
       branchLead = await Office1Leads.findById(leadId);
       if (!branchLead) {
-        return res.status(404).send({ message: 'Lead not found' });
+        return res.status(404).send({ message: 'Lead was not found' });
       }
       if(branchLead.selfCreated === true && branchLead.owner.id.toString() === authId){
         deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office1: branchLead._id});
@@ -140,7 +142,7 @@ const deleteLeadById = async (req, res) => {
     case "Office2":
       branchLead = await Office2Leads.findById(leadId);
       if (!branchLead) {
-        return res.status(404).send({ message: 'Lead not found' });
+        return res.status(404).send({ message: 'Lead was not found' });
       }
       if(branchLead.selfCreated === true && branchLead.owner.id.toString() === authId){
         deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office2: branchLead._id});
@@ -154,35 +156,39 @@ const deleteLeadById = async (req, res) => {
   };
 
 
-  if (!result) {
-    throw HttpError(404, "Lead was not found");
-  };
 
-
-  const response = {
-    deletedCommentsCount: deletedComments.deletedCount,
-    deletedOfficeLeadId: deletedOfficeLeads._id,
-    messages: [
-      `All ${deletedComments.deletedCount} comments associated with lead ${branchLead._id} were deleted`,
-      `Deleted ${deletedOfficeLeads._id} lead associated with lead ${leadId}`
-    ]
-  };
-  
-
-  switch (authBranch) {
+    switch(authBranch) {
     case "Main":
-      if (branch === "Office1" || branch === "Office2") {
-        res.status(200).send(response);
-      } else {
-        response._id = result._id;
-        response.message = "Contact Deleted";
-        response.messages.push(`The external lead with ${result._id} was deleted`);
-        res.status(200).send(response);
+      if (branchLead.assignedOffice === "Not Assigned") {
+        return res.status(200).send({ _id: result._id, message: "Lead Deleted" });
       }
-      break;
+  
+      messages = [
+        `All ${deletedComments.deletedCount} comments associated with lead ${branchLead._id} were deleted`,
+        `Deleted ${deletedOfficeLeads._id} lead associated with lead ${leadId}`
+      ];
+  
+      if (branch !== "Office1" && branch !== "Office2") {
+        messages.unshift(`Deleted ${result._id} lead`);
+      }
+  
+      return res.status(200).send({
+        deletedCommentsCount: deletedComments.deletedCount,
+        deletedOfficeLeadId: deletedOfficeLeads._id,
+        messages
+      });
+  
+    case "Office1":
     default:
-      res.status(200).send(response);
-  }
+      return res.status(200).send({
+        deletedCommentsCount: deletedComments.deletedCount,
+        deletedOfficeLeadId: deletedOfficeLeads._id,
+        messages: [
+          `All ${deletedComments.deletedCount} comments associated with lead ${branchLead._id} were deleted`,
+          `Deleted ${deletedOfficeLeads._id} lead associated with lead ${leadId}`
+        ]
+      });
+  };
 };
 
 
