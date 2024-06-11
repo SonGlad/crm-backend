@@ -9,6 +9,7 @@ const app = express();
 const authRouter = require("./routes/api/auth");
 const usersRouter = require("./routes/api/users");
 const leadsRouter = require('./routes/api/leads');
+const findsRouter = require('./routes/api/finds');
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
 
 
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 app.use('/leads', leadsRouter);
+app.use('/finds', findsRouter)
 
 
 app.use((req, res) => {

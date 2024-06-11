@@ -66,7 +66,7 @@ const internalRegister = async (req, res, next) => {
     };
 
 
-    // // Проверка отсутствия пользователя с ролью "CRM Manager" в базе данных
+     // Проверка отсутствия пользователя с ролью "CRM Manager" в базе данных
     let CrmManagerExists;
     switch(branch){
         case "Office1":

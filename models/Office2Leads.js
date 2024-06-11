@@ -1,6 +1,7 @@
 const { Schema, model } = require("mongoose");
 const Joi = require("joi");
 const { handleMongooseError } = require("../helpers/index");
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const emailRegexp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegexp = /^[0-9()+\s-]+$/;
@@ -212,11 +213,11 @@ const leadsSchema = new Schema(
       },
         },
           lastCall: {
-        type: String,
+        type: Date,
         required: false,
         },
                     nextCall: {
-        type: String,
+        type: Date,
         required: false,
       },
   },
@@ -390,8 +391,8 @@ const addOffice2LeadSchema = Joi.object({
     createdAt: Joi.date().default(Date.now()).optional(),
     comment: Joi.string().optional(),
   }).messages({ "any.only": "Comment is required." }),
-    lastCall: Joi.string().optional(),
-  nextCall: Joi.string().optional(),
+    lastCall: Joi.date().optional(),
+  nextCall: Joi.date().optional(),
 });
 
 const office2ConManagerSchema = Joi.object({
@@ -524,6 +525,8 @@ const office2NextCallSchema = Joi.object({
     "any.only": "Invalid last call provided.",
   }),
 });
+
+leadsSchema.plugin(mongoosePaginate);
 
 const Office2Leads = model("office2_leads", leadsSchema);
 const Office2Schemas = {
