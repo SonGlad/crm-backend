@@ -71,17 +71,18 @@ const internalRegister = async (req, res, next) => {
     switch(branch){
         case "Office1":
             CrmManagerExists = await Office1User.findOne({role: "CRM Manager"});
+            if(CrmManagerExists.role === role){
+                throw HttpError(409, "You are allowed to create only 1 CRM Manager per Office");
+            }
             break;
         case "Office2":
             CrmManagerExists = await Office2User.findOne({role: "CRM Manager"});
+            if(CrmManagerExists.role === role){
+                throw HttpError(409, "You are allowed to create only 1 CRM Manager per Office");
+            }
             break;
         default:
             throw new HttpError(400, "Unknown branch specified");
-    };
-
-
-    if (CrmManagerExists) {
-        throw HttpError(409, "You are allowed to create only 1 CRM Manager per Office");
     };
 
 

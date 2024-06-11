@@ -42,7 +42,7 @@ const extrenalRegister = async(req, res) => {
     } else if (email === MANAGER_EMAIL && password === MANAGER_PASSWORD){
         role = 'Manager'
     } else {
-        throw HttpError(400, "Invalid credentials");
+        throw HttpError(400, "You have no rights to register in the system");
     }
 
 
