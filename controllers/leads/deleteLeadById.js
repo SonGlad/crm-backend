@@ -26,7 +26,6 @@ const deleteLeadById = async (req, res) => {
   let messages;
   
 
-
   switch(authBranch){
     case "Main":
       branchLead = await Leads.findById(leadId)
