@@ -1,5 +1,5 @@
 const {HttpError, ctrlWrapper} = require("../../helpers/index");
-const { Leads } = require("../../models/ExternalLead");
+const { Leads } = require("../../models/externalLead");
 const { Office1Leads } = require("../../models/Office1Leads");
 const { Office2Leads } = require("../../models/Office2Leads");
 

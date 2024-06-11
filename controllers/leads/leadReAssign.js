@@ -5,7 +5,7 @@ const { Office1Leads } = require("../../models/Office1Leads");
 const { Office2Leads } = require("../../models/Office2Leads");
 const { User } = require("../../models/MainUser");
 const { AllCommentsSchema } = require("../../models/LeadsComments");
-const { Leads } = require("../../models/ExternalLead");
+const { Leads } = require("../../models/externalLead");
 
 const leadReAssign = async (req, res) => {
   const { role: authRole, branch: authBranch, id: authId } = req.auth;
