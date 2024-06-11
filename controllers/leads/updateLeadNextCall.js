@@ -15,7 +15,7 @@ const updateLeadNextCall = async (req, res) => {
   if (authRole !== userRole || authBranch !== userBranch) {
     return res.status(403).send({ message: "Forbidden: Access denied" });
   }
-
+  
   let lead;
   let user;
   let prevLead;
@@ -71,7 +71,7 @@ const updateLeadNextCall = async (req, res) => {
             comment: `The lead next call was changed to ${bodyNextCall} by user ${user.username}`,
           });
           break;
-
+        
         case "Office2":
           prevLead = await Office2Leads.findOne({ _id: leadId });
           if (!prevLead) {

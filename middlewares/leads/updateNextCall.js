@@ -27,6 +27,7 @@ const updateNextCall = async (req, res, next) => {
             switch(lead.branch){
                 case "Office1":
                     schema = Office1Schemas.office1NextCallSchema;
+                    console.log(schema)
                     break;
                 case "Office2":
                     schema = Office2Schemas.office2NextCallSchema;

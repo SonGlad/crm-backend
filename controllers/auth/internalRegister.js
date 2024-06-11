@@ -66,7 +66,7 @@ const internalRegister = async (req, res, next) => {
     };
 
 
-    // // Проверка отсутствия пользователя с ролью "CRM Manager" в базе данных
+     // Проверка отсутствия пользователя с ролью "CRM Manager" в базе данных
     let CrmManagerExists;
     switch(branch){
         case "Office1":
@@ -78,7 +78,6 @@ const internalRegister = async (req, res, next) => {
         default:
             throw new HttpError(400, "Unknown branch specified");
     };
-
 
     if (CrmManagerExists) {
         throw HttpError(409, "You are allowed to create only 1 CRM Manager per Office");
