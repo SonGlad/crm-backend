@@ -1,5 +1,5 @@
 const { HttpError } = require("../../helpers/index");
-const { externalLeadsSchemas }  = require("../../models/ExternalLead");
+const { externalLeadsSchemas }  = require("../../models/externalLead");
 const { Office1Schemas }  = require("../../models/Office1Leads");
 const { Office2Schemas }  = require("../../models/Office2Leads");
 const validateBody = require("../validateBody");

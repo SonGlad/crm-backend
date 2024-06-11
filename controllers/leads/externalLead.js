@@ -1,4 +1,4 @@
-const { Leads } = require("../../models/ExternalLead");
+const { Leads } = require("../../models/externalLead");
 const { ctrlWrapper, HttpError } = require("../../helpers/index");
 require("dotenv").config();
 

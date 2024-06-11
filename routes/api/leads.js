@@ -38,7 +38,7 @@ const {
   updateLastCall,
   updateNextCall,
 } = require("../../middlewares/index");
-const { externalLeadsSchemas } = require("../../models/ExternalLead");
+const { externalLeadsSchemas } = require("../../models/externalLead");
 
 
 router.post("/external", validateBodyExternal(
