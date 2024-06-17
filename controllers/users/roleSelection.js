@@ -14,29 +14,59 @@ const getRole = async(req, res) => {
     };
 
 
-    if((authRole === "Developer" || 
-        authRole === "Administrator" || 
-        authRole === "Manager") && 
-        authBranch === "Main"){
+    switch(authRole) {
+        case('Developer'):
             responce = [{role: 'CRM Manager'}, 
-            {role: 'Retention Manager'},
-            {role: 'Conversion Manager'},
-            {role: 'Retention Agent'},
-            {role: 'Conversion Agent'},
-        ];
-    } else if(authRole === "CRM Manager" && (authBranch === "Office1" || authBranch === "Office2")){
-        responce = [{role: 'Retention Manager'},
-        {role: 'Conversion Manager'},
-        {role: 'Retention Agent'},
-        {role: 'Conversion Agent'},
-    ];
-    } else if(authRole === "Retention Manager" && (authBranch === "Office1" || authBranch === "Office2")){
-        responce = [{role: 'Retention Agent'}];
-    } else if(authRole === "Conversion Manager" && (authBranch === "Office1" || authBranch === "Office2")){
-        responce = [{role: 'Conversion Agent'}];
-    } else {
-        responce = [];
+                {role: 'Retention Manager'},
+                {role: 'Conversion Manager'},
+                {role: 'Retention Agent'},
+                {role: 'Conversion Agent'},
+                {role: 'Manager'},
+                {role: 'Administrator'},
+                {role: 'Developer'},
+            ];
+            break;
+        case('Administrator'):
+            responce = [{role: 'CRM Manager'}, 
+                {role: 'Retention Manager'},
+                {role: 'Conversion Manager'},
+                {role: 'Retention Agent'},
+                {role: 'Conversion Agent'},
+                {role: 'Manager'},
+                {role: 'Administrator'},
+            ];
+            break;
+        case('Manager'):
+            responce = [{role: 'CRM Manager'}, 
+                {role: 'Retention Manager'},
+                {role: 'Conversion Manager'},
+                {role: 'Retention Agent'},
+                {role: 'Conversion Agent'},
+                {role: 'Manager'},
+            ];
+            break;
+        case('CRM Manager'):
+            responce = [ 
+                {role: 'Retention Manager'},
+                {role: 'Conversion Manager'},
+                {role: 'Retention Agent'},
+                {role: 'Conversion Agent'},
+            ];
+            break;
+        case('Retention Manager'):
+            responce = [ 
+                {role: 'Retention Agent'},
+            ];
+            break;
+        case('Conversion Manager'):
+            responce = [ 
+                {role: 'Conversion Agent'},
+            ];
+            break;
+        default:
+            responce = [];
     };
+
 
 
     res.send(responce);
