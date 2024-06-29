@@ -5,7 +5,7 @@ const { Office2User } = require("../../models/Office2User");
 
 const deleteUserById = async (req, res) =>{
     const { userId } = req.params;
-    const { branch } = req.body;
+    const { branch: reqBranch } = req.query;
     const {role: userRole, branch: userBranch} = req.user;
     const {role: authRole, branch: authBranch} = req.auth;
 
@@ -20,7 +20,7 @@ const deleteUserById = async (req, res) =>{
 
     switch(authBranch){
         case "Main":
-            switch(branch){
+            switch(reqBranch){
                 case "Office1":
                     user = await Office1User.findOne({ _id: userId});
                     break;
@@ -43,7 +43,7 @@ const deleteUserById = async (req, res) =>{
 
     switch(authBranch){
         case "Main":
-            switch(branch){
+            switch(reqBranch){
                 case "Office1":
                     user = await Office1User.findOneAndDelete({ _id: userId});
                     break;

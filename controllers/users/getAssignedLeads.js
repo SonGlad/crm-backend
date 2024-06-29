@@ -5,7 +5,7 @@ const { ctrlWrapper, HttpError } = require("../../helpers/index");
 
 const getAssignedLeads = async (req, res) => {
     const { userId } = req.params;
-    const { branch: reqBranch } = req.body;
+    const { branch: reqBranch } = req.query;
     const {role, branch} = req.user;
     const {role: authRole, branch: authBranch} = req.auth;
 
