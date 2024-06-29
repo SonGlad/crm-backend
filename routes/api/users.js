@@ -24,7 +24,7 @@ router.get("/office", authenticate, getOffice.getOffice);
 
 router.get("/role", authenticate, getRole.getRole);
 
-router.get("/all", authenticate, getAllUsers.getAllUsers);
+router.get("/all/:branch", authenticate, getAllUsers.getAllUsers);
 
 router.get('/:userId', authenticate, isValidUserId, getUserById.getUserById);
 
