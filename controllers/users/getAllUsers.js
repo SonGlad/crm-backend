@@ -6,7 +6,7 @@ const { ctrlWrapper, HttpError } = require("../../helpers/index");
 const getAllUsers = async (req, res) => {
     const {role, branch} = req.user;
     const {role: authRole, branch: authBranch} = req.auth;
-    const { branch: reqBranch } = req.body;
+    const { branch: reqBranch } = req.params;
 
 
     if (authRole !== role || authBranch !== branch) {
