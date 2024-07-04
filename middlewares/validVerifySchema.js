@@ -7,7 +7,7 @@ const validateBody = require("./validateBody");
 
 const validVerifySchema = async (req, res, next) => {
     const { branch: authBranch } = req.auth;
-    const { branch: reqBranch } = req.body;
+    const { branch: reqBranch } = req.query;
 
 
     let schema;
