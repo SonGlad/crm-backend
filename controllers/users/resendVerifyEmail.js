@@ -4,12 +4,12 @@ const { Office2User } = require("../../models/Office2User");
 require("dotenv").config();
 
 
-const {BASE_URL} = process.env;
+const { BASE_URL, ADMIN_EMAIL} = process.env;
 
 
 const resendUserVerifyEmail = async(req, res) => {
     const { userId } = req.params;
-    const { branch, email } = req.body;
+    const { branch: reqBranch } = req.query;
     const {role: userRole, branch: userBranch} = req.user;
     const {role: authRole, branch: authBranch} = req.auth;
 
@@ -24,7 +24,7 @@ const resendUserVerifyEmail = async(req, res) => {
 
     switch(authBranch){
         case "Main":
-            switch(branch){
+            switch(reqBranch){
                 case "Office1":
                     user = await Office1User.findOne({ _id: userId});
                     break;
@@ -36,10 +36,18 @@ const resendUserVerifyEmail = async(req, res) => {
             };
             break;
         case "Office1":
-            user = await Office1User.findOne({ _id: userId});
+            if(authRole === "CRM Manager"){
+                user = await Office1User.findOne({ _id: userId});
+            } else {
+                return res.status(403).send({ message: "You are not authorized for this type of action"});
+            }
             break;
         case "Office2":
-            user = await Office2User.findOne({ _id: userId});
+            if(authRole === "CRM Manager"){
+                user = await Office2User.findOne({ _id: userId});
+            } else {
+                return res.status(403).send({ message: "You are not authorized for this type of action"});
+            }
             break;
         default: 
             return res.status(400).send({ message: 'Authorization branch is invalid' });
@@ -57,7 +65,7 @@ const resendUserVerifyEmail = async(req, res) => {
 
 
     const verifyEmail = {
-        to: email,
+        to: ADMIN_EMAIL,
         subject: "Resending New User Email Verification",
         html: `
         <p>This email has been sent because the new registered user did not receive the email 

@@ -8,7 +8,7 @@ const crypto = require("node:crypto");
 require("dotenv").config();
 
 
-const { BASE_URL } = process.env;
+const { BASE_URL, ADMIN_EMAIL } = process.env;
 
 
 const internalRegister = async (req, res, next) => {
@@ -127,7 +127,7 @@ const internalRegister = async (req, res, next) => {
 
     // Отправка письма с подтверждением регистрации
     const verifyEmail = {
-        to: email,
+        to: ADMIN_EMAIL,
         subject: "New User Registered",
         html: `
         <p>The New User has been registered:</p>

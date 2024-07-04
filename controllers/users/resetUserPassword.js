@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 
 const resetUserPassword = async (req, res) => {
     const { userId } = req.params;
-    const { branch } = req.body;
+    const { branch: reqBranch } = req.query;
     const {role: userRole, branch: userBranch} = req.user;
     const {role: authRole, branch: authBranch} = req.auth;
 
@@ -21,7 +21,7 @@ const resetUserPassword = async (req, res) => {
 
     switch(authBranch){
         case "Main":
-            switch(branch){
+            switch(reqBranch){
                 case "Office1":
                     user = await Office1User.findOne({ _id: userId});
                     break;
@@ -33,10 +33,18 @@ const resetUserPassword = async (req, res) => {
             };
             break;
         case "Office1":
-            user = await Office1User.findOne({ _id: userId});
+            if (authRole === "CRM Manager"){
+                user = await Office1User.findOne({ _id: userId});
+            } else {
+                return res.status(403).send({ message: "You are not authorized for this type of action"});
+            }
             break;
         case "Office2":
-            user = await Office2User.findOne({ _id: userId});
+            if(authRole === "CRM Manager"){
+                user = await Office2User.findOne({ _id: userId});
+            } else {
+                return res.status(403).send({ message: "You are not authorized for this type of action"});
+            }
             break;
         default: 
             return res.status(400).send({ message: 'Authorization branch is invalid' });
@@ -54,7 +62,7 @@ const resetUserPassword = async (req, res) => {
 
     switch(authBranch){
         case "Main":
-            switch(branch){
+            switch(reqBranch){
                 case "Office1":
                     user = await Office1User.findByIdAndUpdate(userId, { password: hashedTemporaryPassword });
                     break;
@@ -66,10 +74,18 @@ const resetUserPassword = async (req, res) => {
             };
             break;
         case "Office1":
-            user = await Office1User.findByIdAndUpdate(userId, { password: hashedTemporaryPassword });
+            if(authRole === "CRM Manager"){
+                user = await Office1User.findByIdAndUpdate(userId, { password: hashedTemporaryPassword });
+            } else {
+                return res.status(403).send({ message: "You are not authorized for this type of action"});
+            }
             break;
         case "Office2":
-            user = await Office2User.findByIdAndUpdate(userId, { password: hashedTemporaryPassword });
+            if(authRole === "CRM Manager"){
+                user = await Office2User.findByIdAndUpdate(userId, { password: hashedTemporaryPassword });
+            } else {
+                return res.status(403).send({ message: "You are not authorized for this type of action"});
+            }
             break;
         default: 
             return res.status(400).send({ message: 'Authorization branch is invalid' });
