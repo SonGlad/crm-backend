@@ -156,7 +156,9 @@ const internalRegister = async (req, res, next) => {
         email: newUser.email,
         role: newUser.role,
         branch: newUser.branch,
-        password: password
+        password: password,
+        createdAt: newUser.createdAt,
+        _id: newUser._id,
     });
 };
 
