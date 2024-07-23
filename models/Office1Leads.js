@@ -213,14 +213,14 @@ const leadsSchema = new Schema({
       required: false,
     },
   },
-            lastCall: {
-        type: Date,
-        required: false,
-        },
-                    nextCall: {
-        type: Date,
-        required: false,
-      },  
+  lastCall: {
+      type: Date,
+      required: false,
+    },
+  nextCall: {
+    type: Date,
+    required: false,
+  },  
 }, { versionKey: false, timestamps: true });
 
 

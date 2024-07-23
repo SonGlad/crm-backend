@@ -7,7 +7,7 @@ const { ctrlWrapper } = require("../../helpers/index");
 const getAll = async (req, res) => {
     const {role: userRole, branch: userBranch} = req.user;
     const {role: authRole, branch: authBranch, id: authId} = req.auth;
-    const { branch } = req.body;
+    const { branch } = req.query;
 
 
     if (authRole !== userRole || authBranch !== userBranch) {
