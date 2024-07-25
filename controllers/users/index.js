@@ -8,6 +8,7 @@ const resendUserVerifyEmail = require("./resendVerifyEmail");
 const verifyUserEmail = require("./vefifyUserEmail");
 const resetUserPassword = require("./resetUserPassword");
 const deleteUserById = require("./deleteUserById");
+const getAvailableUsers = require("./getAvailableUsers");
 
 
 module.exports ={
@@ -21,4 +22,5 @@ module.exports ={
     verifyUserEmail,
     resetUserPassword,
     deleteUserById,
+    getAvailableUsers,
 };

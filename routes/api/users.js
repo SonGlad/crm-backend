@@ -16,6 +16,7 @@ const {
     verifyUserEmail,
     resetUserPassword,
     deleteUserById,
+    getAvailableUsers
 } = require("../../controllers/users/index");
 
 
@@ -25,6 +26,8 @@ router.get("/office", authenticate, getOffice.getOffice);
 router.get("/role", authenticate, getRole.getRole);
 
 router.get("/all/:branch", authenticate, getAllUsers.getAllUsers);
+
+router.get("/availableUsers", authenticate, getAvailableUsers.getAvailableUsers);
 
 router.get('/:userId', authenticate, isValidUserId, getUserById.getUserById);
 

@@ -24,10 +24,38 @@ const getAll = async (req, res) => {
         case "Main":
             switch(branch){
                 case "Office1":
-                    result = await Office1Leads.find().skip(parseInt(skip)).limit(parseInt(limit));
+                    result = await Office1Leads.find()
+                    .skip(parseInt(skip))
+                    .limit(parseInt(limit))
+                    .populate({
+                        path: 'managerId',
+                        select: 'username'
+                    })
+                    .populate({
+                        path: 'conManagerId',
+                        select: 'username'
+                    })
+                    .populate({
+                        path: 'conAgentId',
+                        select: 'username'
+                    });
                     break;
                 case "Office2":
-                    result = await Office2Leads.find().skip(parseInt(skip)).limit(parseInt(limit));
+                    result = await Office2Leads.find()
+                    .skip(parseInt(skip))
+                    .limit(parseInt(limit))
+                    .populate({
+                        path: 'managerId',
+                        select: 'username'
+                    })
+                    .populate({
+                        path: 'conManagerId',
+                        select: 'username'
+                    })
+                    .populate({
+                        path: 'conAgentId',
+                        select: 'username'
+                    });
                     break;
                 default: 
                     result = await Leads.find().skip(parseInt(skip)).limit(parseInt(limit));
@@ -38,12 +66,26 @@ const getAll = async (req, res) => {
                 case "CRM Manager":
                     result = await Office1Leads.find({
                         $or: [{managerId: authId}, {'owner.id': authId }]
-                    }).skip(parseInt(skip)).limit(parseInt(limit));
+                    }).skip(parseInt(skip))
+                    .limit(parseInt(limit))
+                    .populate({
+                        path: 'conManagerId',
+                        select: 'username'
+                    })
+                    .populate({
+                        path: 'conAgentId',
+                        select: 'username'
+                    });
                     break;
                 case "Conversion Manager":
                     result = await Office1Leads.find({
                         $or: [{conManagerId: authId}, {'owner.id': authId}]
-                    }).skip(parseInt(skip)).limit(parseInt(limit));
+                    }).skip(parseInt(skip))
+                    .limit(parseInt(limit))
+                    .populate({
+                        path: 'conAgentId',
+                        select: 'username'
+                    });
                     break;
                 case "Conversion Agent":
                     result = await Office1Leads.find({
@@ -59,12 +101,26 @@ const getAll = async (req, res) => {
                 case "CRM Manager":
                     result = await Office2Leads.find({
                         $or: [{managerId: authId}, {'owner.id': authId }]
-                    }).skip(parseInt(skip)).limit(parseInt(limit));
+                    }).skip(parseInt(skip))
+                    .limit(parseInt(limit))
+                    .populate({
+                        path: 'conManagerId',
+                        select: 'username'
+                    })
+                    .populate({
+                        path: 'conAgentId',
+                        select: 'username'
+                    });
                     break;
                 case "Conversion Manager":
                     result = await Office2Leads.find({
                         $or: [{conManagerId: authId}, {'owner.id': authId}]
-                    }).skip(parseInt(skip)).limit(parseInt(limit));
+                    }).skip(parseInt(skip))
+                    .limit(parseInt(limit))
+                    .populate({
+                        path: 'conAgentId',
+                        select: 'username'
+                    });
                     break;
                 case "Conversion Agent":
                     result = await Office2Leads.find({
