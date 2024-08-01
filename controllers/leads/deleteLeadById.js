@@ -37,11 +37,13 @@ const deleteLeadById = async (req, res) => {
           branch = "Office1";
         } else {
           branchLead = await Office2Leads.findById(leadId);
-          if (lead) {
+          if (branchLead) {
             branch = 'Office2';
           }
         }
       };
+
+
       if(!branchLead){
         return res.status(404).send({ message: 'Lead was not found' });
       };
@@ -79,7 +81,7 @@ const deleteLeadById = async (req, res) => {
                 return res.status(400).send({ message: 'Branch in Office 1 or Office 2 was not defined' });
             };
           };
-          break;
+        break;
 
 
         case "Office1":
@@ -98,7 +100,7 @@ const deleteLeadById = async (req, res) => {
             deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office1: branchLead._id});
             deletedOfficeLeads = await Office1Leads.findByIdAndDelete(leadId);
           }
-          break;
+        break;
 
 
         case "Office2":
@@ -117,11 +119,11 @@ const deleteLeadById = async (req, res) => {
             deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office2: branchLead._id});
             deletedOfficeLeads = await Office2Leads.findByIdAndDelete(leadId);
           }
-          break;
+        break;
         default:
           return res.status(400).send({ message: 'Branch was not defined' });
       };
-      break;
+    break;
 
 
     case "Office1":
@@ -135,7 +137,7 @@ const deleteLeadById = async (req, res) => {
       } else {
         return res.status(403).send({ message: 'You have no rights to delete the lead if you are not owner of it' }); 
       }
-      break;
+    break;
 
 
     case "Office2":
@@ -156,7 +158,7 @@ const deleteLeadById = async (req, res) => {
 
 
 
-    switch(authBranch) {
+  switch(authBranch) {
     case "Main":
       if (branchLead.assignedOffice === "Not Assigned") {
         return res.status(200).send({ _id: result._id, message: "Lead Deleted" });
@@ -172,21 +174,19 @@ const deleteLeadById = async (req, res) => {
       }
   
       return res.status(200).send({
+        _id: deletedOfficeLeads._id,
         deletedCommentsCount: deletedComments.deletedCount,
-        deletedOfficeLeadId: deletedOfficeLeads._id,
         messages
       });
-  
-    case "Office1":
     default:
-      return res.status(200).send({
-        deletedCommentsCount: deletedComments.deletedCount,
-        deletedOfficeLeadId: deletedOfficeLeads._id,
-        messages: [
-          `All ${deletedComments.deletedCount} comments associated with lead ${branchLead._id} were deleted`,
-          `Deleted ${deletedOfficeLeads._id} lead associated with lead ${leadId}`
-        ]
-      });
+    return res.status(200).send({
+      _id: deletedOfficeLeads._id,
+      deletedCommentsCount: deletedComments.deletedCount,
+      messages: [
+        `All ${deletedComments.deletedCount} comments associated with lead ${branchLead._id} were deleted`,
+        `Deleted ${deletedOfficeLeads._id} lead associated with lead ${leadId}`
+      ]
+    });
   };
 };
 
