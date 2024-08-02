@@ -7,6 +7,7 @@ const {ctrlWrapper} = require("../../helpers/index");
 
 const deleteLeadById = async (req, res) => {
   const { leadId } = req.params;
+  // const { branch: reqBranch } = req.query;
   const {role: userRole, branch: userBranch,} = req.user;
   const {role: authRole, branch: authBranch, id: authId} = req.auth;
 

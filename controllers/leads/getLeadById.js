@@ -8,7 +8,7 @@ const getLeadById = async (req, res) => {
   const {role: userRole, branch: userBranch} = req.user;
   const {role: authRole, branch: authBranch} = req.auth;
   const { leadId } = req.params;
-  const { branch } = req.body;
+  const { branch } = req.query;
 
 
   if (authRole !== userRole || authBranch !== userBranch) {
