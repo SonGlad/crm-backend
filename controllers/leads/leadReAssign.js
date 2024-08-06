@@ -446,13 +446,7 @@ const leadReAssign = async (req, res) => {
 
           await Office1Leads.findByIdAndDelete(leadBeforeChanges._id)
 
-          res.status(200).send({
-            externalLead,
-            newAssignedLead,
-            deletedLeadId: leadBeforeChanges._id,
-            updatedComments: await AllCommentsSchema.find({ ownerLeadId_office2: newAssignedLead._id }),
-            message: 'Lead reassignment successful'
-          });
+          res.status(200).send(externalLead);
         break;
 
 
@@ -526,13 +520,7 @@ const leadReAssign = async (req, res) => {
 
           await Office2Leads.findByIdAndDelete(leadBeforeChanges._id)
 
-          res.status(200).send({
-            externalLead,
-            newAssignedLead,
-            deletedLeadId: leadBeforeChanges._id,
-            updatedComments: await AllCommentsSchema.find({ ownerLeadId_office1: newAssignedLead._id }),
-            message: 'Lead reassignment successful'
-          });
+          res.status(200).send(externalLead);
         break;
 
 
