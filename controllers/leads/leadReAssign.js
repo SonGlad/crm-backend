@@ -10,12 +10,13 @@ const { Leads } = require("../../models/externalLead");
 const leadReAssign = async (req, res) => {
   const { role: authRole, branch: authBranch, id: authId } = req.auth;
   const { leadId } = req.params;
-  const { branch, conManagerId, conAgentId } = req.body;
+  const {branch, conManagerId, conAgentId} = req.body;
   const { role: userRole, branch: userBranch } = req.user;
 
   if (authRole !== userRole || authBranch !== userBranch) {
     return res.status(403).send({ message: "Forbidden: Access denied" });
   }
+
 
   let lead;
   let officeUser;
@@ -23,10 +24,13 @@ const leadReAssign = async (req, res) => {
   let convertionManagerId;
   let convertionAgentId;
   let assignedLead;
-  let leadBeforeChenges;
+  let leadBeforeChanges;
   let prevUserId;
   let newAssignedLead;
-
+  let newAssignedLeadData;
+  let managerId;
+  let existingLead;
+  let externalLead;
 
 
   switch (authBranch) {
@@ -41,10 +45,10 @@ const leadReAssign = async (req, res) => {
                 _id: conAgentId,
               });
               if (convertionAgentId.role === "Conversion Agent") {
-                leadBeforeChenges = await Office1Leads.findById(leadId);
-                if (leadBeforeChenges.conAgentId) {
+                leadBeforeChanges = await Office1Leads.findById(leadId);
+                if (leadBeforeChanges.conAgentId) {
                   prevUserId = await Office1User.findById({
-                    _id: leadBeforeChenges.conAgentId,
+                    _id: leadBeforeChanges.conAgentId,
                   });
                 }
                 if (!convertionAgentId) {
@@ -115,15 +119,15 @@ const leadReAssign = async (req, res) => {
             switch (lead.selfCreated) {
               case false:
                 officeUser = await Office1User.findById({ _id: authId });
-                leadBeforeChenges = await Office1Leads.findById(leadId);
-                if (leadBeforeChenges.role === "Retention Manager") {
+                leadBeforeChanges = await Office1Leads.findById(leadId);
+                if (leadBeforeChanges.role === "Retention Manager") {
                   res.status(403).send({
                     message: "You can not reassign to 'Retention Manager'",
                   });
                 }
-                if (leadBeforeChenges.conManagerId) {
+                if (leadBeforeChanges.conManagerId) {
                   prevUserId = await Office1User.findById({
-                    _id: leadBeforeChenges.conManagerId,
+                    _id: leadBeforeChanges.conManagerId,
                   });
                 }
 
@@ -197,7 +201,7 @@ const leadReAssign = async (req, res) => {
             message: "You don't have the right permissions in this branch",
           });
       }
-      break;
+    break;
 
     case "Office2":
       lead = await Office2Leads.findById(leadId);
@@ -210,10 +214,10 @@ const leadReAssign = async (req, res) => {
                 _id: conAgentId,
               });
               if (convertionAgentId.role === "Conversion Agent") {
-                leadBeforeChenges = await Office2Leads.findById(leadId);
-                if (leadBeforeChenges.conAgentId) {
+                leadBeforeChanges = await Office2Leads.findById(leadId);
+                if (leadBeforeChanges.conAgentId) {
                   prevUserId = await Office2User.findById({
-                    _id: leadBeforeChenges.conAgentId,
+                    _id: leadBeforeChanges.conAgentId,
                   });
                 }
 
@@ -286,10 +290,10 @@ const leadReAssign = async (req, res) => {
             switch (lead.selfCreated) {
               case false:
                 officeUser = await Office2User.findById({ _id: authId });
-                leadBeforeChenges = await Office2Leads.findById(leadId);
-                if (leadBeforeChenges.conManagerId) {
+                leadBeforeChanges = await Office2Leads.findById(leadId);
+                if (leadBeforeChanges.conManagerId) {
                   prevUserId = await Office2User.findById({
-                    _id: leadBeforeChenges.conManagerId,
+                    _id: leadBeforeChanges.conManagerId,
                   });
                 }
 
@@ -366,21 +370,42 @@ const leadReAssign = async (req, res) => {
             message: "You don't have the right permissions in this branch",
           });
       }
-      break;
+    break;
+
 
     case "Main":
+      mainUser = await User.findById({_id: authId});
       switch (branch) {
         case "Office2":
-          mainUser = await User.findById({ _id: authId });
-          if (await Office2Leads.findById(leadId)) {
-            res.status(404).send({
-              message: `This lead exist in ${branch} branch!`,
-            });
+          leadBeforeChanges = await Office1Leads.findOne({externalLeadId: leadId});
+          existingLead = await Office2Leads.findOne({email: leadBeforeChanges.email});
+          if (existingLead) {
+            res.status(404).send({message: `This lead exist in ${branch} branch!`});
+            break;
           }
 
-          assignedLead = await Office1Leads.findByIdAndUpdate(leadId, {
+          await AllCommentsSchema.create({
+            ownerLeadId_office1: leadBeforeChanges._id,
+            createdBy: {
+              username: mainUser.username,
+              email: mainUser.email,
+              branch: authBranch,
+              role: authRole,
+            },
+            createdAt: Date.now(),
+            comment: "Current lead was reassigned from branch Office1 to Office2",
+          });
+
+          managerId = await Office2User.findOne({ role: "CRM Manager" });
+          newAssignedLeadData = {
+            ...leadBeforeChanges.toObject(),
+            managerId: managerId._id,
             conManagerId: null,
             conAgentId: null,
+            branch: branch,
+            assigned: false,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
             latestComment: {
               createdBy: {
                 username: mainUser.username,
@@ -389,73 +414,78 @@ const leadReAssign = async (req, res) => {
                 role: authRole,
               },
               createdAt: Date.now(),
-              comment: `Current lead was reassigned from branch Office1 to Office2`,
+              comment: "Current lead was reassigned from branch Office1 to Office2",
             },
-          });
-
-          await AllCommentsSchema.create({
-            ownerLeadId_office1: leadId,
-            createdBy: {
-              username: mainUser.username,
-              email: mainUser.email,
-              branch: authBranch,
-              role: authRole,
-            },
-            createdAt: Date.now(),
-            comment:
-              "Current lead was reassigned from branch Office1 to Office2",
-          });
-
-          await Leads.findByIdAndUpdate(
-            assignedLead.externalLeadId,
-            {
-              assignedOffice: branch,
-              conManager: {
-                name: null,
-                email: null,
-              },
-            },
-            { new: true }
-          );
-
-          await Office2Leads.create({
-            ...assignedLead.toObject(),
-            managerId: null,
-            conManagerId: null,
-            conAgentId: null,
-            branch: branch,
-            _id: null,
-          });
-          newAssignedLead = await Office2Leads.findOne({
-            clientId: assignedLead.clientId,
-          });
+          };
+          delete newAssignedLeadData._id;
+          newAssignedLead = await Office2Leads.create(newAssignedLeadData);
 
           await AllCommentsSchema.updateMany(
-            { ownerLeadId_office1: assignedLead._id },
-            { $rename: { ownerLeadId_office1: "ownerLeadId_office2" } }
+            { ownerLeadId_office1: leadBeforeChanges._id },
+            { 
+              $set: { ownerLeadId_office2: newAssignedLead._id },
+              $unset: { ownerLeadId_office1: "" }
+            }
           );
 
-          await AllCommentsSchema.updateMany(
-            { ownerLeadId_office2: assignedLead._id },
-            { $set: { ownerLeadId_office2: newAssignedLead._id } }
-          );
+          externalLead = await Leads.findByIdAndUpdate(leadId, {
+            assignedOffice: branch,
+            crmManager: {
+              name: managerId.username,
+              email: managerId.email,
+            },
+            conManager: {
+              name: '',
+              email: '',
+            },
+            conAgent: {
+              name: '',
+              email: ''
+            }
+          },{ new: true });
 
-          await Office1Leads.deleteOne({ _id: assignedLead._id });
+          await Office1Leads.findByIdAndDelete(leadBeforeChanges._id)
 
-          res.status(200).send({ newAssignedLead });
-          break;
+          res.status(200).send({
+            externalLead,
+            newAssignedLead,
+            deletedLeadId: leadBeforeChanges._id,
+            updatedComments: await AllCommentsSchema.find({ ownerLeadId_office2: newAssignedLead._id }),
+            message: 'Lead reassignment successful'
+          });
+        break;
+
 
         case "Office1":
-          mainUser = await User.findById({ _id: authId });
-          if (await Office1Leads.findById(leadId)) {
-            res.status(404).send({
-              message: `This lead exist in ${branch} branch!`,
-            });
+          leadBeforeChanges = await Office2Leads.findOne({externalLeadId: leadId});
+          existingLead = await Office1Leads.findOne({email: leadBeforeChanges.email});
+          if (existingLead) {
+            res.status(404).send({message: `This lead exist in ${branch} branch!`});
+            break;
           }
 
-          assignedLead = await Office2Leads.findByIdAndUpdate(leadId, {
+          await AllCommentsSchema.create({
+            ownerLeadId_office2: leadBeforeChanges._id,
+            createdBy: {
+              username: mainUser.username,
+              email: mainUser.email,
+              branch: authBranch,
+              role: authRole,
+            },
+            createdAt: Date.now(),
+            comment: "Current lead was reassigned from branch Office2 to Office1",
+          });
+
+          managerId = await Office1User.findOne({ role: "CRM Manager" });
+          newAssignedLeadData = {
+            ...leadBeforeChanges.toObject(),
+            managerId: managerId._id,
             conManagerId: null,
             conAgentId: null,
+            branch: branch,
+            assigned: false,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
             latestComment: {
               createdBy: {
                 username: mainUser.username,
@@ -464,69 +494,54 @@ const leadReAssign = async (req, res) => {
                 role: authRole,
               },
               createdAt: Date.now(),
-              comment:
-                "Current lead was reassigned from branch Office2 to Office1",
+              comment: "Current lead was reassigned from branch Office2 to Office1",
             },
-          });
-
-          await AllCommentsSchema.create({
-            ownerLeadId_office2: leadId,
-            createdBy: {
-              username: mainUser.username,
-              email: mainUser.email,
-              branch: authBranch,
-              role: authRole,
-            },
-            createdAt: Date.now(),
-            comment:
-              "Current lead was reassigned from branch Office2 to Office1",
-          });
-
-          await Leads.findByIdAndUpdate(
-            assignedLead.externalLeadId,
-            {
-              assignedOffice: branch,
-              conManager: {
-                name: null,
-                email: null,
-              },
-            },
-            { new: true }
-          );
-
-          await Office1Leads.create({
-            ...assignedLead.toObject(),
-            managerId: null,
-            conManagerId: null,
-            conAgentId: null,
-            branch: branch,
-            _id: null,
-          });
-          newAssignedLead = await Office1Leads.findOne({
-            clientId: assignedLead.clientId,
-          });
+          };
+          delete newAssignedLeadData._id;
+          newAssignedLead = await Office1Leads.create(newAssignedLeadData);
 
           await AllCommentsSchema.updateMany(
-            { ownerLeadId_office2: assignedLead._id },
-            { $rename: { ownerLeadId_office2: "ownerLeadId_office1" } }
+            { ownerLeadId_office2: leadBeforeChanges._id },
+            { 
+              $set: { ownerLeadId_office1: newAssignedLead._id },
+              $unset: { ownerLeadId_office2: "" }
+            }
           );
 
-          await AllCommentsSchema.updateMany(
-            { ownerLeadId_office1: assignedLead._id },
-            { $set: { ownerLeadId_office1: newAssignedLead._id } }
-          );
+          externalLead = await Leads.findByIdAndUpdate(leadId, {
+            assignedOffice: branch,
+            crmManager: {
+              name: managerId.username,
+              email: managerId.email,
+            },
+            conManager: {
+              name: '',
+              email: '',
+            },
+            conAgent: {
+              name: '',
+              email: ''
+            }
+          },{ new: true });
 
-          await Office2Leads.deleteOne({ _id: assignedLead._id });
+          await Office2Leads.findByIdAndDelete(leadBeforeChanges._id)
 
-          res.status(200).send({ newAssignedLead });
-          break;
+          res.status(200).send({
+            externalLead,
+            newAssignedLead,
+            deletedLeadId: leadBeforeChanges._id,
+            updatedComments: await AllCommentsSchema.find({ ownerLeadId_office1: newAssignedLead._id }),
+            message: 'Lead reassignment successful'
+          });
+        break;
+
 
         default:
           res.status(404).send({
             message: `${branch} branch dosen't exist!`,
           });
       }
-      break;
+    break;
 
     default:
       res.status(400).send({
