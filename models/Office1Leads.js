@@ -214,9 +214,9 @@ const leadsSchema = new Schema({
     },
   },
   lastCall: {
-      type: Date,
-      required: false,
-    },
+    type: Date,
+    required: false,
+  },
   nextCall: {
     type: Date,
     required: false,

@@ -36,6 +36,7 @@ const leadAssign = async (req, res) => {
   let conversionManagerId;
   let conversionAgentId;
   let assignedLead;
+  let externalLead;
 
 
   switch (authBranch) {
@@ -99,7 +100,7 @@ const leadAssign = async (req, res) => {
             createdAt: Date.now(),
             comment: `Lead created & Assigned to Office 1 CRM Manager: ${managerId.username}`,
           });
-          await Leads.findByIdAndUpdate(leadId, {
+          externalLead = await Leads.findByIdAndUpdate(leadId, {
             newContact: false,
             assigned: true,
             assignedOffice: branch,
@@ -108,7 +109,7 @@ const leadAssign = async (req, res) => {
               email: managerId.email,
             },
           }, { new: true });
-          break;
+        break;
 
 
         case "Office2":
@@ -138,7 +139,7 @@ const leadAssign = async (req, res) => {
             createdAt: Date.now(),
             comment: `Lead created & Assigned to Office 2 CRM Manager: ${managerId.username}`,
           });
-          await Leads.findByIdAndUpdate(leadId, {
+          externalLead = await Leads.findByIdAndUpdate(leadId, {
             newContact: false, assigned: true, assignedOffice: branch,
             crmManager: {
               name: managerId.username,
@@ -149,7 +150,7 @@ const leadAssign = async (req, res) => {
         default:
           return res.status(400).send({ message: "Invalid branch specified" });
       }
-      break;
+    break;
 
 
     case "Office1":
@@ -232,7 +233,7 @@ const leadAssign = async (req, res) => {
         default:
           return res.status(400).send({ message: 'Invalid authorization role specified' });
       };
-      break;
+    break;
 
 
     case "Office2":
@@ -323,7 +324,7 @@ const leadAssign = async (req, res) => {
 
   switch (authBranch) {
     case "Main":
-      res.status(201).send(newLead);
+      res.status(201).send(externalLead);
       break;
     default:
       res.status(201).send(assignedLead);
