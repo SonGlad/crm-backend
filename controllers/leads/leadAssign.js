@@ -324,7 +324,7 @@ const leadAssign = async (req, res) => {
 
   switch (authBranch) {
     case "Main":
-      res.status(201).send(externalLead);
+      res.status(200).send(externalLead);
       break;
     default:
       res.status(201).send(assignedLead);

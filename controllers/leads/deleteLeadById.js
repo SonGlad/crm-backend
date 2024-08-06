@@ -96,7 +96,8 @@ const deleteLeadById = async (req, res) => {
           } else {
             lead = await Leads.findOneAndUpdate({_id: branchLead.externalLeadId}, {
               assignedOffice: "Not Assigned", crmManager :{name: "", email: ""},
-              conManager: {name: "", email: ""}, conAgent: {name: "", email: ""} 
+              conManager: {name: "", email: ""}, conAgent: {name: "", email: ""},
+              newContact: true 
             });
             deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office1: branchLead._id});
             deletedOfficeLeads = await Office1Leads.findByIdAndDelete(leadId);
@@ -115,7 +116,8 @@ const deleteLeadById = async (req, res) => {
           } else {
             lead = await Leads.findOneAndUpdate({_id: branchLead.externalLeadId}, {
               assignedOffice: "Not Assigned", crmManager :{name: "", email: ""},
-              conManager: {name: "", email: ""}, conAgent: {name: "", email: ""} 
+              conManager: {name: "", email: ""}, conAgent: {name: "", email: ""},
+              newContact: true 
             });
             deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office2: branchLead._id});
             deletedOfficeLeads = await Office2Leads.findByIdAndDelete(leadId);
