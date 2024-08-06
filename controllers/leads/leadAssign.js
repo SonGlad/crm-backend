@@ -327,7 +327,7 @@ const leadAssign = async (req, res) => {
       res.status(200).send(externalLead);
       break;
     default:
-      res.status(201).send(assignedLead);
+      res.status(200).send(assignedLead);
   };
 };
 
