@@ -7,7 +7,7 @@ const { ctrlWrapper } = require("../../helpers/index");
 const getAll = async (req, res) => {
     const {role: userRole, branch: userBranch} = req.user;
     const {role: authRole, branch: authBranch, id: authId} = req.auth;
-    const { branch } = req.query;
+    const { branch, page, limit } = req.query;
 
 
     if (authRole !== userRole || authBranch !== userBranch) {
@@ -15,15 +15,21 @@ const getAll = async (req, res) => {
     };
 
 
-    const { page = 1, limit = 50 } = req.query;
     const skip = (page - 1) * limit;
     let result;
+    let allLeads;
+    let totalPages;
 
 
     switch(authBranch){
         case "Main":
             switch(branch){
                 case "Office1":
+                    allLeads = (await Leads.find()).length;                 
+                    totalPages = Math.ceil(allLeads / limit);
+                    if (!totalPages) {
+                        totalPages = 1
+                    }
                     result = await Office1Leads.find()
                     .skip(parseInt(skip))
                     .limit(parseInt(limit))
@@ -39,8 +45,15 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
-                    break;
+                break;
+
+
                 case "Office2":
+                    allLeads = (await Leads.find()).length;                 
+                    totalPages = Math.ceil(allLeads / limit);
+                    if (!totalPages) {
+                        totalPages = 1
+                    }
                     result = await Office2Leads.find()
                     .skip(parseInt(skip))
                     .limit(parseInt(limit))
@@ -56,14 +69,28 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
-                    break;
+                break;
+
+
                 default: 
+                    allLeads = (await Leads.find()).length;                 
+                    totalPages = Math.ceil(allLeads / limit);
+                    if (!totalPages) {
+                        totalPages = 1
+                    }
                     result = await Leads.find().skip(parseInt(skip)).limit(parseInt(limit));
             };
-            break;
+        break;
+
+
         case "Office1":
             switch(authRole){
                 case "CRM Manager":
+                    allLeads = (await Leads.find()).length;                 
+                    totalPages = Math.ceil(allLeads / limit);
+                    if (!totalPages) {
+                        totalPages = 1
+                    }
                     result = await Office1Leads.find({
                         $or: [{managerId: authId}, {'owner.id': authId }]
                     }).skip(parseInt(skip))
@@ -76,8 +103,15 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
-                    break;
+                break;
+
+
                 case "Conversion Manager":
+                    allLeads = (await Leads.find()).length;                 
+                    totalPages = Math.ceil(allLeads / limit);
+                    if (!totalPages) {
+                        totalPages = 1
+                    }
                     result = await Office1Leads.find({
                         $or: [{conManagerId: authId}, {'owner.id': authId}]
                     }).skip(parseInt(skip))
@@ -86,19 +120,35 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
-                    break;
+                break;
+
+
                 case "Conversion Agent":
                     result = await Office1Leads.find({
                         $or: [{conAgentId: authId}, {'owner.id': authId}]
                     }).skip(parseInt(skip)).limit(parseInt(limit));
-                    break;
+                    allLeads = (await Leads.find()).length;                 
+                    totalPages = Math.ceil(allLeads / limit);
+                    if (!totalPages) {
+                        totalPages = 1
+                    }
+                break;
+
+
                 default:
                     return res.status(400).send({ message: 'Authorization role is invalid' });
             };
-            break;
+        break;
+
+
         case "Office2":
             switch(authRole){
                 case "CRM Manager":
+                    allLeads = (await Leads.find()).length;                 
+                    totalPages = Math.ceil(allLeads / limit);
+                    if (!totalPages) {
+                        totalPages = 1
+                    }
                     result = await Office2Leads.find({
                         $or: [{managerId: authId}, {'owner.id': authId }]
                     }).skip(parseInt(skip))
@@ -111,8 +161,15 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
-                    break;
+                break;
+
+
                 case "Conversion Manager":
+                    allLeads = (await Leads.find()).length;                 
+                    totalPages = Math.ceil(allLeads / limit);
+                    if (!totalPages) {
+                        totalPages = 1
+                    }
                     result = await Office2Leads.find({
                         $or: [{conManagerId: authId}, {'owner.id': authId}]
                     }).skip(parseInt(skip))
@@ -121,12 +178,21 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
-                    break;
+                break;
+
+
                 case "Conversion Agent":
+                    allLeads = (await Leads.find()).length;                 
+                    totalPages = Math.ceil(allLeads / limit);
+                    if (!totalPages) {
+                        totalPages = 1
+                    }
                     result = await Office2Leads.find({
                         $or: [{conAgentId: authId}, {'owner.id': authId}]
                     }).skip(parseInt(skip)).limit(parseInt(limit));
-                    break;
+                break;
+
+
                 default:
                     return res.status(400).send({ message: 'Authorization role is invalid' });
             };
@@ -136,7 +202,7 @@ const getAll = async (req, res) => {
     };
 
 
-    res.status(200).send(result);
+    res.status(200).send({totalPages, result});
 };
 
 
