@@ -25,7 +25,7 @@ const getAll = async (req, res) => {
         case "Main":
             switch(branch){
                 case "Office1":
-                    allLeads = (await Leads.find()).length;                 
+                    allLeads = (await Office1Leads.find()).length;                 
                     totalPages = Math.ceil(allLeads / limit);
                     if (!totalPages) {
                         totalPages = 1
@@ -49,7 +49,7 @@ const getAll = async (req, res) => {
 
 
                 case "Office2":
-                    allLeads = (await Leads.find()).length;                 
+                    allLeads = (await Office2Leads.find()).length;                 
                     totalPages = Math.ceil(allLeads / limit);
                     if (!totalPages) {
                         totalPages = 1
@@ -86,7 +86,7 @@ const getAll = async (req, res) => {
         case "Office1":
             switch(authRole){
                 case "CRM Manager":
-                    allLeads = (await Leads.find()).length;                 
+                    allLeads = (await Office1Leads.find()).length;                 
                     totalPages = Math.ceil(allLeads / limit);
                     if (!totalPages) {
                         totalPages = 1
@@ -107,7 +107,7 @@ const getAll = async (req, res) => {
 
 
                 case "Conversion Manager":
-                    allLeads = (await Leads.find()).length;                 
+                    allLeads = (await Office1Leads.find()).length;                 
                     totalPages = Math.ceil(allLeads / limit);
                     if (!totalPages) {
                         totalPages = 1
@@ -124,14 +124,14 @@ const getAll = async (req, res) => {
 
 
                 case "Conversion Agent":
-                    result = await Office1Leads.find({
-                        $or: [{conAgentId: authId}, {'owner.id': authId}]
-                    }).skip(parseInt(skip)).limit(parseInt(limit));
-                    allLeads = (await Leads.find()).length;                 
+                    allLeads = (await Office1Leads.find()).length;                 
                     totalPages = Math.ceil(allLeads / limit);
                     if (!totalPages) {
                         totalPages = 1
                     }
+                    result = await Office1Leads.find({
+                        $or: [{conAgentId: authId}, {'owner.id': authId}]
+                    }).skip(parseInt(skip)).limit(parseInt(limit));
                 break;
 
 
@@ -144,7 +144,7 @@ const getAll = async (req, res) => {
         case "Office2":
             switch(authRole){
                 case "CRM Manager":
-                    allLeads = (await Leads.find()).length;                 
+                    allLeads = (await Office2Leads.find()).length;                 
                     totalPages = Math.ceil(allLeads / limit);
                     if (!totalPages) {
                         totalPages = 1
@@ -165,7 +165,7 @@ const getAll = async (req, res) => {
 
 
                 case "Conversion Manager":
-                    allLeads = (await Leads.find()).length;                 
+                    allLeads = (await Office2Leads.find()).length;                 
                     totalPages = Math.ceil(allLeads / limit);
                     if (!totalPages) {
                         totalPages = 1
@@ -182,7 +182,7 @@ const getAll = async (req, res) => {
 
 
                 case "Conversion Agent":
-                    allLeads = (await Leads.find()).length;                 
+                    allLeads = (await Office2Leads.find()).length;                 
                     totalPages = Math.ceil(allLeads / limit);
                     if (!totalPages) {
                         totalPages = 1
