@@ -19,20 +19,15 @@ const getAll = async (req, res) => {
     let result;
     let allLeads;
     let totalPages;
+    let filteredLeads;
+    let totalFilteredLeads;
 
 
     switch(authBranch){
         case "Main":
             switch(branch){
                 case "Office1":
-                    allLeads = (await Office1Leads.find()).length;                 
-                    totalPages = Math.ceil(allLeads / limit);
-                    if (!totalPages) {
-                        totalPages = 1
-                    }
-                    result = await Office1Leads.find()
-                    .skip(parseInt(skip))
-                    .limit(parseInt(limit))
+                    allLeads = await Office1Leads.find()
                     .populate({
                         path: 'managerId',
                         select: 'username'
@@ -45,18 +40,23 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
+
+                    filteredLeads = allLeads.sort((a, b) => {
+                        if (a.newContact === b.newContact) {
+                            return new Date(b.createdAt) - new Date(a.createdAt);
+                        }
+                        return a.newContact ? -1 : 1;
+                    });
+
+                    totalFilteredLeads = filteredLeads.length;
+                    totalPages = Math.ceil(totalFilteredLeads / limit);
+
+                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
                 break;
 
 
                 case "Office2":
-                    allLeads = (await Office2Leads.find()).length;                 
-                    totalPages = Math.ceil(allLeads / limit);
-                    if (!totalPages) {
-                        totalPages = 1
-                    }
-                    result = await Office2Leads.find()
-                    .skip(parseInt(skip))
-                    .limit(parseInt(limit))
+                    allLeads = await Office2Leads.find()
                     .populate({
                         path: 'managerId',
                         select: 'username'
@@ -69,16 +69,35 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
+
+                    filteredLeads = allLeads.sort((a, b) => {
+                        if (a.newContact === b.newContact) {
+                            return new Date(b.createdAt) - new Date(a.createdAt);
+                        }
+                        return a.newContact ? -1 : 1;
+                    });
+
+                    totalFilteredLeads = filteredLeads.length;
+                    totalPages = Math.ceil(totalFilteredLeads / limit);
+
+                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
                 break;
 
 
                 default: 
-                    allLeads = (await Leads.find()).length;                 
-                    totalPages = Math.ceil(allLeads / limit);
-                    if (!totalPages) {
-                        totalPages = 1
+                allLeads = await Leads.find()
+
+                filteredLeads = allLeads.sort((a, b) => {
+                    if (a.newContact === b.newContact) {
+                        return new Date(b.createdAt) - new Date(a.createdAt);
                     }
-                    result = await Leads.find().skip(parseInt(skip)).limit(parseInt(limit));
+                    return a.newContact ? -1 : 1;
+                });
+
+                totalFilteredLeads = filteredLeads.length;
+                totalPages = Math.ceil(totalFilteredLeads / limit);
+
+                result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
             };
         break;
 
@@ -86,15 +105,9 @@ const getAll = async (req, res) => {
         case "Office1":
             switch(authRole){
                 case "CRM Manager":
-                    allLeads = (await Office1Leads.find()).length;                 
-                    totalPages = Math.ceil(allLeads / limit);
-                    if (!totalPages) {
-                        totalPages = 1
-                    }
-                    result = await Office1Leads.find({
+                    allLeads = await Office1Leads.find({
                         $or: [{managerId: authId}, {'owner.id': authId }]
-                    }).skip(parseInt(skip))
-                    .limit(parseInt(limit))
+                    })
                     .populate({
                         path: 'conManagerId',
                         select: 'username'
@@ -102,36 +115,46 @@ const getAll = async (req, res) => {
                     .populate({
                         path: 'conAgentId',
                         select: 'username'
-                    });
+                    }); 
+                    
+                    filteredLeads = allLeads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                    totalFilteredLeads = filteredLeads.length;
+                    totalPages = Math.ceil(totalFilteredLeads / limit);
+    
+                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
                 break;
 
 
                 case "Conversion Manager":
-                    allLeads = (await Office1Leads.find()).length;                 
-                    totalPages = Math.ceil(allLeads / limit);
-                    if (!totalPages) {
-                        totalPages = 1
-                    }
-                    result = await Office1Leads.find({
+                    allLeads = await Office1Leads.find({
                         $or: [{conManagerId: authId}, {'owner.id': authId}]
-                    }).skip(parseInt(skip))
-                    .limit(parseInt(limit))
+                    })
                     .populate({
                         path: 'conAgentId',
                         select: 'username'
                     });
+                    
+                    filteredLeads = allLeads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                    totalFilteredLeads = filteredLeads.length;
+                    totalPages = Math.ceil(totalFilteredLeads / limit);
+    
+                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
                 break;
 
 
                 case "Conversion Agent":
-                    allLeads = (await Office1Leads.find()).length;                 
-                    totalPages = Math.ceil(allLeads / limit);
-                    if (!totalPages) {
-                        totalPages = 1
-                    }
-                    result = await Office1Leads.find({
+                    allLeads = await Office1Leads.find({
                         $or: [{conAgentId: authId}, {'owner.id': authId}]
-                    }).skip(parseInt(skip)).limit(parseInt(limit));
+                    });
+                    
+                    filteredLeads = allLeads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                    totalFilteredLeads = filteredLeads.length;
+                    totalPages = Math.ceil(totalFilteredLeads / limit);
+    
+                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
                 break;
 
 
@@ -144,15 +167,9 @@ const getAll = async (req, res) => {
         case "Office2":
             switch(authRole){
                 case "CRM Manager":
-                    allLeads = (await Office2Leads.find()).length;                 
-                    totalPages = Math.ceil(allLeads / limit);
-                    if (!totalPages) {
-                        totalPages = 1
-                    }
-                    result = await Office2Leads.find({
+                    allLeads = await Office2Leads.find({
                         $or: [{managerId: authId}, {'owner.id': authId }]
-                    }).skip(parseInt(skip))
-                    .limit(parseInt(limit))
+                    })
                     .populate({
                         path: 'conManagerId',
                         select: 'username'
@@ -160,36 +177,46 @@ const getAll = async (req, res) => {
                     .populate({
                         path: 'conAgentId',
                         select: 'username'
-                    });
+                    }); 
+                    
+                    filteredLeads = allLeads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                    totalFilteredLeads = filteredLeads.length;
+                    totalPages = Math.ceil(totalFilteredLeads / limit);
+    
+                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
                 break;
 
 
                 case "Conversion Manager":
-                    allLeads = (await Office2Leads.find()).length;                 
-                    totalPages = Math.ceil(allLeads / limit);
-                    if (!totalPages) {
-                        totalPages = 1
-                    }
-                    result = await Office2Leads.find({
+                    allLeads = await Office2Leads.find({
                         $or: [{conManagerId: authId}, {'owner.id': authId}]
-                    }).skip(parseInt(skip))
-                    .limit(parseInt(limit))
+                    })
                     .populate({
                         path: 'conAgentId',
                         select: 'username'
                     });
+                    
+                    filteredLeads = allLeads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                    totalFilteredLeads = filteredLeads.length;
+                    totalPages = Math.ceil(totalFilteredLeads / limit);
+    
+                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
                 break;
 
 
                 case "Conversion Agent":
-                    allLeads = (await Office2Leads.find()).length;                 
-                    totalPages = Math.ceil(allLeads / limit);
-                    if (!totalPages) {
-                        totalPages = 1
-                    }
-                    result = await Office2Leads.find({
+                    allLeads = await Office2Leads.find({
                         $or: [{conAgentId: authId}, {'owner.id': authId}]
-                    }).skip(parseInt(skip)).limit(parseInt(limit));
+                    });
+                    
+                    filteredLeads = allLeads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                    totalFilteredLeads = filteredLeads.length;
+                    totalPages = Math.ceil(totalFilteredLeads / limit);
+    
+                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
                 break;
 
 
@@ -202,7 +229,7 @@ const getAll = async (req, res) => {
     };
 
 
-    res.status(200).send({totalPages, result});
+    res.status(200).send({totalPages, result, totalFilteredLeads});
 };
 
 
