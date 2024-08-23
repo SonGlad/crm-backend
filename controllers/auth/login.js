@@ -61,6 +61,7 @@ const loginUser = async (res, user, userModel, password) => {
         avatarURL: user.avatarURL,
         role: user.role,
         branch: user.branch,
+        email: user.email,
     });
 };
 
