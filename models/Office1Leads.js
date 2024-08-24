@@ -101,7 +101,7 @@ const leadsSchema = new Schema({
       "Call Back 2",
       "Call Back 3",
       "Not Potential",
-      "Reassign",
+      "ReAssign",
       "Never Answer",
     ],
     default: "New",
@@ -296,7 +296,7 @@ const addOffice1LeadSchema = Joi.object({
       "Call Back 2",
       "Call Back 3",
       "Not Potential",
-      "Reassign",
+      "ReAssign",
       "Never Answer"
     ).messages({
       "any.only": "Invalid status provided.",
@@ -436,7 +436,7 @@ const statusValues = [
   "Call Back 2",
   "Call Back 3",
   "Not Potential",
-  "Reassign",
+  "ReAssign",
   "Never Answer",
 ];
 

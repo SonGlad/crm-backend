@@ -14,7 +14,7 @@ const getAllStatus = async (req, res) => {
     "Call Back 2",
     "Call Back 3",
     "Not Potential",
-    "Reassign",
+    "ReAssign",
     "Never Answer",
   ];
 

@@ -100,7 +100,7 @@ const leadsSchema = new Schema(
         "Call Back 2",
         "Call Back 3",
         "Not Potential",
-        "Reassign",
+        "ReAssign",
         "Never Answer",
       ],
       default: "New",
@@ -297,7 +297,7 @@ const addOffice2LeadSchema = Joi.object({
       "Call Back 2",
       "Call Back 3",
       "Not Potential",
-      "Reassign",
+      "ReAssign",
       "Never Answer"
     )
     .messages({
@@ -440,7 +440,7 @@ const statusValues = [
   "Call Back 2",
   "Call Back 3",
   "Not Potential",
-  "Reassign",
+  "ReAssign",
   "Never Answer",
 ];
 
