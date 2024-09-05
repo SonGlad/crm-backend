@@ -21,7 +21,7 @@ const leadReAssign = async (req, res) => {
   let lead;
   let officeUser;
   let mainUser;
-  let convertionManagerId;
+  let conversionManagerId;
   let convertionAgentId;
   let assignedLead;
   let leadBeforeChanges;
@@ -86,7 +86,6 @@ const leadReAssign = async (req, res) => {
                     ? `Current lead was reassigned from agent ${prevUserId.username} to ${officeUser.username}`
                     : "This is first assign",
                 });
-                console.log(assignedLead.externalLeadId);
                 await Leads.findByIdAndUpdate(
                   assignedLead.externalLeadId,
                   {
@@ -97,7 +96,7 @@ const leadReAssign = async (req, res) => {
                   },
                   { new: true }
                 );
-                res.status(200).send({ assignedLead });
+                res.status(200).send(assignedLead);
               } else {
                 res.status(403).send({
                   message: "You must reasign to 'Conversion Agent'!",
@@ -112,10 +111,10 @@ const leadReAssign = async (req, res) => {
           break;
 
         case "CRM Manager":
-          convertionManagerId = await Office1User.findById({
+          conversionManagerId = await Office1User.findById({
             _id: conManagerId,
           });
-          if (convertionManagerId.role === "Conversion Manager") {
+          if (conversionManagerId.role === "Conversion Manager") {
             switch (lead.selfCreated) {
               case false:
                 officeUser = await Office1User.findById({ _id: authId });
@@ -131,14 +130,14 @@ const leadReAssign = async (req, res) => {
                   });
                 }
 
-                if (!convertionManagerId) {
+                if (!conversionManagerId) {
                   res.status(404).send({
                     message: "Conversion manager not found",
                   });
                 }
 
                 assignedLead = await Office1Leads.findByIdAndUpdate(leadId, {
-                  conManagerId: convertionManagerId._id,
+                  conManagerId: conversionManagerId._id,
                   latestComment: {
                     createdBy: {
                       username: officeUser.username,
@@ -169,8 +168,8 @@ const leadReAssign = async (req, res) => {
                   assignedLead.externalLeadId,
                   {
                     conManager: {
-                      name: convertionManagerId.username,
-                      email: convertionManagerId.email,
+                      name: conversionManagerId.username,
+                      email: conversionManagerId.email,
                     },
                     conAgent: {
                       name: null,
@@ -180,7 +179,7 @@ const leadReAssign = async (req, res) => {
                   { new: true }
                 );
                 newAssignedLead = await Office1Leads.findById({ _id: leadId });
-                res.status(200).send({ newAssignedLead });
+                res.status(200).send(newAssignedLead);
                 break;
               default:
                 res.status(403).send({
@@ -266,7 +265,7 @@ const leadReAssign = async (req, res) => {
                   },
                   { new: true }
                 );
-                res.status(200).send({ assignedLead });
+                res.status(200).send(assignedLead);
               } else {
                 res.status(403).send({
                   message: "You must reasign to 'Conversion Agent'!",
@@ -282,11 +281,10 @@ const leadReAssign = async (req, res) => {
           break;
 
         case "CRM Manager":
-          convertionManagerId = await Office2User.findById({
+          conversionManagerId = await Office2User.findById({
             _id: conManagerId,
           });
-          if (convertionManagerId.role === "Conversion Manager") {
-            console.log(lead.selfCreated);
+          if (conversionManagerId.role === "Conversion Manager") {
             switch (lead.selfCreated) {
               case false:
                 officeUser = await Office2User.findById({ _id: authId });
@@ -297,14 +295,14 @@ const leadReAssign = async (req, res) => {
                   });
                 }
 
-                if (!convertionManagerId) {
+                if (!conversionManagerId) {
                   res.status(404).send({
                     message: "Conversion manager not found",
                   });
                 }
 
                 assignedLead = await Office2Leads.findByIdAndUpdate(leadId, {
-                  conManagerId: convertionManagerId._id,
+                  conManagerId: conversionManagerId._id,
                   assigned: false,
                   latestComment: {
                     createdBy: {
@@ -337,8 +335,8 @@ const leadReAssign = async (req, res) => {
                   assignedLead.externalLeadId,
                   {
                     conManager: {
-                      name: convertionManagerId.username,
-                      email: convertionManagerId.email,
+                      name: conversionManagerId.username,
+                      email: conversionManagerId.email,
                     },
                     conAgent: {
                       name: null,
@@ -347,9 +345,8 @@ const leadReAssign = async (req, res) => {
                   },
                   { new: true }
                 );
-                console.log(leadId);
                 newAssignedLead = await Office2Leads.findById({ _id: leadId });
-                res.status(200).send({ newAssignedLead });
+                res.status(200).send(newAssignedLead);
                 break;
               default:
                 res.status(403).send({
