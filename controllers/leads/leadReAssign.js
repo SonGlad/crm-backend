@@ -22,7 +22,7 @@ const leadReAssign = async (req, res) => {
   let officeUser;
   let mainUser;
   let conversionManagerId;
-  let convertionAgentId;
+  let conversionAgentId;
   let assignedLead;
   let leadBeforeChanges;
   let prevUserId;
@@ -41,24 +41,24 @@ const leadReAssign = async (req, res) => {
           switch (lead.selfCreated) {
             case false:
               officeUser = await Office1User.findById({ _id: authId });
-              convertionAgentId = await Office1User.findById({
+              conversionAgentId = await Office1User.findById({
                 _id: conAgentId,
               });
-              if (convertionAgentId.role === "Conversion Agent") {
+              if (conversionAgentId.role === "Conversion Agent") {
                 leadBeforeChanges = await Office1Leads.findById(leadId);
                 if (leadBeforeChanges.conAgentId) {
                   prevUserId = await Office1User.findById({
                     _id: leadBeforeChanges.conAgentId,
                   });
                 }
-                if (!convertionAgentId) {
+                if (!conversionAgentId) {
                   res.status(404).send({
                     message: "Conversion agent not found",
                   });
                 }
 
                 assignedLead = await Office1Leads.findByIdAndUpdate(leadId, {
-                  conAgentId: convertionAgentId._id,
+                  conAgentId: conversionAgentId._id,
                   assigned: false,
                   latestComment: {
                     createdBy: {
@@ -90,13 +90,18 @@ const leadReAssign = async (req, res) => {
                   assignedLead.externalLeadId,
                   {
                     conAgent: {
-                      name: convertionAgentId.username,
-                      email: convertionAgentId.email,
+                      name: conversionAgentId.username,
+                      email: conversionAgentId.email,
                     },
                   },
                   { new: true }
                 );
-                res.status(200).send(assignedLead);
+                newAssignedLead = await Office1Leads.findById({ _id: leadId })
+                .populate({
+                  path: 'conAgentId',
+                  select:'username email'
+                });
+                res.status(200).send(newAssignedLead);
               } else {
                 res.status(403).send({
                   message: "You must reasign to 'Conversion Agent'!",
@@ -108,7 +113,8 @@ const leadReAssign = async (req, res) => {
                 message: "You are not authorized to reassign self created lead",
               });
           }
-          break;
+        break;
+
 
         case "CRM Manager":
           conversionManagerId = await Office1User.findById({
@@ -178,7 +184,15 @@ const leadReAssign = async (req, res) => {
                   },
                   { new: true }
                 );
-                newAssignedLead = await Office1Leads.findById({ _id: leadId });
+                newAssignedLead = await Office1Leads.findById({ _id: leadId })
+                .populate({
+                  path: 'conManagerId',
+                  select: 'username email'
+                })
+                .populate({
+                  path: 'conAgentId',
+                  select:'username email'
+                });
                 res.status(200).send(newAssignedLead);
                 break;
               default:
@@ -192,8 +206,8 @@ const leadReAssign = async (req, res) => {
               message: "You must reassign to 'Conversion Manager'",
             });
           }
+        break;
 
-          break;
 
         default:
           res.status(404).send({
@@ -202,6 +216,7 @@ const leadReAssign = async (req, res) => {
       }
     break;
 
+
     case "Office2":
       lead = await Office2Leads.findById(leadId);
       switch (authRole) {
@@ -209,10 +224,10 @@ const leadReAssign = async (req, res) => {
           switch (lead.selfCreated) {
             case false:
               officeUser = await Office2User.findById({ _id: authId });
-              convertionAgentId = await Office2User.findById({
+              conversionAgentId = await Office2User.findById({
                 _id: conAgentId,
               });
-              if (convertionAgentId.role === "Conversion Agent") {
+              if (conversionAgentId.role === "Conversion Agent") {
                 leadBeforeChanges = await Office2Leads.findById(leadId);
                 if (leadBeforeChanges.conAgentId) {
                   prevUserId = await Office2User.findById({
@@ -220,14 +235,14 @@ const leadReAssign = async (req, res) => {
                   });
                 }
 
-                if (!convertionAgentId) {
+                if (!conversionAgentId) {
                   res.status(404).send({
                     message: "Conversion agent not found",
                   });
                 }
 
                 assignedLead = await Office2Leads.findByIdAndUpdate(leadId, {
-                  conAgentId: convertionAgentId._id,
+                  conAgentId: conversionAgentId._id,
                   latestComment: {
                     createdBy: {
                       username: officeUser.username,
@@ -259,13 +274,18 @@ const leadReAssign = async (req, res) => {
                   assignedLead.externalLeadId,
                   {
                     conAgent: {
-                      name: convertionAgentId.username,
-                      email: convertionAgentId.email,
+                      name: conversionAgentId.username,
+                      email: conversionAgentId.email,
                     },
                   },
                   { new: true }
                 );
-                res.status(200).send(assignedLead);
+                newAssignedLead = await Office2Leads.findById({ _id: leadId })
+                .populate({
+                  path: 'conAgentId',
+                  select:'username email'
+                });
+                res.status(200).send(newAssignedLead);
               } else {
                 res.status(403).send({
                   message: "You must reasign to 'Conversion Agent'!",
@@ -278,7 +298,8 @@ const leadReAssign = async (req, res) => {
                 message: "You are not authorized to reassign self created lead",
               });
           }
-          break;
+        break;
+
 
         case "CRM Manager":
           conversionManagerId = await Office2User.findById({
@@ -345,7 +366,15 @@ const leadReAssign = async (req, res) => {
                   },
                   { new: true }
                 );
-                newAssignedLead = await Office2Leads.findById({ _id: leadId });
+                newAssignedLead = await Office2Leads.findById({ _id: leadId })
+                .populate({
+                  path: 'conManagerId',
+                  select: 'username email'
+                })
+                .populate({
+                  path: 'conAgentId',
+                  select:'username email'
+                });
                 res.status(200).send(newAssignedLead);
                 break;
               default:
@@ -359,8 +388,8 @@ const leadReAssign = async (req, res) => {
               message: "You must reassign to 'Conversion Manager'",
             });
           }
+        break;
 
-          break;
 
         default:
           res.status(404).send({
