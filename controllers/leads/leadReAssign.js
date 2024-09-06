@@ -7,11 +7,13 @@ const { User } = require("../../models/MainUser");
 const { AllCommentsSchema } = require("../../models/LeadsComments");
 const { Leads } = require("../../models/externalLead");
 
+
 const leadReAssign = async (req, res) => {
   const { role: authRole, branch: authBranch, id: authId } = req.auth;
   const { leadId } = req.params;
   const {branch, conManagerId, conAgentId} = req.body;
   const { role: userRole, branch: userBranch } = req.user;
+
 
   if (authRole !== userRole || authBranch !== userBranch) {
     return res.status(403).send({ message: "Forbidden: Access denied" });
@@ -36,365 +38,258 @@ const leadReAssign = async (req, res) => {
   switch (authBranch) {
     case "Office1":
       lead = await Office1Leads.findById(leadId);
+      officeUser = await Office1User.findById(authId);
       switch (authRole) {
         case "Conversion Manager":
-          switch (lead.selfCreated) {
-            case false:
-              officeUser = await Office1User.findById({ _id: authId });
-              conversionAgentId = await Office1User.findById({
-                _id: conAgentId,
-              });
-              if (conversionAgentId.role === "Conversion Agent") {
-                leadBeforeChanges = await Office1Leads.findById(leadId);
-                if (leadBeforeChanges.conAgentId) {
-                  prevUserId = await Office1User.findById({
-                    _id: leadBeforeChanges.conAgentId,
-                  });
-                }
-                if (!conversionAgentId) {
-                  res.status(404).send({
-                    message: "Conversion agent not found",
-                  });
-                }
+          if(lead.selfCreated !== true){
+            prevUserId = await Office1User.findById(lead.conAgentId);
+            conversionAgentId = await Office1User.findById(conAgentId); 
 
-                assignedLead = await Office1Leads.findByIdAndUpdate(leadId, {
-                  conAgentId: conversionAgentId._id,
-                  assigned: false,
-                  latestComment: {
-                    createdBy: {
-                      username: officeUser.username,
-                      email: officeUser.email,
-                      branch: authBranch,
-                      role: authRole,
-                    },
-                    createdAt: Date.now(),
-                    comment: prevUserId
-                      ? `Current lead was reassigned from agent ${prevUserId.username} to ${officeUser.username}`
-                      : "created",
-                  },
-                });
-                await AllCommentsSchema.create({
-                  ownerLeadId_office1: leadId,
-                  createdBy: {
-                    username: officeUser.username,
-                    email: officeUser.email,
-                    branch: authBranch,
-                    role: authRole,
-                  },
-                  createdAt: Date.now(),
-                  comment: prevUserId.username
-                    ? `Current lead was reassigned from agent ${prevUserId.username} to ${officeUser.username}`
-                    : "This is first assign",
-                });
-                await Leads.findByIdAndUpdate(
-                  assignedLead.externalLeadId,
-                  {
-                    conAgent: {
-                      name: conversionAgentId.username,
-                      email: conversionAgentId.email,
-                    },
-                  },
-                  { new: true }
-                );
-                newAssignedLead = await Office1Leads.findById({ _id: leadId })
-                .populate({
-                  path: 'conAgentId',
-                  select:'username email'
-                });
-                res.status(200).send(newAssignedLead);
-              } else {
-                res.status(403).send({
-                  message: "You must reasign to 'Conversion Agent'!",
-                });
-              }
-              break;
-            default:
-              res.status(403).send({
-                message: "You are not authorized to reassign self created lead",
-              });
+            assignedLead = await Office1Leads.findByIdAndUpdate(leadId, {
+              conAgentId: conversionAgentId._id,
+              assigned: true,
+              latestComment: {
+                createdBy: {
+                  username: officeUser.username,
+                  email: officeUser.email,
+                  branch: authBranch,
+                  role: authRole,
+                },
+                createdAt: Date.now(),
+                comment: prevUserId
+                  ? `Current lead was reassigned from agent ${prevUserId.username} to ${officeUser.username}`
+                  : "created",
+              },
+            })
+            .populate({
+              path: 'conAgentId',
+              select:'username email'
+            });
+
+            await AllCommentsSchema.create({
+              ownerLeadId_office1: leadId,
+              createdBy: {
+                username: officeUser.username,
+                email: officeUser.email,
+                branch: authBranch,
+                role: authRole,
+              },
+              createdAt: Date.now(),
+              comment: prevUserId.username
+                ? `Current lead was reassigned from agent ${prevUserId.username} to ${officeUser.username}`
+                : "This is first assign",
+            });
+
+            await Leads.findByIdAndUpdate(
+              assignedLead.externalLeadId,
+              {
+                conAgent: {
+                  name: conversionAgentId.username,
+                  email: conversionAgentId.email,
+                },
+              },
+              { new: true }
+            );
+
+            res.status(200).send(assignedLead);
+          } else {
+            return res.status(403).send({message: "You are not authorized to reassign self created lead"});
           }
         break;
 
 
         case "CRM Manager":
-          conversionManagerId = await Office1User.findById({
-            _id: conManagerId,
-          });
-          if (conversionManagerId.role === "Conversion Manager") {
-            switch (lead.selfCreated) {
-              case false:
-                officeUser = await Office1User.findById({ _id: authId });
-                leadBeforeChanges = await Office1Leads.findById(leadId);
-                if (leadBeforeChanges.role === "Retention Manager") {
-                  res.status(403).send({
-                    message: "You can not reassign to 'Retention Manager'",
-                  });
-                }
-                if (leadBeforeChanges.conManagerId) {
-                  prevUserId = await Office1User.findById({
-                    _id: leadBeforeChanges.conManagerId,
-                  });
-                }
-
-                if (!conversionManagerId) {
-                  res.status(404).send({
-                    message: "Conversion manager not found",
-                  });
-                }
-
-                assignedLead = await Office1Leads.findByIdAndUpdate(leadId, {
-                  conManagerId: conversionManagerId._id,
-                  latestComment: {
-                    createdBy: {
-                      username: officeUser.username,
-                      email: officeUser.email,
-                      branch: authBranch,
-                      role: authRole,
-                    },
-                    createdAt: Date.now(),
-                    comment: prevUserId
-                      ? `Current lead was reassigned from manager ${prevUserId.username} to ${officeUser.username}`
-                      : "created",
-                  },
-                });
-                await AllCommentsSchema.create({
-                  ownerLeadId_office1: leadId,
-                  createdBy: {
-                    username: officeUser.username,
-                    email: officeUser.email,
-                    branch: authBranch,
-                    role: authRole,
-                  },
-                  createdAt: Date.now(),
-                  comment: prevUserId.username
-                    ? `Current lead was reassigned from manager ${prevUserId.username} to ${officeUser.username}`
-                    : "This is first assign",
-                });
-                await Leads.findByIdAndUpdate(
-                  assignedLead.externalLeadId,
-                  {
-                    conManager: {
-                      name: conversionManagerId.username,
-                      email: conversionManagerId.email,
-                    },
-                    conAgent: {
-                      name: null,
-                      email: null,
-                    },
-                  },
-                  { new: true }
-                );
-                newAssignedLead = await Office1Leads.findById({ _id: leadId })
-                .populate({
-                  path: 'conManagerId',
-                  select: 'username email'
-                })
-                .populate({
-                  path: 'conAgentId',
-                  select:'username email'
-                });
-                res.status(200).send(newAssignedLead);
-                break;
-              default:
-                res.status(403).send({
-                  message:
-                    "You are not authorized to reassign self created lead",
-                });
-            }
-          } else {
-            res.status(403).send({
-              message: "You must reassign to 'Conversion Manager'",
+          if (lead.selfCreated !== true) {
+            prevUserId = await Office1User.findById(lead.conManagerId);
+            conversionManagerId = await Office1User.findById(conManagerId);
+     
+            assignedLead = await Office1Leads.findByIdAndUpdate(leadId, {
+              conManagerId: conversionManagerId._id,
+              latestComment: {
+                createdBy: {
+                  username: officeUser.username,
+                  email: officeUser.email,
+                  branch: authBranch,
+                  role: authRole,
+                },
+                createdAt: Date.now(),
+                comment: prevUserId
+                  ? `Current lead was reassigned from manager ${prevUserId.username} to ${officeUser.username}`
+                  : "created",
+              },
+            })
+            .populate({
+              path: 'conManagerId',
+              select:'username email'
+            })
+            .populate({
+              path: 'conAgentId',
+              select:'username email'
             });
+
+            await AllCommentsSchema.create({
+              ownerLeadId_office1: leadId,
+              createdBy: {
+                username: officeUser.username,
+                email: officeUser.email,
+                branch: authBranch,
+                role: authRole,
+              },
+              createdAt: Date.now(),
+              comment: prevUserId.username
+                ? `Current lead was reassigned from manager ${prevUserId.username} to ${officeUser.username}`
+                : "This is first assign",
+            });
+
+            await Leads.findByIdAndUpdate(
+              assignedLead.externalLeadId,
+              {
+                conManager: {
+                  name: conversionManagerId.username,
+                  email: conversionManagerId.email,
+                },
+              },
+              { new: true }
+            );
+
+            res.status(200).send(assignedLead);
+          } else {
+            return res.status(403).send({message: "You are not authorized to reassign self created lead"});
           }
         break;
-
-
+         
+           
         default:
-          res.status(404).send({
-            message: "You don't have the right permissions in this branch",
-          });
+          res.status(404).send({message: "You don't have the right permissions in this branch"});
       }
     break;
 
 
     case "Office2":
       lead = await Office2Leads.findById(leadId);
+      officeUser = await Office2User.findById(authId);
       switch (authRole) {
         case "Conversion Manager":
-          switch (lead.selfCreated) {
-            case false:
-              officeUser = await Office2User.findById({ _id: authId });
-              conversionAgentId = await Office2User.findById({
-                _id: conAgentId,
-              });
-              if (conversionAgentId.role === "Conversion Agent") {
-                leadBeforeChanges = await Office2Leads.findById(leadId);
-                if (leadBeforeChanges.conAgentId) {
-                  prevUserId = await Office2User.findById({
-                    _id: leadBeforeChanges.conAgentId,
-                  });
-                }
+          if (lead.selfCreated !== true) {
+            prevUserId = await Office2User.findById(lead.conAgentId);
+            conversionAgentId = await Office2User.findById(conAgentId); 
 
-                if (!conversionAgentId) {
-                  res.status(404).send({
-                    message: "Conversion agent not found",
-                  });
-                }
+            assignedLead = await Office2Leads.findByIdAndUpdate(leadId, {
+              conAgentId: conversionAgentId._id,
+              assigned: true,
+              latestComment: {
+                createdBy: {
+                  username: officeUser.username,
+                  email: officeUser.email,
+                  branch: authBranch,
+                  role: authRole,
+                },
+                createdAt: Date.now(),
+                comment: prevUserId
+                  ? `Current lead was reassigned from agent ${prevUserId.username} to ${officeUser.username}`
+                  : "created",
+              },
+            })
+            .populate({
+              path: 'conAgentId',
+              select:'username email'
+            });
 
-                assignedLead = await Office2Leads.findByIdAndUpdate(leadId, {
-                  conAgentId: conversionAgentId._id,
-                  latestComment: {
-                    createdBy: {
-                      username: officeUser.username,
-                      email: officeUser.email,
-                      branch: authBranch,
-                      role: authRole,
-                    },
-                    createdAt: Date.now(),
-                    comment: prevUserId
-                      ? `Current lead was reassigned from agent ${prevUserId.username} to ${officeUser.username}`
-                      : "created",
-                  },
-                });
-                await AllCommentsSchema.create({
-                  ownerLeadId_office1: leadId,
-                  createdBy: {
-                    username: officeUser.username,
-                    email: officeUser.email,
-                    branch: authBranch,
-                    role: authRole,
-                  },
-                  createdAt: Date.now(),
-                  comment: prevUserId.username
-                    ? `Current lead was reassigned from agent ${prevUserId.username} to ${officeUser.username}`
-                    : "This is first assign",
-                });
+            await AllCommentsSchema.create({
+              ownerLeadId_office1: leadId,
+              createdBy: {
+                username: officeUser.username,
+                email: officeUser.email,
+                branch: authBranch,
+                role: authRole,
+              },
+              createdAt: Date.now(),
+              comment: prevUserId.username
+                ? `Current lead was reassigned from agent ${prevUserId.username} to ${officeUser.username}`
+                : "This is first assign",
+            });
 
-                await Leads.findByIdAndUpdate(
-                  assignedLead.externalLeadId,
-                  {
-                    conAgent: {
-                      name: conversionAgentId.username,
-                      email: conversionAgentId.email,
-                    },
-                  },
-                  { new: true }
-                );
-                newAssignedLead = await Office2Leads.findById({ _id: leadId })
-                .populate({
-                  path: 'conAgentId',
-                  select:'username email'
-                });
-                res.status(200).send(newAssignedLead);
-              } else {
-                res.status(403).send({
-                  message: "You must reasign to 'Conversion Agent'!",
-                });
-              }
+            await Leads.findByIdAndUpdate(
+              assignedLead.externalLeadId,
+              {
+                conAgent: {
+                  name: conversionAgentId.username,
+                  email: conversionAgentId.email,
+                },
+              },
+              { new: true }
+            );
 
-              break;
-            default:
-              res.status(403).send({
-                message: "You are not authorized to reassign self created lead",
-              });
+            res.status(200).send(assignedLead);
+          } else {
+            return res.status(403).send({message: "You are not authorized to reassign self created lead"});
           }
         break;
 
 
         case "CRM Manager":
-          conversionManagerId = await Office2User.findById({
-            _id: conManagerId,
-          });
-          if (conversionManagerId.role === "Conversion Manager") {
-            switch (lead.selfCreated) {
-              case false:
-                officeUser = await Office2User.findById({ _id: authId });
-                leadBeforeChanges = await Office2Leads.findById(leadId);
-                if (leadBeforeChanges.conManagerId) {
-                  prevUserId = await Office2User.findById({
-                    _id: leadBeforeChanges.conManagerId,
-                  });
-                }
+          if (lead.selfCreated !== true) {
+            prevUserId = await Office2User.findById(lead.conManagerId);
+            conversionManagerId = await Office2User.findById(conManagerId);
 
-                if (!conversionManagerId) {
-                  res.status(404).send({
-                    message: "Conversion manager not found",
-                  });
-                }
-
-                assignedLead = await Office2Leads.findByIdAndUpdate(leadId, {
-                  conManagerId: conversionManagerId._id,
-                  assigned: false,
-                  latestComment: {
-                    createdBy: {
-                      username: officeUser.username,
-                      email: officeUser.email,
-                      branch: authBranch,
-                      role: authRole,
-                    },
-                    createdAt: Date.now(),
-                    comment: prevUserId
-                      ? `Current lead was reassigned from manager ${prevUserId.username} to ${officeUser.username}`
-                      : "created",
-                  },
-                });
-
-                await AllCommentsSchema.create({
-                  ownerLeadId_office1: leadId,
-                  createdBy: {
-                    username: officeUser.username,
-                    email: officeUser.email,
-                    branch: authBranch,
-                    role: authRole,
-                  },
-                  createdAt: Date.now(),
-                  comment: prevUserId.username
-                    ? `Current lead was reassigned from manager ${prevUserId.username} to ${officeUser.username}`
-                    : "This is first assign",
-                });
-                await Leads.findByIdAndUpdate(
-                  assignedLead.externalLeadId,
-                  {
-                    conManager: {
-                      name: conversionManagerId.username,
-                      email: conversionManagerId.email,
-                    },
-                    conAgent: {
-                      name: null,
-                      email: null,
-                    },
-                  },
-                  { new: true }
-                );
-                newAssignedLead = await Office2Leads.findById({ _id: leadId })
-                .populate({
-                  path: 'conManagerId',
-                  select: 'username email'
-                })
-                .populate({
-                  path: 'conAgentId',
-                  select:'username email'
-                });
-                res.status(200).send(newAssignedLead);
-                break;
-              default:
-                res.status(403).send({
-                  message:
-                    "You are not authorized to reassign self created lead",
-                });
-            }
-          } else {
-            res.status(403).send({
-              message: "You must reassign to 'Conversion Manager'",
+            assignedLead = await Office2Leads.findByIdAndUpdate(leadId, {
+              conManagerId: conversionManagerId._id,
+              assigned: false,
+              latestComment: {
+                createdBy: {
+                  username: officeUser.username,
+                  email: officeUser.email,
+                  branch: authBranch,
+                  role: authRole,
+                },
+                createdAt: Date.now(),
+                comment: prevUserId
+                  ? `Current lead was reassigned from manager ${prevUserId.username} to ${officeUser.username}`
+                  : "created",
+              },
+            })
+            .populate({
+              path: 'conManagerId',
+              select:'username email'
+            })
+            .populate({
+              path: 'conAgentId',
+              select:'username email'
             });
+
+            await AllCommentsSchema.create({
+              ownerLeadId_office1: leadId,
+              createdBy: {
+                username: officeUser.username,
+                email: officeUser.email,
+                branch: authBranch,
+                role: authRole,
+              },
+              createdAt: Date.now(),
+              comment: prevUserId.username
+                ? `Current lead was reassigned from manager ${prevUserId.username} to ${officeUser.username}`
+                : "This is first assign",
+            });
+            await Leads.findByIdAndUpdate(
+              assignedLead.externalLeadId,
+              {
+                conManager: {
+                  name: conversionManagerId.username,
+                  email: conversionManagerId.email,
+                },
+              },
+              { new: true }
+            );
+
+            res.status(200).send(assignedLead);
+          } else {
+            return res.status(403).send({message: "You are not authorized to reassign self created lead"});
           }
         break;
 
 
         default:
-          res.status(404).send({
-            message: "You don't have the right permissions in this branch",
-          });
+          res.status(404).send({message: "You don't have the right permissions in this branch"});
       }
     break;
 
