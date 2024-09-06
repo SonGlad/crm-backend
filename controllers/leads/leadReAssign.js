@@ -60,10 +60,6 @@ const leadReAssign = async (req, res) => {
                   ? `Current lead was reassigned from agent ${prevUserId.username} to ${officeUser.username}`
                   : "created",
               },
-            })
-            .populate({
-              path: 'conAgentId',
-              select:'username email'
             });
 
             await AllCommentsSchema.create({
@@ -91,7 +87,13 @@ const leadReAssign = async (req, res) => {
               { new: true }
             );
 
-            res.status(200).send(assignedLead);
+            newAssignedLead = await Office1Leads.findById(leadId)
+            .populate({
+              path: 'conAgentId',
+              select:'username email'
+            });
+            res.status(200).send(newAssignedLead);
+
           } else {
             return res.status(403).send({message: "You are not authorized to reassign self created lead"});
           }
@@ -117,14 +119,6 @@ const leadReAssign = async (req, res) => {
                   ? `Current lead was reassigned from manager ${prevUserId.username} to ${officeUser.username}`
                   : "created",
               },
-            })
-            .populate({
-              path: 'conManagerId',
-              select:'username email'
-            })
-            .populate({
-              path: 'conAgentId',
-              select:'username email'
             });
 
             await AllCommentsSchema.create({
@@ -152,7 +146,17 @@ const leadReAssign = async (req, res) => {
               { new: true }
             );
 
-            res.status(200).send(assignedLead);
+            newAssignedLead = await Office1Leads.findById(leadId)
+            .populate({
+              path: 'conManagerId',
+              select:'username email'
+            })
+            .populate({
+              path: 'conAgentId',
+              select:'username email'
+            });
+            res.status(200).send(newAssignedLead);
+
           } else {
             return res.status(403).send({message: "You are not authorized to reassign self created lead"});
           }
@@ -189,10 +193,6 @@ const leadReAssign = async (req, res) => {
                   ? `Current lead was reassigned from agent ${prevUserId.username} to ${officeUser.username}`
                   : "created",
               },
-            })
-            .populate({
-              path: 'conAgentId',
-              select:'username email'
             });
 
             await AllCommentsSchema.create({
@@ -220,7 +220,13 @@ const leadReAssign = async (req, res) => {
               { new: true }
             );
 
-            res.status(200).send(assignedLead);
+            newAssignedLead = await Office2Leads.findById(leadId)
+            .populate({
+              path: 'conAgentId',
+              select:'username email'
+            });
+            res.status(200).send(newAssignedLead);
+
           } else {
             return res.status(403).send({message: "You are not authorized to reassign self created lead"});
           }
@@ -281,7 +287,17 @@ const leadReAssign = async (req, res) => {
               { new: true }
             );
 
-            res.status(200).send(assignedLead);
+            newAssignedLead = await Office2Leads.findById(leadId)
+            .populate({
+              path: 'conManagerId',
+              select:'username email'
+            })
+            .populate({
+              path: 'conAgentId',
+              select:'username email'
+            });
+            res.status(200).send(newAssignedLead);
+
           } else {
             return res.status(403).send({message: "You are not authorized to reassign self created lead"});
           }

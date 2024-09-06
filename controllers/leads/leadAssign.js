@@ -36,6 +36,7 @@ const leadAssign = async (req, res) => {
   let conversionManagerId;
   let conversionAgentId;
   let assignedLead;
+  let newAssignedLead;
   let externalLead;
 
 
@@ -147,7 +148,7 @@ const leadAssign = async (req, res) => {
           },{ new: true });
         break;
 
-        
+
         default:
           return res.status(400).send({ message: "Invalid branch specified" });
       }
@@ -173,15 +174,8 @@ const leadAssign = async (req, res) => {
                 createdAt: Date.now(),
                 comment: `Lead Assigned to Office 1 Conversion Manager: ${conversionManagerId.username}`,
               },
-            }, { new: true })
-            .populate({
-              path: 'conManagerId',
-              select: 'username email'
-            })
-            .populate({
-              path: 'conAgentId',
-              select: 'username, email'
-            });
+            }, { new: true });
+      
             await AllCommentsSchema.create({
               ownerLeadId_office1: leadId,
               createdBy: {
@@ -193,12 +187,24 @@ const leadAssign = async (req, res) => {
               createdAt: Date.now(),
               comment: `Lead Assigned to Office 1 Conversion Manager: ${conversionManagerId.username}`,
             });
+
             await Leads.findByIdAndUpdate(assignedLead.externalLeadId, {
               conManager: {
                 name: conversionManagerId.username,
                 email: conversionManagerId.email,
               },
             }, { new: true });
+
+            newAssignedLead = await Office1Leads.findById(leadId)
+            .populate({
+              path: 'conManagerId',
+              select: 'username email'
+            })
+            .populate({
+              path: 'conAgentId',
+              select: 'username, email'
+            });
+
           } else {
             return res.status(403).send({ message: "You are not allowed for this type of action" });
           }
@@ -220,11 +226,8 @@ const leadAssign = async (req, res) => {
                 createdAt: Date.now(),
                 comment: `Lead Assigned to Office 1 Conversion Agent: ${conversionAgentId.username}`
               } 
-            }, {new: true})
-            .populate({
-              path: 'conAgentId',
-              select: "username email"
-            });
+            }, {new: true});
+         
             await AllCommentsSchema.create({
               ownerLeadId_office1: leadId,
               createdBy: {
@@ -236,12 +239,20 @@ const leadAssign = async (req, res) => {
               createdAt: Date.now(),
               comment: `Lead Assigned to Office 1 Conversion Agent: ${conversionAgentId.username}`
             });
+
             await Leads.findByIdAndUpdate(assignedLead.externalLeadId, {
               conAgent: {
                 name: conversionAgentId.username,
                 email: conversionAgentId.email
               }
             }, { new: true });
+
+            newAssignedLead = await Office1Leads.findById(leadId)
+            .populate({
+              path: 'conAgentId',
+              select: "username email"
+            });
+
           } else {
             return res.status(403).send({ message: "You are not allowed for this type of action" });
           }
@@ -273,15 +284,8 @@ const leadAssign = async (req, res) => {
                 createdAt: Date.now(),
                 comment: `Lead Assigned to Office 2 Conversion Manager: ${conversionManagerId.username}`,
               },
-            },{ new: true })
-            .populate({
-              path: 'conManagerId',
-              select: 'username email'
-            })
-            .populate({
-              path: 'conAgentId',
-              select: 'username email'
-            });
+            },{ new: true });
+
             await AllCommentsSchema.create({
               ownerLeadId_office2: leadId,
               createdBy: {
@@ -293,12 +297,24 @@ const leadAssign = async (req, res) => {
               createdAt: Date.now(),
               comment: `Lead Assigned to Office 2 Conversion Manager: ${conversionManagerId.username}`,
             });
+
             await Leads.findByIdAndUpdate(assignedLead.externalLeadId, {
               conManager: {
                 name: conversionManagerId.username,
                 email: conversionManagerId.email,
               },
             },{ new: true });
+
+            newAssignedLead = await Office2Leads.findById(leadId)
+            .populate({
+              path: 'conManagerId',
+              select: 'username email'
+            })
+            .populate({
+              path: 'conAgentId',
+              select: 'username, email'
+            });
+
           } else {
             return res.status(403).send({ message: "You are not allowed for this type of action" });
           }
@@ -320,11 +336,8 @@ const leadAssign = async (req, res) => {
                 createdAt: Date.now(),
                 comment: `Lead Assigned to Office 2 Conversion Agent: ${conversionAgentId.username}`,
               },
-            }, {new: true})
-            .populate({
-              path: 'conAgentId',
-              select: 'username email'
-            });
+            }, {new: true});
+
             await AllCommentsSchema.create({
               ownerLeadId_office2: leadId,
               createdBy: {
@@ -336,12 +349,20 @@ const leadAssign = async (req, res) => {
               createdAt: Date.now(),
               comment: `Lead Assigned to Office 2 Conversion Agent: ${conversionAgentId.username}`,
             });
+
             await Leads.findByIdAndUpdate(assignedLead.externalLeadId, {
               conAgent: {
                 name: conversionAgentId.username,
                 email: conversionAgentId.email,
               },
             }, { new: true });
+
+            newAssignedLead = await Office2Leads.findById(leadId)
+            .populate({
+              path: 'conAgentId',
+              select: "username email"
+            });
+
           } else {
             return res.status(403).send({ message: "You are not allowed for this type of action" });
           }
@@ -367,7 +388,7 @@ const leadAssign = async (req, res) => {
 
 
     default:
-      res.status(200).send(assignedLead);
+      res.status(200).send(newAssignedLead);
   };
 };
 
