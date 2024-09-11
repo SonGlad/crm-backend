@@ -87,7 +87,7 @@ const changeBaseInfo = async(req, res) => {
                                         role: authRole,
                                     },
                                     createdAt: Date.now(),
-                                    comment: `${changesOffice1.join(', ')} was(were) changed by the user ${mainUser.username}`
+                                    comment: `${changesOffice1.join('. ')} was(were) changed by the user ${mainUser.username}`
                                 } 
                             }, { new: true });
                         };
@@ -100,7 +100,7 @@ const changeBaseInfo = async(req, res) => {
                                 role: authRole,
                             },
                             createdAt: Date.now(),
-                            comment: `${changesOffice1.join(', ')} was(were) changed by the user ${mainUser.username}`
+                            comment: `${changesOffice1.join('. ')} was(were) changed by the user ${mainUser.username}`
                         });
                         break;
                     };
@@ -127,7 +127,7 @@ const changeBaseInfo = async(req, res) => {
                                         role: authRole,
                                     },
                                     createdAt: Date.now(),
-                                    comment: `${changesOffice2.join(', ')} was(were) changed by the user ${mainUser.username}`
+                                    comment: `${changesOffice2.join('. ')} was(were) changed by the user ${mainUser.username}`
                                 } 
                             }, { new: true });
                         };
@@ -140,7 +140,7 @@ const changeBaseInfo = async(req, res) => {
                                 role: authRole,
                             },
                             createdAt: Date.now(),
-                            comment: `${changesOffice2.join(', ')} was(were) changed by the user ${mainUser.username}`
+                            comment: `${changesOffice2.join('. ')} was(were) changed by the user ${mainUser.username}`
                         });
                         break;
                     };
@@ -178,7 +178,7 @@ const changeBaseInfo = async(req, res) => {
                                     role: authRole,
                                 },
                                 createdAt: Date.now(),
-                                comment: `${changesOffice1Self.join(', ')} was(were) changed by the user ${officeUser.username}`
+                                comment: `${changesOffice1Self.join('. ')} was(were) changed by the user ${officeUser.username}`
                             } 
                         }, { new: true });
                     };
@@ -191,7 +191,7 @@ const changeBaseInfo = async(req, res) => {
                             role: authRole,
                         },
                         createdAt: Date.now(),
-                        comment: `${changesOffice1Self.join(', ')} was(were) changed by the user ${officeUser.username}`
+                        comment: `${changesOffice1Self.join('. ')} was(were) changed by the user ${officeUser.username}`
                     });
                 };
             };
@@ -225,7 +225,7 @@ const changeBaseInfo = async(req, res) => {
                                     role: authRole,
                                 },
                                 createdAt: Date.now(),
-                                comment: `${changesOffice2Self.join(', ')} was(were) changed by the user ${officeUser.username}`
+                                comment: `${changesOffice2Self.join('. ')} was(were) changed by the user ${officeUser.username}`
                             } 
                         }, { new: true });
                     };
@@ -238,7 +238,7 @@ const changeBaseInfo = async(req, res) => {
                             role: authRole,
                         },
                         createdAt: Date.now(),
-                        comment: `${changesOffice2Self.join(', ')} was(were) changed by the user ${officeUser.username}`
+                        comment: `${changesOffice2Self.join('. ')} was(were) changed by the user ${officeUser.username}`
                     });
                 }
             };

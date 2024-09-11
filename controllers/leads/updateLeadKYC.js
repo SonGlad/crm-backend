@@ -90,7 +90,7 @@ const updateLeadKYC = async (req, res) => {
                                     role: authRole,
                                 },
                                 createdAt: Date.now(),
-                                comment: `${changesOffice1.join(', ')}. The following change(s) was(were) done by the user ${user.username}`
+                                comment: `${changesOffice1.join('. ')}. The following change(s) was(were) done by the user ${user.username}`
                             } 
                         }, { new: true });
                     } else {
@@ -105,9 +105,9 @@ const updateLeadKYC = async (req, res) => {
                             role: authRole,
                         },
                         createdAt: Date.now(),
-                        comment: `${changesOffice1.join(', ')}. The following change(s) was(were) done by the user ${user.username}`
+                        comment: `${changesOffice1.join('. ')}. The following change(s) was(were) done by the user ${user.username}`
                     });
-                    break;
+                break;
                 };
 
 
@@ -131,7 +131,7 @@ const updateLeadKYC = async (req, res) => {
                                     role: authRole,
                                 },
                                 createdAt: Date.now(),
-                                comment: `${changesOffice2.join(', ')}. The following change(s) was(were) done by the user ${user.username}`
+                                comment: `${changesOffice2.join('. ')}. The following change(s) was(were) done by the user ${user.username}`
                             } 
                         }, { new: true });
                     } else {
@@ -146,14 +146,18 @@ const updateLeadKYC = async (req, res) => {
                             role: authRole,
                         },
                         createdAt: Date.now(),
-                        comment: `${changesOffice2.join(', ')}. The following change(s) was(were) done by the user ${user.username}`
+                        comment: `${changesOffice2.join('. ')}. The following change(s) was(were) done by the user ${user.username}`
                     });
-                    break;
+                break;
                 };
+
+
                 default:
                     return res.status(400).send({ message: "Lead branch not specified in lead"});
             };
-            break;
+        break;
+
+
         case "Office1": {
             user = await Office1User.findOne({_id: authId});
             if (!user) {
@@ -178,7 +182,7 @@ const updateLeadKYC = async (req, res) => {
                             role: authRole,
                         },
                         createdAt: Date.now(),
-                        comment: `${changesOffice1.join(', ')}. The following change(s) was(were) done by the user ${user.username}`
+                        comment: `${changesOffice1.join('. ')}. The following change(s) was(were) done by the user ${user.username}`
                     } 
                 }, { new: true });
             } else {
@@ -193,9 +197,9 @@ const updateLeadKYC = async (req, res) => {
                     role: authRole,
                 },
                 createdAt: Date.now(),
-                comment: `${changesOffice1.join(', ')}. The following change(s) was(were) done by the user ${user.username}`
+                comment: `${changesOffice1.join('. ')}. The following change(s) was(were) done by the user ${user.username}`
             });
-            break;
+        break;
         };
 
 
@@ -223,7 +227,7 @@ const updateLeadKYC = async (req, res) => {
                             role: authRole,
                         },
                         createdAt: Date.now(),
-                        comment: `${changesOffice2.join(', ')}. The following change(s) was(were) done by the user ${user.username}`
+                        comment: `${changesOffice2.join('. ')}. The following change(s) was(were) done by the user ${user.username}`
                     } 
                 }, { new: true });
             } else {
@@ -238,10 +242,12 @@ const updateLeadKYC = async (req, res) => {
                     role: authRole,
                 },
                 createdAt: Date.now(),
-                comment: `${changesOffice2.join(', ')}. The following change(s) was(were) done by the user ${user.username}`
+                comment: `${changesOffice2.join('. ')}. The following change(s) was(were) done by the user ${user.username}`
             });
-            break;
+        break;
         };
+
+        
         default:
             return res.status(400).send({ message: 'Authorization branch is invalid' });
     };
