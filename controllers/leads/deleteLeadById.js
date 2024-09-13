@@ -7,7 +7,6 @@ const {ctrlWrapper} = require("../../helpers/index");
 
 const deleteLeadById = async (req, res) => {
   const { leadId } = req.params;
-  // const { branch: reqBranch } = req.query;
   const {role: userRole, branch: userBranch,} = req.user;
   const {role: authRole, branch: authBranch, id: authId} = req.auth;
 
@@ -29,7 +28,7 @@ const deleteLeadById = async (req, res) => {
 
   switch(authBranch){
     case "Main":
-      branchLead = await Leads.findById(leadId)
+      branchLead = await Leads.findById(leadId);
       if(branchLead){
         branch = "External";
       } else {
@@ -40,8 +39,8 @@ const deleteLeadById = async (req, res) => {
           branchLead = await Office2Leads.findById(leadId);
           if (branchLead) {
             branch = 'Office2';
-          }
-        }
+          };
+        };
       };
 
 
@@ -57,27 +56,39 @@ const deleteLeadById = async (req, res) => {
           } else {
             switch(branchLead.assignedOffice){
               case "Office1":
-                lead = await Office1Leads.findOne({externalLeadId: leadId})
-                leadComments = await AllCommentsSchema.find({ownerLeadId_office1: lead._id});
-                if(!leadComments || leadComments.length === 0){
-                  return res.status(404).send({ message: 'No comments were found for the Lead in Office1 branch'});
+                lead = await Office1Leads.findOne({externalLeadId: leadId});
+                if(!lead){
+                  return res.status(404).send({ message: 'Lead was not found in Office1 branch' });
+                } else {
+                  leadComments = await AllCommentsSchema.find({ownerLeadId_office1: lead._id});
+                  if(!leadComments || leadComments.length === 0){
+                    return res.status(404).send({ message: 'No comments were found for the Lead in Office1 branch'});
+                  } else {
+                    deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office1: lead._id});
+                    deletedOfficeLeads = await Office1Leads.findOneAndDelete({externalLeadId: leadId});
+                    result = await Leads.findOneAndDelete(leadId); 
+                  };
                 };
-                deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office1: lead._id});
-                deletedOfficeLeads = await Office1Leads.findOneAndDelete({externalLeadId: leadId});
-                result = await Leads.findOneAndDelete(leadId); 
-                break;
+              break;
 
 
               case "Office2":
-                lead = await Office2Leads.findOne({externalLeadId: leadId})
-                leadComments = await AllCommentsSchema.find({ownerLeadId_office2: lead._id});
-                if(!leadComments || leadComments.length === 0){
-                  return res.status(404).send({ message: 'No comments were found for the Lead in Office1 branch'});
+                lead = await Office2Leads.findOne({externalLeadId: leadId});
+                if(!lead){
+                  return res.status(404).send({ message: 'Lead was not found in Office1 branch' });
+                } else {
+                  leadComments = await AllCommentsSchema.find({ownerLeadId_office2: lead._id});
+                  if(!leadComments || leadComments.length === 0){
+                    return res.status(404).send({ message: 'No comments were found for the Lead in Office1 branch'});
+                  } else {
+                    deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office2: lead._id});
+                    deletedOfficeLeads = await Office2Leads.findOneAndDelete({externalLeadId: leadId});
+                    result = await Leads.findOneAndDelete(leadId); 
+                  };
                 };
-                deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office2: lead._id});
-                deletedOfficeLeads = await Office2Leads.findOneAndDelete({externalLeadId: leadId});
-                result = await Leads.findOneAndDelete(leadId); 
-                break;
+              break;
+
+
               default:
                 return res.status(400).send({ message: 'Branch in Office 1 or Office 2 was not defined' });
             };
@@ -86,43 +97,57 @@ const deleteLeadById = async (req, res) => {
 
 
         case "Office1":
-          leadComments = await AllCommentsSchema.find({ownerLeadId_office1: branchLead._id});
-          if(!leadComments || leadComments.length === 0){
-            return res.status(404).send({ message: 'No comments were found for the Lead in Office 1 branch'});
-          };
-          if(branchLead.selfCreated === true){
-            deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office1: branchLead._id});
-            deletedOfficeLeads = await Office1Leads.findByIdAndDelete(leadId);
+          lead = await Office1Leads.findById(leadId);
+          if(!lead){
+            return res.status(404).send({ message: 'Lead was not found in Office1 branch' });
           } else {
-            lead = await Leads.findOneAndUpdate({_id: branchLead.externalLeadId}, {
-              assignedOffice: "Not Assigned", crmManager :{name: "", email: ""},
-              conManager: {name: "", email: ""}, conAgent: {name: "", email: ""},
-              newContact: true 
-            });
-            deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office1: branchLead._id});
-            deletedOfficeLeads = await Office1Leads.findByIdAndDelete(leadId);
-          }
+            leadComments = await AllCommentsSchema.find({ownerLeadId_office1: branchLead._id});
+            if(!leadComments || leadComments.length === 0){
+              return res.status(404).send({ message: 'No comments were found for the Lead in Office 1 branch'});
+            } else {
+              if(branchLead.selfCreated === true){
+                deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office1: branchLead._id});
+                deletedOfficeLeads = await Office1Leads.findByIdAndDelete(leadId);
+              } else {
+                lead = await Leads.findOneAndUpdate({_id: branchLead.externalLeadId}, {
+                  assignedOffice: "Not Assigned", crmManager :{name: "", email: ""},
+                  conManager: {name: "", email: ""}, conAgent: {name: "", email: ""},
+                  newContact: true, 
+                });
+                deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office1: branchLead._id});
+                deletedOfficeLeads = await Office1Leads.findByIdAndDelete(leadId);
+              };
+            };
+          };
         break;
 
 
         case "Office2":
-          leadComments = await AllCommentsSchema.find({ownerLeadId_office2: branchLead._id});
-          if(!leadComments || leadComments.length === 0){
-            return res.status(404).send({ message: 'No comments were found for the Lead in Office 2 branch'});
-          };
-          if(branchLead.selfCreated === true){
-            deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office2: branchLead._id});
-            deletedOfficeLeads = await Office2Leads.findByIdAndDelete(leadId);
+          lead = await Office2Leads.findById(leadId);
+          if(!lead){
+            return res.status(404).send({ message: 'Lead was not found in Office2 branch' });
           } else {
-            lead = await Leads.findOneAndUpdate({_id: branchLead.externalLeadId}, {
-              assignedOffice: "Not Assigned", crmManager :{name: "", email: ""},
-              conManager: {name: "", email: ""}, conAgent: {name: "", email: ""},
-              newContact: true 
-            });
-            deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office2: branchLead._id});
-            deletedOfficeLeads = await Office2Leads.findByIdAndDelete(leadId);
-          }
+            leadComments = await AllCommentsSchema.find({ownerLeadId_office2: branchLead._id});
+            if(!leadComments || leadComments.length === 0){
+              return res.status(404).send({ message: 'No comments were found for the Lead in Office2 branch'});
+            } else {
+              if(branchLead.selfCreated === true){
+                deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office2: branchLead._id});
+                deletedOfficeLeads = await Office2Leads.findByIdAndDelete(leadId);
+              } else {
+                lead = await Leads.findOneAndUpdate({_id: branchLead.externalLeadId}, {
+                  assignedOffice: "Not Assigned", crmManager :{name: "", email: ""},
+                  conManager: {name: "", email: ""}, conAgent: {name: "", email: ""},
+                  newContact: true 
+                });
+                deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office2: branchLead._id});
+                deletedOfficeLeads = await Office2Leads.findByIdAndDelete(leadId);
+              };
+            };
+          };
         break;
+
+
         default:
           return res.status(400).send({ message: 'Branch was not defined' });
       };
@@ -133,13 +158,14 @@ const deleteLeadById = async (req, res) => {
       branchLead = await Office1Leads.findById(leadId);
       if (!branchLead) {
         return res.status(404).send({ message: 'Lead was not found' });
-      }
-      if(branchLead.selfCreated === true && branchLead.owner.id.toString() === authId){
-        deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office1: branchLead._id});
-        deletedOfficeLeads = await Office1Leads.findByIdAndDelete(leadId);
       } else {
-        return res.status(403).send({ message: 'You have no rights to delete the lead if you are not owner of it' }); 
-      }
+        if(branchLead.selfCreated === true && branchLead.owner.id.toString() === authId){
+          deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office1: branchLead._id});
+          deletedOfficeLeads = await Office1Leads.findByIdAndDelete(leadId);
+        } else {
+          return res.status(403).send({ message: 'You have no rights to delete the lead if you are not owner of it' }); 
+        };
+      };
     break;
 
 
@@ -147,14 +173,17 @@ const deleteLeadById = async (req, res) => {
       branchLead = await Office2Leads.findById(leadId);
       if (!branchLead) {
         return res.status(404).send({ message: 'Lead was not found' });
-      }
-      if(branchLead.selfCreated === true && branchLead.owner.id.toString() === authId){
-        deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office2: branchLead._id});
-        deletedOfficeLeads = await Office2Leads.findByIdAndDelete(leadId);
       } else {
-        return res.status(403).send({ message: 'You have no rights to delete the lead if you are not owner of it' }); 
-      }
-      break;
+        if(branchLead.selfCreated === true && branchLead.owner.id.toString() === authId){
+          deletedComments = await AllCommentsSchema.deleteMany({ownerLeadId_office2: branchLead._id});
+          deletedOfficeLeads = await Office2Leads.findByIdAndDelete(leadId);
+        } else {
+          return res.status(403).send({ message: 'You have no rights to delete the lead if you are not owner of it' }); 
+        }
+      };
+    break;
+
+
     default:
       return res.status(400).send({ message: 'Authorization branch is invalid' }); 
   };
@@ -165,31 +194,34 @@ const deleteLeadById = async (req, res) => {
     case "Main":
       if (branchLead.assignedOffice === "Not Assigned") {
         return res.status(200).send({ _id: result._id, message: "Lead Deleted" });
-      }
-  
-      messages = [
-        `All ${deletedComments.deletedCount} comments associated with lead ${branchLead._id} were deleted`,
-        `Deleted ${deletedOfficeLeads._id} lead associated with lead ${leadId}`
-      ];
-  
-      if (branch !== "Office1" && branch !== "Office2") {
-        messages.unshift(`Deleted ${result._id} lead`);
-      }
-  
+      } else {
+        messages = [
+          `All ${deletedComments.deletedCount} comments associated with lead ${branchLead._id} were deleted`,
+          `Deleted ${deletedOfficeLeads._id} lead associated with lead ${leadId}`
+        ];
+
+        if (branch !== "Office1" && branch !== "Office2") {
+          messages.unshift(`Deleted ${result._id} lead`);
+        } else {
+          return res.status(200).send({
+            _id: deletedOfficeLeads._id,
+            deletedCommentsCount: deletedComments.deletedCount,
+            messages
+          });
+        };
+      };
+    break;
+
+
+    default:
       return res.status(200).send({
         _id: deletedOfficeLeads._id,
         deletedCommentsCount: deletedComments.deletedCount,
-        messages
+        messages: [
+          `All ${deletedComments.deletedCount} comments associated with lead ${branchLead._id} were deleted`,
+          `Deleted ${deletedOfficeLeads._id} lead associated with lead ${leadId}`
+        ]
       });
-    default:
-    return res.status(200).send({
-      _id: deletedOfficeLeads._id,
-      deletedCommentsCount: deletedComments.deletedCount,
-      messages: [
-        `All ${deletedComments.deletedCount} comments associated with lead ${branchLead._id} were deleted`,
-        `Deleted ${deletedOfficeLeads._id} lead associated with lead ${leadId}`
-      ]
-    });
   };
 };
 

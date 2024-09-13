@@ -38,14 +38,17 @@ const deleteUserById = async (req, res) =>{
             switch(reqBranch){
                 case "Office1":
                     user = await Office1User.findOne({ _id: userId});
-                    break;
+                break;
+
                 case "Office2":
                     user = await Office2User.findOne({ _id: userId});
-                    break;
+                break;
+
                 default:
                     return res.status(400).send({ message: 'Invalid branch specified' }); 
             };
-            break;
+        break;
+
         default: 
             return res.status(400).send({ message: 'You are not athorized for this type of action' });
     };
@@ -58,10 +61,10 @@ const deleteUserById = async (req, res) =>{
 
     switch(authBranch){
         case "Main":
-            mainUser = await User.findOne({_id: authId});
+            mainUser = await User.findById(authId);
             switch(reqBranch){
                 case "Office1":
-                    user = await Office1User.findOne({ _id: userId});
+                    user = await Office1User.findById(userId);
                     if(["CRM Manager", "Conversion Manager", "Conversion Agent"].includes(user.role)){
                         assignedExternalOfficeLeads =  await Leads.find({ assignedOffice: "Office1" });
                         userLeads = assignedExternalOfficeLeads.filter(externalLead =>
@@ -110,15 +113,15 @@ const deleteUserById = async (req, res) =>{
         
                                 if (officeLead.conManagerId && officeLead.conManagerId.equals(user._id)) {
                                     officeLead.conManagerId = null;
-                                    changes.push("Conversion Manager ID");
+                                    changes.push(`${user.role}`);
                                 }
                                 if (officeLead.managerId && officeLead.managerId.equals(user._id)) {
                                     officeLead.managerId = null;
-                                    changes.push("Manager ID");
+                                    changes.push(`${user.role}`);
                                 }
                                 if (officeLead.conAgentId && officeLead.conAgentId.equals(user._id)) {
                                     officeLead.conAgentId = null;
-                                    changes.push("Conversion Agent ID");
+                                    changes.push(`${user.role}`);
                                 }
                                 await officeLead.save();
         
@@ -133,18 +136,20 @@ const deleteUserById = async (req, res) =>{
                                             role: authRole,
                                         },
                                         createdAt: Date.now(),
-                                        comment: `User ${user.email} was removed. ${changes.join(', ')} was(were) reset by ${mainUser.username}`
+                                        comment: `User ${user.username} with email ${user.email} was removed. ${changes.join(', ')} was(were) reset by ${mainUser.username}`
                                     });
                                 }
                             }
                         }
-                        user = await Office1User.findOneAndDelete({ _id: userId});
+                        user = await Office1User.findByIdAndDelete(userId);
                     } else {
-                        user = await Office1User.findOneAndDelete({ _id: userId});
+                        user = await Office1User.findByIdAndDelete(userId);
                     }
-                    break;
+                break;
+
+
                 case "Office2":
-                    user = await Office2User.findOne({ _id: userId});
+                    user = await Office2User.findById(userId);
                     if(["CRM Manager", "Conversion Manager", "Conversion Agent"].includes(user.role)){
                         assignedExternalOfficeLeads =  await Leads.find({ assignedOffice: "Office2" });
                         userLeads = assignedExternalOfficeLeads.filter(externalLead =>
@@ -192,15 +197,15 @@ const deleteUserById = async (req, res) =>{
         
                                 if (officeLead.conManagerId && officeLead.conManagerId.equals(user._id)) {
                                     officeLead.conManagerId = null;
-                                    changes.push("Conversion Manager ID");
+                                    changes.push(`${user.role}`);
                                 }
                                 if (officeLead.managerId && officeLead.managerId.equals(user._id)) {
                                     officeLead.managerId = null;
-                                    changes.push("Manager ID");
+                                    changes.push(`${user.role}`);
                                 }
                                 if (officeLead.conAgentId && officeLead.conAgentId.equals(user._id)) {
                                     officeLead.conAgentId = null;
-                                    changes.push("Conversion Agent ID");
+                                    changes.push(`${user.role}`);
                                 }
                                 await officeLead.save();
         
@@ -215,20 +220,24 @@ const deleteUserById = async (req, res) =>{
                                             role: authRole,
                                         },
                                         createdAt: Date.now(),
-                                        comment: `User ${user.email} was removed. ${changes.join(', ')} was(were) reset by ${mainUser.username}`
+                                        comment: `User ${user.username} with email ${user.email} was removed. ${changes.join(', ')} was(were) reset by ${mainUser.username}`
                                     });
                                 }
                             }
                         }
-                        user = await Office2User.findOneAndDelete({ _id: userId});
+                        user = await Office2User.findByIdAndDelete(userId);
                     } else {
-                        user = await Office2User.findOneAndDelete({ _id: userId});
+                        user = await Office2User.findByIdAndDelete(userId);
                     }
-                    break;
+                break;
+
+
                 default:
                     return res.status(400).send({ message: 'Invalid branch specified' }); 
             };
-            break;
+        break;
+
+
         default: 
             return res.status(400).send({ message: 'You are not athorized for this type of action' });
     };
