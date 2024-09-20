@@ -4,113 +4,101 @@ const { Office2Leads } = require("../../models/Office2Leads");
 
 const getAllCountry = async (req, res) => {
   const { role: authRole, branch: authBranch, id: authId } = req.auth;
-  const { branch } = req.body;
+  const { branch } = req.query;
   const { role: userRole, branch: userBranch } = req.user;
 
   if (authRole !== userRole || authBranch !== userBranch) {
     return res.status(403).send({ message: "Forbidden: Access denied" });
   }
 
-  let leads;
-  let leadCountry;
-  let uniqueCountry;
-  let noSelfCreatedLead;
-  let SelfCreatedLead;
+  let leads; 
+
+  const countryResponse = (leads, res) => {
+    if(!leads || leads.length === 0){
+      return res.status(404).send({message: `No Leads Countries found`});
+    } else {
+      const leadCountry = leads.map(lead => lead.country !== "" ? lead.country : "Not Defined");
+      const uniqueCountry = [...new Set(leadCountry)];
+      return res.status(200).send(uniqueCountry);
+    }
+  };
   
 
   switch (authBranch) {
     case "Main":
       switch (branch) {
         case "Office1":
-              leads = await Office1Leads.find();
-              leadCountry = leads.map(lead => lead.country).filter(country => country !== "");
-          uniqueCountry = [...new Set(leadCountry)];
-          res.status(200).send(uniqueCountry);
-          break;
+          leads = await Office1Leads.find();
+          countryResponse(leads, res);
+        break;
+
         case "Office2":
-              leads = await Office2Leads.find();
-              leadCountry = leads.map(lead => lead.country).filter(country => country !== "");
-          uniqueCountry = [...new Set(leadCountry)];
-          res.status(200).send(uniqueCountry);
-          break;
+          leads = await Office2Leads.find();
+          countryResponse(leads, res);
+        break;
+
         default:
-          res.status(403).send({
-            message: `Invalid branch!`,
-          });
+          return res.status(403).send({message: `Invalid branch!`});
       }
-      break;
+    break;
+
     case "Office1":
       switch (authRole) {
         case "CRM Manager":
-          leads = await Office1Leads.find();
-          leadCountry = leads.map((lead) => lead.country).filter(country => country !== "");
-          uniqueCountry = [...new Set(leadCountry)];
-          res.status(200).send(uniqueCountry);
-          break;
-        case "Conversion Manager":
-          leads = await Office1Leads.find({ conManagerId: authId });
-          leadCountry = leads.map((lead) => lead.country).filter(country => country !== "");
-          uniqueCountry = [...new Set(leadCountry)];
-          res.status(200).send(uniqueCountry);
-          break;
-        case "Conversion Agent":
-               if (await Office1Leads.find({ conAgentId: authId })) {
-            noSelfCreatedLead = await Office1Leads.find({ conAgentId: authId });
-          }
-          if (await Office1Leads.find({ 'owner.id': authId })) {
-            SelfCreatedLead = await Office1Leads.find({ 'owner.id': authId })
-          }
-
-              leads = [...noSelfCreatedLead, ...SelfCreatedLead];
-          leadCountry = leads.map((lead) => lead.country).filter(country => country !== "");
-          uniqueCountry = [...new Set(leadCountry)];
-
-          res.status(200).send(uniqueCountry);
-          break;
-        default:
-          res.status(403).send({
-            message: `Invalid role of user!`,
+          leads = await Office1Leads.find({
+            $or: [{managerId: authId}, {'owner.id': authId }]
           });
+          countryResponse(leads, res);
+        break;
+
+        case "Conversion Manager":
+          leads = await Office1Leads.find({
+            $or: [{conManagerId: authId}, {'owner.id': authId }]
+          });
+          countryResponse(leads, res);
+        break;
+
+        case "Conversion Agent":
+          leads = await Office1Leads.find({
+            $or: [{conAgentId: authId}, {'owner.id': authId }]
+          });
+          countryResponse(leads, res);
+        break;
+
+        default:
+          return res.status(403).send({message: `Invalid role of user!`});
       }
-      break;
+    break;
+
     case "Office2":
-            switch (authRole) {
+      switch (authRole) {
         case "CRM Manager":
-          leads = await Office2Leads.find();
-          leadCountry = leads.map((lead) => lead.country).filter(country => country !== "");
-          uniqueCountry = [...new Set(leadCountry)];
-          res.status(200).send(uniqueCountry);
-          break;
-        case "Conversion Manager":
-          leads = await Office2Leads.find({ conManagerId: authId });
-          leadCountry = leads.map((lead) => lead.country).filter(country => country !== "");
-          uniqueCountry = [...new Set(leadCountry)];
-          res.status(200).send(uniqueCountry);
-          break;
-        case "Conversion Agent":
-               if (await Office2Leads.find({ conAgentId: authId })) {
-            noSelfCreatedLead = await Office2Leads.find({ conAgentId: authId });
-          }
-          if (await Office2Leads.find({ 'owner.id': authId })) {
-            SelfCreatedLead = await Office2Leads.find({ 'owner.id': authId })
-          }
-
-          leads = [...noSelfCreatedLead, ...SelfCreatedLead];
-          leadCountry = leads.map((lead) => lead.country).filter(country => country !== "");
-          uniqueCountry = [...new Set(leadCountry)];
-
-          res.status(200).send(uniqueCountry);
-          break;
-        default:
-          res.status(403).send({
-            message: `Invalid role of user!`,
+          leads = await Office2Leads.find({
+            $or: [{managerId: authId}, {'owner.id': authId }]
           });
+          countryResponse(leads, res);
+        break;
+
+        case "Conversion Manager":
+          leads = await Office2Leads.find({
+            $or: [{conManagerId: authId}, {'owner.id': authId }]
+          });
+          countryResponse(leads, res);
+        break;
+
+        case "Conversion Agent":
+          leads = await Office2Leads.find({
+            $or: [{conAgentId: authId}, {'owner.id': authId }]
+          });
+          countryResponse(leads, res);
+        break;
+
+        default:
+          return res.status(403).send({message: `Invalid role of user!`});
       }
-      break;
+    break;
     default:
-      res.status(404).send({
-        message: `${authBranch} branch dosen't exist!`,
-      });
+      return res.status(404).send({message: `${authBranch} branch dosen't exist!`});
   }
 };
 

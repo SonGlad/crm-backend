@@ -55,11 +55,11 @@ const getAllUsers = async (req, res) => {
             if(authRole === "Developer" || authRole === "Administrator" || authRole === "Manager"){
                 switch (reqBranch) {
                     case 'Office1':
-                        preUsers = await Office1User.find().select("username email role branch createdAt");
+                        preUsers = await Office1User.find().select("username email role branch createdAt verify");
                         leadsModel = Office1Leads;
                         break;
                     case 'Office2':
-                        preUsers = await Office2User.find().select("username email role branch createdAt");
+                        preUsers = await Office2User.find().select("username email role branch createdAt verify");
                         leadsModel = Office2Leads;
                         break;
                     default:
@@ -72,17 +72,17 @@ const getAllUsers = async (req, res) => {
             switch(authRole){
                 case "CRM Manager":
                     preUsers = await Office1User.find({ role: { $ne: "CRM Manager" }})
-                    .select("username email role branch createdAt");
+                    .select("username email role branch createdAt verify");
                     leadsModel = Office1Leads;
                     break;
                 case "Conversion Manager":
                     preUsers = await Office1User.find({ role: { $nin: ["CRM Manager", "Conversion Manager", "Retention Manager", "Retention Agent"]}})
-                    .select("username email role branch createdAt");
+                    .select("username email role branch createdAt verify");
                     leadsModel = Office1Leads;
                     break;
                 case "Retention Manager":
                     preUsers = await Office1User.find({ role: { $nin: ["CRM Manager", "Retention Manager", "Conversion Manager", "Conversion Agent"]}})
-                    .select("username email role branch createdAt");
+                    .select("username email role branch createdAt verify");
                     leadsModel = Office1Leads;
                     break;
                 default:
@@ -94,17 +94,17 @@ const getAllUsers = async (req, res) => {
             switch(authRole){
                 case "CRM Manager":
                     preUsers = await Office2User.find({ role: { $ne: "CRM Manager" }})
-                    .select("username email role branch createdAt");
+                    .select("username email role branch createdAt verify");
                     leadsModel = Office2Leads;
                     break;
                 case "Conversion Manager":
                     preUsers = await Office2User.find({ role: { $nin: ["CRM Manager", "Conversion Manager", "Retention Manager", "Retention Agent"]}})
-                    .select("username email role branch createdAt");
+                    .select("username email role branch createdAt verify");
                     leadsModel = Office2Leads;
                     break;
                 case "Retention Manager":
                     preUsers = await Office2User.find({ role: { $nin: ["CRM Manager", "Retention Manager", "Conversion Manager", "Conversion Agent"]}})
-                    .select("username email role branch createdAt");
+                    .select("username email role branch createdAt verify");
                     leadsModel = Office2Leads;
                     break;
                 default:

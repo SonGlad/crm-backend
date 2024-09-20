@@ -2,9 +2,10 @@ const { ctrlWrapper } = require("../../helpers");
 const { Office1Leads } = require("../../models/Office1Leads");
 const { Office2Leads } = require("../../models/Office2Leads");
 
+
 const getAllRegion = async (req, res) => {
   const { role: authRole, branch: authBranch, id: authId } = req.auth;
-  const { branch } = req.body;
+  const { branch } = req.query;
   const { role: userRole, branch: userBranch } = req.user;
 
   if (authRole !== userRole || authBranch !== userBranch) {
@@ -12,107 +13,96 @@ const getAllRegion = async (req, res) => {
   }
 
   let leads;
-  let leadRegion;
-  let uniqueRegion;
-  let noSelfCreatedLead;
-  let SelfCreatedLead;
+
+  const regionResponse = (leads, res) => {
+    if(!leads || leads.length === 0){
+      return res.status(404).send({message: `No Leads Regions found`});
+    } else {
+      const leadRegion = leads.map(lead => lead.region !== "" ? lead.region : "Not Defined");
+      const uniqueRegion = [...new Set(leadRegion)];
+      return res.status(200).send(uniqueRegion);
+    }
+  };
   
 
   switch (authBranch) {
     case "Main":
       switch (branch) {
         case "Office1":
-              leads = await Office1Leads.find();
-              leadRegion = leads.map(lead => lead.region).filter(region => region !== "");
-          uniqueRegion = [...new Set(leadRegion)];
-          res.status(200).send(uniqueRegion);
-          break;
+          leads = await Office1Leads.find();
+          regionResponse(leads, res);
+        break;
+
         case "Office2":
-              leads = await Office2Leads.find();
-              leadRegion = leads.map(lead => lead.region).filter(region => region !== "");
-          uniqueRegion = [...new Set(leadRegion)];
-          res.status(200).send(uniqueRegion);
-          break;
+          leads = await Office2Leads.find();
+          regionResponse(leads, res);
+        break;
+
         default:
-          res.status(403).send({
-            message: `Invalid branch!`,
-          });
+          return res.status(403).send({message: `Invalid branch!`});
       }
-      break;
+    break;
+
     case "Office1":
       switch (authRole) {
         case "CRM Manager":
-          leads = await Office1Leads.find();
-          leadRegion = leads.map((lead) => lead.region).filter(region => region !== "");
-          uniqueRegion = [...new Set(leadRegion)];
-          res.status(200).send(uniqueRegion);
-          break;
-        case "Conversion Manager":
-          leads = await Office1Leads.find({ conManagerId: authId });
-          leadRegion = leads.map((lead) => lead.region).filter(region => region !== "");
-          uniqueRegion = [...new Set(leadRegion)];
-          res.status(200).send(uniqueRegion);
-          break;
-        case "Conversion Agent":
-               if (await Office1Leads.find({ conAgentId: authId })) {
-            noSelfCreatedLead = await Office1Leads.find({ conAgentId: authId });
-          }
-          if (await Office1Leads.find({ 'owner.id': authId })) {
-            SelfCreatedLead = await Office1Leads.find({ 'owner.id': authId })
-          }
-
-              leads = [...noSelfCreatedLead, ...SelfCreatedLead];
-          leadRegion = leads.map((lead) => lead.region).filter(region => region !== "");
-          uniqueRegion = [...new Set(leadRegion)];
-
-          res.status(200).send(uniqueRegion);
-          break;
-        default:
-          res.status(403).send({
-            message: `Invalid role of user!`,
+          leads = await Office1Leads.find({
+            $or: [{managerId: authId}, {'owner.id': authId }]
           });
+          regionResponse(leads, res);
+        break;
+
+        case "Conversion Manager":
+          leads = await Office1Leads.find({
+            $or: [{conManagerId: authId}, {'owner.id': authId }]
+          });
+          regionResponse(leads, res);
+        break;
+
+        case "Conversion Agent":
+          leads = await Office1Leads.find({
+            $or: [{conAgentId: authId}, {'owner.id': authId }]
+          });
+          regionResponse(leads, res);
+        break;
+
+        default:
+          return res.status(403).send({message: `Invalid role of user!`});
       }
-      break;
+    break;
+
     case "Office2":
-            switch (authRole) {
+      switch (authRole) {
         case "CRM Manager":
-          leads = await Office2Leads.find();
-          leadRegion = leads.map((lead) => lead.region).filter(region => region !== "");
-          uniqueRegion = [...new Set(leadRegion)];
-          res.status(200).send(uniqueRegion);
-          break;
-        case "Conversion Manager":
-          leads = await Office2Leads.find({ conManagerId: authId });
-          leadRegion = leads.map((lead) => lead.region).filter(region => region !== "");
-          uniqueRegion = [...new Set(leadRegion)];
-          res.status(200).send(uniqueRegion);
-          break;
-        case "Conversion Agent":
-               if (await Office2Leads.find({ conAgentId: authId })) {
-            noSelfCreatedLead = await Office2Leads.find({ conAgentId: authId });
-          }
-          if (await Office2Leads.find({ 'owner.id': authId })) {
-            SelfCreatedLead = await Office2Leads.find({ 'owner.id': authId })
-          }
-
-          leads = [...noSelfCreatedLead, ...SelfCreatedLead];
-          leadRegion = leads.map((lead) => lead.region).filter(region => region !== "");
-          uniqueRegion = [...new Set(leadRegion)];
-
-          res.status(200).send(uniqueRegion);
-          break;
-        default:
-          res.status(403).send({
-            message: `Invalid role of user!`,
+          leads = await Office2Leads.find({
+            $or: [{managerId: authId}, {'owner.id': authId }]
           });
+          regionResponse(leads, res);
+        break;
+
+        case "Conversion Manager":
+          leads = await Office2Leads.find({
+            $or: [{conManagerId: authId}, {'owner.id': authId }]
+          });
+          regionResponse(leads, res);
+        break;
+
+        case "Conversion Agent":
+          leads = await Office2Leads.find({
+            $or: [{conAgentId: authId}, {'owner.id': authId }]
+          });
+          regionResponse(leads, res);
+        break;
+
+        default:
+          return res.status(403).send({message: `Invalid role of user!`});
       }
-      break;
+    break;
     default:
-      res.status(404).send({
-        message: `${authBranch} branch dosen't exist!`,
-      });
+      return res.status(404).send({message: `${authBranch} branch dosen't exist!`});
   }
 };
+
 
 module.exports = {
   getAllRegion: ctrlWrapper(getAllRegion),

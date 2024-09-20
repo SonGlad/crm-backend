@@ -26,11 +26,11 @@ const getAvailableUsers = async (req, res) => {
         case "Office1":
             switch(authRole){
                 case "CRM Manager":
-                    users = await Office1User.find({ role: "Conversion Manager" })
+                    users = await Office1User.find({ role: "Conversion Manager", verify: true })
                     .select("_id username email");
                     break;
                 case "Conversion Manager":
-                    users = await Office1User.find({ role: "Conversion Agent" })
+                    users = await Office1User.find({ role: "Conversion Agent", verify: true })
                     .select("_id username email");
                     break;
                 default:
@@ -40,11 +40,11 @@ const getAvailableUsers = async (req, res) => {
         case "Office2":
             switch(authRole){
                 case "CRM Manager":
-                    users = await Office2User.find({ role: "Conversion Manager" })
+                    users = await Office2User.find({ role: "Conversion Manager", verify: true })
                     .select("_id username email");
                     break;
                 case "Conversion Manager":
-                    users = await Office2User.find({ role: "Conversion Agent" })
+                    users = await Office2User.find({ role: "Conversion Agent", verify: true })
                     .select("_id username email");
                     break;
                 default:

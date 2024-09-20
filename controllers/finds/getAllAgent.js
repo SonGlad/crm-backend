@@ -4,98 +4,107 @@ const { Office1User } = require("../../models/Office1User");
 const { Office2Leads } = require("../../models/Office2Leads");
 const { Office2User } = require("../../models/Office2User");
 
+
 const getAllAgent = async (req, res) => {
-  const { role: authRole, branch: authBranch, id: authId } = req.auth;
-  const { branch } = req.body;
+  const { role: authRole, branch: authBranch } = req.auth;
+  const { branch } = req.query;
   const { role: userRole, branch: userBranch } = req.user;
 
   if (authRole !== userRole || authBranch !== userBranch) {
     return res.status(403).send({ message: "Forbidden: Access denied" });
   }
 
-  let users;
-    let userAgent;
-    let userAgentIds;
-    let userAgents;
-    let userNames;
+  
+  let leads;
+  let usersModel; 
+
+
+  const agentResponse = async (leads, usersModel, res) => {
+    if(!leads || leads.length === 0){
+      return res.status(404).send({message: `No Leads Countries found`});
+    } else {
+      const leadAgentIds = leads.filter(lead => lead.conAgentId).map(lead => lead.conAgentId);
+
+      if (leadAgentIds.length === 0) {
+        return res.status(200).send(["Not Defined"]);
+      }
+      const agents = await usersModel.find({ _id: { $in: leadAgentIds } }).select("username");
+
+      const agentNames = agents.map(agent => agent.name);
+      const uniqueAgentNames = [...new Set(agentNames)];
+      return res.status(200).send(uniqueAgentNames);
+    }
+  };
+
 
   switch (authBranch) {
     case "Main":
       switch (branch) {
         case "Office1":
-          users = await Office1User.find({ role: "Conversion Agent" });
-          userAgent = users.map((user) => user.username)
+          leads = await Office1Leads.find();
+          usersModel = Office1User;
+          await agentResponse(leads, usersModel, res);
+        break;
 
-          res.status(200).send(userAgent);
-          break;
         case "Office2":
-          users = await Office2User.find({ role: "Conversion Agent" });
-          userAgent = users.map((user) => user.username)
+          leads = await Office2Leads.find();
+          usersModel = Office2User;
+          await agentResponse(leads, usersModel, res);
+        break;
 
-          res.status(200).send(userAgent);
-          break;
         default:
-          res.status(403).send({
-            message: `Invalid branch!`,
-          });
+          return res.status(403).send({message: `Invalid branch!`});
       }
-      break;
+    break;
+
     case "Office1":
       switch (authRole) {
         case "CRM Manager":
-          users = await Office1User.find({ role: "Conversion Agent" });
-          userAgent = users.map((user) => user.username)
+          leads = await Office1Leads.find();
+          usersModel = Office1User;
+          await agentResponse(leads, usersModel, res);
+        break;
 
-          res.status(200).send(userAgent);
-          break;
         case "Conversion Manager":
-           users = await Office1Leads.find({ conManagerId: authId });
-                  userAgentIds = [...new Set(users.map(user => user.conAgentId).filter(id => id))];
-         userAgents = await Office1User.find({ _id: { $in: userAgentIds } });
-         userNames = userAgents.map(user => user.username);
-        res.status(200).send(userNames);
-          break;
+          leads = await Office1Leads.find();
+          usersModel = Office1User;
+          await agentResponse(leads, usersModel, res);
+        break;
+
         case "Conversion Agent":
-  res.status(403).send({
-            message: `You do not have access rights`,
-          });
-          break;
+          res.status(403).send({message: `You do not have access rights`});
+        break;
+
         default:
-          res.status(403).send({
-            message: `Invalid role of user!`,
-          });
-      }
-      break;
+          return res.status(403).send({message: `Invalid role of user!`});
+        }
+    break;
+
     case "Office2":
       switch (authRole) {
         case "CRM Manager":
-          users = await Office2User.find({ role: "Conversion Agent" });
-          userAgent = users.map((user) => user.username)
+          leads = await Office2Leads.find();
+          usersModel = Office2User;
+          await agentResponse(leads, usersModel, res);
+        break;
 
-          res.status(200).send(userAgent);
-          break;
         case "Conversion Manager":
-           users = await Office2Leads.find({ conManagerId: authId });
-                  userAgentIds = [...new Set(users.map(user => user.conAgentId).filter(id => id))];
-         userAgents = await Office2User.find({ _id: { $in: userAgentIds } });
-         userNames = userAgents.map(user => user.username);
-        res.status(200).send(userNames);
-          break;
+          leads = await Office2Leads.find();
+          usersModel = Office2User;
+          await agentResponse(leads, usersModel, res);
+        break;
+
         case "Conversion Agent":
-  res.status(403).send({
-            message: `You do not have access rights`,
-          });
-          break;
+          res.status(403).send({message: `You do not have access rights`});
+        break;
+
         default:
-          res.status(403).send({
-            message: `Invalid role of user!`,
-          });
+          return res.status(403).send({message: `Invalid role of user!`});
       }
-      break;
+    break;
+
     default:
-      res.status(404).send({
-        message: `${authBranch} branch dosen't exist!`,
-      });
+      res.status(404).send({message: `${authBranch} branch dosen't exist!`});
   }
 };
 
