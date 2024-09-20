@@ -10,6 +10,8 @@ const {
   getAllAgent,
   getAllNextCall,
   getAllResults,
+  getAllTimeZones,
+  getAllStatuses,
 } = require("../../controllers/finds/index");
 const router = express.Router();
 
@@ -21,14 +23,19 @@ router.get("/region", authenticate, getAllRegion.getAllRegion);
 
 router.get("/city", authenticate, getAllCity.getAllCity);
 
+router.get("/agent", authenticate, getAllAgent.getAllAgent);
+
+router.get("/timezones", authenticate, getAllTimeZones.getAllTimeZones);
+
+router.get("/statuses", authenticate, getAllStatuses.getAllStatuses);
+
 router.get("/lastupdate", authenticate, getAllLastUpdate.getAllLastUpdate);
 
 router.get("/created", authenticate, getAllCreatedAt.getAllCreatedAt);
 
-router.get("/agent", authenticate, getAllAgent.getAllAgent);
-
 router.get("/nextcall", authenticate, getAllNextCall.getAllNextCall);
 
 router.get("/results", authenticate, getAllResults.getAllResults);
+
 
 module.exports = router;

@@ -16,7 +16,7 @@ const getAllCity = async (req, res) => {
    
   const cityResponse = (leads, res) => {
     if(!leads || leads.length === 0){
-      return res.status(404).send({message: `No Leads Cities found`});
+      return res.status(404).send({message: `No Leads found`});
     } else {
       const leadCity = leads.map(lead => lead.city !== "" ? lead.city : "Not Defined");
       const uniqueCity = [...new Set(leadCity)];

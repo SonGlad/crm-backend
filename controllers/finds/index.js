@@ -1,12 +1,15 @@
-const getAllSource = require('./getAllSource')
-const getAllCountry = require('./getAllCountry')
-const getAllRegion = require('./getAllRegion')
-const getAllCity = require('./getAllCity')
-const getAllLastUpdate = require('./getAllLastUpdate')
-const getAllCreatedAt = require('./getAllCreatedAt')
-const getAllAgent = require('./getAllAgent')
-const getAllNextCall = require('./getAllNextCall')
-const getAllResults = require('./getAllResults')
+const getAllSource = require('./getAllSource');
+const getAllCountry = require('./getAllCountry');
+const getAllRegion = require('./getAllRegion');
+const getAllCity = require('./getAllCity');
+const getAllLastUpdate = require('./getAllLastUpdate');
+const getAllCreatedAt = require('./getAllCreatedAt');
+const getAllAgent = require('./getAllAgent');
+const getAllNextCall = require('./getAllNextCall');
+const getAllResults = require('./getAllResults');
+const getAllTimeZones = require('./getAllTimeZones');
+const getAllStatuses = require('./getAllStatuses');
+
 
 module.exports = {
     getAllSource,
@@ -18,4 +21,6 @@ module.exports = {
     getAllAgent,
     getAllNextCall,
     getAllResults,
+    getAllTimeZones,
+    getAllStatuses,
 }

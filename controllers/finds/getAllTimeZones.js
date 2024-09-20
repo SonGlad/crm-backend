@@ -3,7 +3,7 @@ const { Office1Leads } = require("../../models/Office1Leads");
 const { Office2Leads } = require("../../models/Office2Leads");
 
 
-const getAllSource = async (req, res) => {
+const getAllTimeZones = async (req, res) => {
   const { role: authRole, branch: authBranch, id: authId } = req.auth;
   const { branch } = req.query;
   const { role: userRole, branch: userBranch } = req.user;
@@ -13,14 +13,15 @@ const getAllSource = async (req, res) => {
   }
 
   let leads;
-
-  const sourceResponse = (leads, res) => {
-    if(!leads || leads.length === 0) {
+   
+  const timeZoneResponse = (leads, res) => {
+    if(!leads || leads.length === 0){
       return res.status(404).send({message: `No Leads found`});
     } else {
-      const leadSource = leads.map((lead) => lead.resource);
-      const uniqueResources = [...new Set(leadSource)];
-      return res.status(200).send(uniqueResources);
+      const leadTimeZone = leads.map(lead => lead.timeZone);
+      const uniqueTimeZone = [...new Set(leadTimeZone)];
+      const sortedZones = uniqueTimeZone.sort();
+      return res.status(200).send(sortedZones);
     }
   };
   
@@ -30,12 +31,12 @@ const getAllSource = async (req, res) => {
       switch (branch) {
         case "Office1":
           leads = await Office1Leads.find();
-          sourceResponse(leads, res);
+          timeZoneResponse(leads, res);
         break;
 
         case "Office2":
           leads = await Office2Leads.find();
-          sourceResponse(leads, res);
+          timeZoneResponse(leads, res);
         break;
 
         default:
@@ -49,21 +50,21 @@ const getAllSource = async (req, res) => {
           leads = await Office1Leads.find({
             $or: [{managerId: authId}, {'owner.id': authId }]
           });
-          sourceResponse(leads, res);
+          timeZoneResponse(leads, res);
         break;
 
         case "Conversion Manager":
           leads = await Office1Leads.find({
             $or: [{conManagerId: authId}, {'owner.id': authId }]
           });
-          sourceResponse(leads, res);
+          timeZoneResponse(leads, res);
         break;
-        
+
         case "Conversion Agent":
           leads = await Office1Leads.find({
             $or: [{conAgentId: authId}, {'owner.id': authId }]
           });
-          sourceResponse(leads, res);
+          timeZoneResponse(leads, res);
         break;
 
         default:
@@ -77,28 +78,27 @@ const getAllSource = async (req, res) => {
           leads = await Office2Leads.find({
             $or: [{managerId: authId}, {'owner.id': authId }]
           });
-          sourceResponse(leads, res);
+          timeZoneResponse(leads, res);
         break;
 
         case "Conversion Manager":
           leads = await Office2Leads.find({
             $or: [{conManagerId: authId}, {'owner.id': authId }]
           });
-          sourceResponse(leads, res);
+          timeZoneResponse(leads, res);
         break;
 
         case "Conversion Agent":
           leads = await Office2Leads.find({
             $or: [{conAgentId: authId}, {'owner.id': authId }]
           });
-          sourceResponse(leads, res);
+          timeZoneResponse(leads, res);
         break;
 
         default:
-          return res.status(403).send({message: `Invalid User Role!`});
+          return res.status(403).send({message: `Invalid role of user!`});
       }
     break;
-
     default:
       return res.status(404).send({message: `${authBranch} branch dosen't exist!`});
   }
@@ -106,5 +106,5 @@ const getAllSource = async (req, res) => {
 
 
 module.exports = {
-  getAllSource: ctrlWrapper(getAllSource),
+    getAllTimeZones: ctrlWrapper(getAllTimeZones),
 };

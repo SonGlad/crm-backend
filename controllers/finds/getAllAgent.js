@@ -14,23 +14,23 @@ const getAllAgent = async (req, res) => {
     return res.status(403).send({ message: "Forbidden: Access denied" });
   }
 
-  
+
   let leads;
   let usersModel; 
 
 
   const agentResponse = async (leads, usersModel, res) => {
     if(!leads || leads.length === 0){
-      return res.status(404).send({message: `No Leads Countries found`});
+      return res.status(404).send({message: `No Leads found`});
     } else {
       const leadAgentIds = leads.filter(lead => lead.conAgentId).map(lead => lead.conAgentId);
 
       if (leadAgentIds.length === 0) {
-        return res.status(200).send(["Not Defined"]);
+        return res.status(404).send({message: `There no Agents Available`});
       }
       const agents = await usersModel.find({ _id: { $in: leadAgentIds } }).select("username");
-
-      const agentNames = agents.map(agent => agent.name);
+      
+      const agentNames = agents.map(agent => agent.username);
       const uniqueAgentNames = [...new Set(agentNames)];
       return res.status(200).send(uniqueAgentNames);
     }

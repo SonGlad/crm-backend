@@ -15,7 +15,7 @@ const getAllCountry = async (req, res) => {
 
   const countryResponse = (leads, res) => {
     if(!leads || leads.length === 0){
-      return res.status(404).send({message: `No Leads Countries found`});
+      return res.status(404).send({message: `No Leads found`});
     } else {
       const leadCountry = leads.map(lead => lead.country !== "" ? lead.country : "Not Defined");
       const uniqueCountry = [...new Set(leadCountry)];
