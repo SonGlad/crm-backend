@@ -16,10 +16,10 @@ const getAllSource = async (req, res) => {
 
   const sourceResponse = (leads, res) => {
     if(!leads || leads.length === 0) {
-      return res.status(404).send({message: `No Leads found`});
+      return res.status(404).send({message: `No filter option available`});
     } else {
       const leadSource = leads.map((lead) => lead.resource);
-      const uniqueResources = [...new Set(leadSource)];
+      const uniqueResources = [...new Set(leadSource)].sort((a, b) => a.localeCompare(b));;
       return res.status(200).send(uniqueResources);
     }
   };

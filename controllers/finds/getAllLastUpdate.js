@@ -16,7 +16,7 @@ const getAllLastUpdate = async (req, res) => {
 
   const lastUpdateResponse = (leads, res) => {
     if(!leads || leads.length === 0) {
-      return res.status(404).send({message: `No Leads found`});
+      return res.status(404).send({message: `No filter option available`});
     } else {
       const leadUpdatedAt = leads.map((lead) => {
         return new Date(lead.updatedAt).toISOString().slice(0, 10); 

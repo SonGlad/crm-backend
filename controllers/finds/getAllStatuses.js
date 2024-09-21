@@ -16,7 +16,7 @@ const getAllStatuses = async (req, res) => {
    
   const statusesResponse = (leads, res) => {
     if(!leads || leads.length === 0){
-      return res.status(404).send({message: `No Leads found`});
+      return res.status(404).send({message: `No filter option available`});
     } else {
       const leadStatuses = leads.map(lead => lead.status);
       const uniqueStatuses = [...new Set(leadStatuses)];

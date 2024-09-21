@@ -16,7 +16,7 @@ const getAllNextCall = async (req, res) => {
 
   const nextCallResponse = (leads, res) => {
     if (!leads || leads.length === 0) {
-      return res.status(404).send({ message: 'No Leads found' });
+      return res.status(404).send({ message: 'No filter option available' });
     } else {
       const leadNextCall = leads.map((lead) => {
         if (!lead.nextCall || lead.nextCall === "") {
@@ -25,7 +25,11 @@ const getAllNextCall = async (req, res) => {
           return new Date(lead.nextCall).toISOString().slice(0, 10);
         }
       });
-      const uniqueNextCall = [...new Set(leadNextCall)].sort((a, b) => b.localeCompare(a));
+      const uniqueNextCall = [...new Set(leadNextCall)].sort((a, b) => {
+        if (a === "Not Defined") return -1;
+        if (b === "Not Defined") return 1;
+        return b.localeCompare(a);          
+      });
       return res.status(200).send(uniqueNextCall);
     }
   };

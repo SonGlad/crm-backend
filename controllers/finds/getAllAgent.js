@@ -21,7 +21,7 @@ const getAllAgent = async (req, res) => {
 
   const agentResponse = async (leads, usersModel, res) => {
     if(!leads || leads.length === 0){
-      return res.status(404).send({message: `No Leads found`});
+      return res.status(404).send({message: `No filter option available`});
     } else {
       const leadAgentIds = leads.filter(lead => lead.conAgentId).map(lead => lead.conAgentId);
 
@@ -31,7 +31,7 @@ const getAllAgent = async (req, res) => {
       const agents = await usersModel.find({ _id: { $in: leadAgentIds } }).select("username");
       
       const agentNames = agents.map(agent => agent.username);
-      const uniqueAgentNames = [...new Set(agentNames)];
+      const uniqueAgentNames = [...new Set(agentNames)].sort((a, b) => a.localeCompare(b));;
       return res.status(200).send(uniqueAgentNames);
     }
   };

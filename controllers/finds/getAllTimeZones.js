@@ -16,7 +16,7 @@ const getAllTimeZones = async (req, res) => {
    
   const timeZoneResponse = (leads, res) => {
     if(!leads || leads.length === 0){
-      return res.status(404).send({message: `No Leads found`});
+      return res.status(404).send({message: `No filter option available`});
     } else {
       const leadTimeZone = leads.map(lead => lead.timeZone);
       const uniqueTimeZone = [...new Set(leadTimeZone)];

@@ -16,7 +16,7 @@ const getAllCreatedAt = async (req, res) => {
 
   const createdAtResponse = (leads, res) => {
     if(!leads || leads.length === 0) {
-      return res.status(404).send({message: `No Leads found`});
+      return res.status(404).send({message: `No filter option available`});
     } else {
       const leadCreatedAt = leads.map((lead) => {
         return new Date(lead.createdAt).toISOString().slice(0, 10); 

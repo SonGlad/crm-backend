@@ -16,10 +16,14 @@ const getAllCity = async (req, res) => {
    
   const cityResponse = (leads, res) => {
     if(!leads || leads.length === 0){
-      return res.status(404).send({message: `No Leads found`});
+      return res.status(404).send({message: `No filter option available`});
     } else {
       const leadCity = leads.map(lead => lead.city !== "" ? lead.city : "Not Defined");
-      const uniqueCity = [...new Set(leadCity)];
+      const uniqueCity = [...new Set(leadCity)].sort((a, b) => {
+        if (a === "Not Defined") return -1;
+        if (b === "Not Defined") return 1;
+        return a.localeCompare(b);          
+      });
       return res.status(200).send(uniqueCity);
     }
   };
