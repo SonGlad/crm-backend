@@ -3,6 +3,7 @@ const { Office1Leads } = require("../../models/Office1Leads");
 const { Office1User } = require("../../models/Office1User");
 const { Office2Leads } = require("../../models/Office2Leads");
 const { Office2User } = require("../../models/Office2User");
+const { Leads } = require("../../models/externalLead");
 
 
 const getAllAgent = async (req, res) => {
@@ -53,7 +54,18 @@ const getAllAgent = async (req, res) => {
         break;
 
         default:
-          return res.status(403).send({message: `Invalid branch!`});
+          leads = await Leads.find();
+          if(!leads || leads.length === 0){
+            return res.status(404).send({message: `No filter option available`});
+          } else {
+            const leadAgent = leads.map(lead => lead.conAgent.name !== "" ? lead.conAgent.name : "Not Defined");
+            const uniqueAgent = [...new Set(leadAgent)].sort((a, b) => {
+              if (a === "Not Defined") return -1;
+              if (b === "Not Defined") return 1;
+              return a.localeCompare(b);          
+            });
+            return res.status(200).send(uniqueAgent);
+          }
       }
     break;
 

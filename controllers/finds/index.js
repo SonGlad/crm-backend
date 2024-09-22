@@ -9,6 +9,8 @@ const getAllNextCall = require('./getAllNextCall');
 const getAllResults = require('./getAllResults');
 const getAllTimeZones = require('./getAllTimeZones');
 const getAllStatuses = require('./getAllStatuses');
+const getAllOffices = require('./getAllOffices');
+const getAllManagers = require('./getAllManagers')
 
 
 module.exports = {
@@ -23,4 +25,6 @@ module.exports = {
     getAllResults,
     getAllTimeZones,
     getAllStatuses,
+    getAllOffices,
+    getAllManagers
 }

@@ -1,6 +1,8 @@
 const { ctrlWrapper } = require("../../helpers");
 const { Office1Leads } = require("../../models/Office1Leads");
 const { Office2Leads } = require("../../models/Office2Leads");
+const { Leads } = require("../../models/externalLead");
+
 
 
 const getAllSource = async (req, res) => {
@@ -39,7 +41,8 @@ const getAllSource = async (req, res) => {
         break;
 
         default:
-          return res.status(403).send({message: `Invalid branch!`});
+          leads = await Leads.find();
+          sourceResponse(leads, res);
       }
     break;
 
