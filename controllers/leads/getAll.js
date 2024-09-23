@@ -70,9 +70,9 @@ const getAll = async (req, res) => {
                 filteredLeads = filteredLeads.filter(lead => lead.assignedOffice === office);
             }
             if (createdAt) {
-                const [year, month, day] = createdAt.split('-');
-                const startDate = new Date(year, month - 1, day);
-                const endDate = new Date(year, month - 1, day);
+                const [year, month, day] = nextCall.split('-');
+                const startDate = new Date(Date.UTC(year, month - 1, day));
+                const endDate = new Date(Date.UTC(year, month - 1, day, 23, 59, 59));
         
                 filteredLeads = filteredLeads.filter(lead => {
                     const leadDate = new Date(lead.createdAt);
@@ -124,12 +124,12 @@ const getAll = async (req, res) => {
                 filteredLeads = filteredLeads.filter(lead => lead.status === status);
             }
             if (timeZone) {
-                filteredLeads = filteredLeads.filter(lead => lead.timeZone === timeZone);
+                filteredLeads = filteredLeads.filter(lead => lead.timeZone.toString() === timeZone.toString());
             }
             if (conAgent) {
-                const agent = await userOffice.findOne({ username: conAgent }).select("_id");
+                const agent = await userOffice.findOne({ username: conAgent }).select('_id');
                 filteredLeads = filteredLeads.filter(lead => {
-                    return lead.conAgentId.toString() === agent._id.toString();
+                    return lead.conAgentId && lead.conAgentId._id.toString() === agent._id.toString()
                 });
             }
             if (country) {
@@ -143,14 +143,14 @@ const getAll = async (req, res) => {
                 if(region === "Not Defined") {
                     filteredLeads = filteredLeads.filter(lead => !lead.region || lead.region === "")
                 } else {
-                    filteredLeads = filteredLeads.filter(lead => lead.region === country)
+                    filteredLeads = filteredLeads.filter(lead => lead.region === region)
                 }
             }
             if (city) {
                 if(city === "Not Defined") {
                     filteredLeads = filteredLeads.filter(lead => !lead.city || lead.city === "")
                 } else {
-                    filteredLeads = filteredLeads.filter(lead => lead.city === country)
+                    filteredLeads = filteredLeads.filter(lead => lead.city === city)
                 }
             }
             if (nextCall) {
@@ -158,9 +158,9 @@ const getAll = async (req, res) => {
                     filteredLeads = filteredLeads.filter(lead => !lead.nextCall || lead.nextCall === "")
                 } else {
                     const [year, month, day] = nextCall.split('-');
-                    const startDate = new Date(year, month - 1, day);
-                    const endDate = new Date(year, month - 1, day);
-            
+                    const startDate = new Date(Date.UTC(year, month - 1, day));
+                    const endDate = new Date(Date.UTC(year, month - 1, day, 23, 59, 59));
+                   
                     filteredLeads = filteredLeads.filter(lead => {
                         const leadDate = new Date(lead.nextCall);
                         return leadDate >= startDate && leadDate <= endDate;
@@ -168,9 +168,9 @@ const getAll = async (req, res) => {
                 }
             }
             if (createdAt) {
-                const [year, month, day] = createdAt.split('-');
-                const startDate = new Date(year, month - 1, day);
-                const endDate = new Date(year, month - 1, day);
+                const [year, month, day] = nextCall.split('-');
+                const startDate = new Date(Date.UTC(year, month - 1, day));
+                const endDate = new Date(Date.UTC(year, month - 1, day, 23, 59, 59));
         
                 filteredLeads = filteredLeads.filter(lead => {
                     const leadDate = new Date(lead.createdAt);
@@ -178,9 +178,9 @@ const getAll = async (req, res) => {
                 });
             }
             if (lastUpdate) {
-                const [year, month, day] = lastUpdate.split('-');
-                const startDate = new Date(year, month - 1, day);
-                const endDate = new Date(year, month - 1, day);
+                const [year, month, day] = nextCall.split('-');
+                const startDate = new Date(Date.UTC(year, month - 1, day));
+                const endDate = new Date(Date.UTC(year, month - 1, day, 23, 59, 59));
         
                 filteredLeads = filteredLeads.filter(lead => {
                     const leadDate = new Date(lead.lastUpdate);
@@ -193,7 +193,9 @@ const getAll = async (req, res) => {
                     return regex.test(lead.name) || 
                     regex.test(lead.lastName) || 
                     regex.test(lead.email) || 
-                    regex.test(lead.phone);
+                    regex.test(lead.phone) ||
+                    regex.test(lead.clientId);
+
                 });
             }
 
