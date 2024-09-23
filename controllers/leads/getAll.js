@@ -1,6 +1,8 @@
 const { Leads } = require("../../models/externalLead");
 const { Office1Leads } = require("../../models/Office1Leads");
 const { Office2Leads } = require("../../models/Office2Leads");
+const { Office1User } = require("../../models/Office1User");
+const { Office2User } = require("../../models/Office2User");
 const { ctrlWrapper } = require("../../helpers/index");
 
 
@@ -15,10 +17,17 @@ const getAll = async (req, res) => {
         createdAt, 
         conManager, 
         conAgent, 
-        office, 
+        office,
+        country,
+        region,
+        city,
+        lastUpdate,
+        nextCall,
+        status,
+        timeZone,
         openFilter
     } = req.query;
-
+   
 
     if (authRole !== userRole || authBranch !== userBranch) {
         return res.status(403).send({ message: 'Forbidden: Access denied' });
@@ -31,10 +40,11 @@ const getAll = async (req, res) => {
     let totalPages;
     let filteredLeads;
     let totalFilteredLeads;
+    let userOffice;
 
 
 
-    const sortingAndResponseForAdmin = (allLeads, res) => {
+    const sortingAndResponseExternal = (allLeads, res) => {
         if(!allLeads || allLeads.length === 0){
             return res.status(404).send({message: `No Leads Found`});
         } else {
@@ -88,30 +98,117 @@ const getAll = async (req, res) => {
             });
     
             totalFilteredLeads = filteredLeads.length;
+
+            if(!totalFilteredLeads || totalFilteredLeads === 0){
+                return res.status(404).send({message: `No Leads Found`});
+            }
+
             totalPages = Math.ceil(totalFilteredLeads / limit);
-    
             result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
-            res.status(200).send({totalPages, result, totalFilteredLeads});
+            return res.status(200).send({totalPages, result, totalFilteredLeads});
         }
     };
 
 
 
 
-    const sortingAndResponse = (allLeads, res) => {
+    const sortingAndResponseOffice = async (allLeads, userOffice, res) => {
         if(!allLeads || allLeads.length === 0){
             return res.status(404).send({message: `No Leads Found`});
         } else {
-            filteredLeads = allLeads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    
+            filteredLeads = allLeads;
+            if (resource) {
+                filteredLeads = filteredLeads.filter(lead => lead.resource === resource);
+            }
+            if (status) {
+                filteredLeads = filteredLeads.filter(lead => lead.status === status);
+            }
+            if (timeZone) {
+                filteredLeads = filteredLeads.filter(lead => lead.timeZone === timeZone);
+            }
+            if (conAgent) {
+                const agent = await userOffice.findOne({ username: conAgent }).select("_id");
+                filteredLeads = filteredLeads.filter(lead => {
+                    return lead.conAgentId.toString() === agent._id.toString();
+                });
+            }
+            if (country) {
+                if(country === "Not Defined") {
+                    filteredLeads = filteredLeads.filter(lead => !lead.country || lead.country === "")
+                } else {
+                    filteredLeads = filteredLeads.filter(lead => lead.country === country)
+                }
+            }
+            if (region) {
+                if(region === "Not Defined") {
+                    filteredLeads = filteredLeads.filter(lead => !lead.region || lead.region === "")
+                } else {
+                    filteredLeads = filteredLeads.filter(lead => lead.region === country)
+                }
+            }
+            if (city) {
+                if(city === "Not Defined") {
+                    filteredLeads = filteredLeads.filter(lead => !lead.city || lead.city === "")
+                } else {
+                    filteredLeads = filteredLeads.filter(lead => lead.city === country)
+                }
+            }
+            if (nextCall) {
+                if(nextCall === "Not Defined") {
+                    filteredLeads = filteredLeads.filter(lead => !lead.nextCall || lead.nextCall === "")
+                } else {
+                    const [year, month, day] = nextCall.split('-');
+                    const startDate = new Date(year, month - 1, day);
+                    const endDate = new Date(year, month - 1, day + 1);
+            
+                    filteredLeads = filteredLeads.filter(lead => {
+                        const leadDate = new Date(lead.nextCall);
+                        return leadDate >= startDate && leadDate < endDate;
+                    });
+                }
+            }
+            if (createdAt) {
+                const [year, month, day] = createdAt.split('-');
+                const startDate = new Date(year, month - 1, day);
+                const endDate = new Date(year, month - 1, day + 1);
+        
+                filteredLeads = filteredLeads.filter(lead => {
+                    const leadDate = new Date(lead.createdAt);
+                    return leadDate >= startDate && leadDate < endDate;
+                });
+            }
+            if (lastUpdate) {
+                const [year, month, day] = lastUpdate.split('-');
+                const startDate = new Date(year, month - 1, day);
+                const endDate = new Date(year, month - 1, day + 1);
+        
+                filteredLeads = filteredLeads.filter(lead => {
+                    const leadDate = new Date(lead.lastUpdate);
+                    return leadDate >= startDate && leadDate < endDate;
+                });
+            }
+            if (openFilter) {
+                const regex = new RegExp(openFilter, "i")
+                filteredLeads = filteredLeads.filter(lead => {
+                    return regex.test(lead.name) || 
+                    regex.test(lead.lastName) || 
+                    regex.test(lead.email) || 
+                    regex.test(lead.phone);
+                });
+            }
+
+            filteredLeads = filteredLeads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
             totalFilteredLeads = filteredLeads.length;
+            if(!totalFilteredLeads || totalFilteredLeads === 0){
+                return res.status(404).send({message: `No Leads Found`});
+            }
+
             totalPages = Math.ceil(totalFilteredLeads / limit);
-    
             result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
-            res.status(200).send({totalPages, result, totalFilteredLeads});
+            return res.status(200).send({totalPages, result, totalFilteredLeads});
         }
     };
-
 
 
 
@@ -132,7 +229,8 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
-                    sortingAndResponseForAdmin(allLeads, res);
+                    userOffice = Office1User;
+                    await sortingAndResponseOffice(allLeads, userOffice, res);
                 break;
 
 
@@ -150,13 +248,14 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
-                    sortingAndResponseForAdmin(allLeads, res);
+                    userOffice = Office2User;
+                    await sortingAndResponseOffice(allLeads, userOffice, res);
                 break;
 
 
                 default: 
                     allLeads = await Leads.find();
-                    sortingAndResponseForAdmin(allLeads, res);
+                    sortingAndResponseExternal(allLeads, res);
             };
         break;
 
@@ -175,7 +274,8 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     }); 
-                    sortingAndResponse(allLeads, res);
+                    userOffice = Office1User;
+                    await sortingAndResponseOffice(allLeads, userOffice, res);
                 break;
 
 
@@ -187,7 +287,8 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
-                    sortingAndResponse(allLeads, res);
+                    userOffice = Office1User;
+                    await sortingAndResponseOffice(allLeads, userOffice, res);
                 break;
 
 
@@ -195,7 +296,8 @@ const getAll = async (req, res) => {
                     allLeads = await Office1Leads.find({
                         $or: [{conAgentId: authId}, {'owner.id': authId}]
                     });
-                    sortingAndResponse(allLeads, res);
+                    userOffice = Office1User;
+                    await sortingAndResponseOffice(allLeads, userOffice, res);
                 break;
 
 
@@ -219,7 +321,8 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
-                    sortingAndResponse(allLeads, res);
+                    userOffice = Office2User;
+                    await sortingAndResponseOffice(allLeads, userOffice, res);
                 break;
 
 
@@ -231,7 +334,8 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
-                    sortingAndResponse(allLeads, res);
+                    userOffice = Office2User;
+                    await sortingAndResponseOffice(allLeads, userOffice, res);
                 break;
 
 
@@ -239,7 +343,8 @@ const getAll = async (req, res) => {
                     allLeads = await Office2Leads.find({
                         $or: [{conAgentId: authId}, {'owner.id': authId}]
                     });
-                    sortingAndResponse(allLeads, res);
+                    userOffice = Office2User;
+                    await sortingAndResponseOffice(allLeads, userOffice, res);
                 break;
 
 
