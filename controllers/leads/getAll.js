@@ -22,6 +22,42 @@ const getAll = async (req, res) => {
     let filteredLeads;
     let totalFilteredLeads;
 
+    
+
+    const sortingAndResponseForAdmin = (allLeads, res) => {
+        if(!allLeads || allLeads.length === 0){
+            return res.status(404).send({message: `No Leads Found`});
+        } else {
+            filteredLeads = allLeads.sort((a, b) => {
+                if (a.newContact === b.newContact) {
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                }
+                return a.newContact ? -1 : 1;
+            });
+    
+            totalFilteredLeads = filteredLeads.length;
+            totalPages = Math.ceil(totalFilteredLeads / limit);
+    
+            result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
+            res.status(200).send({totalPages, result, totalFilteredLeads});
+        }
+    };
+
+
+    const sortingAndResponse = (allLeads, res) => {
+        if(!allLeads || allLeads.length === 0){
+            return res.status(404).send({message: `No Leads Found`});
+        } else {
+            filteredLeads = allLeads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+            totalFilteredLeads = filteredLeads.length;
+            totalPages = Math.ceil(totalFilteredLeads / limit);
+    
+            result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
+            res.status(200).send({totalPages, result, totalFilteredLeads});
+        }
+    };
+
 
     switch(authBranch){
         case "Main":
@@ -40,18 +76,7 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
-
-                    filteredLeads = allLeads.sort((a, b) => {
-                        if (a.newContact === b.newContact) {
-                            return new Date(b.createdAt) - new Date(a.createdAt);
-                        }
-                        return a.newContact ? -1 : 1;
-                    });
-
-                    totalFilteredLeads = filteredLeads.length;
-                    totalPages = Math.ceil(totalFilteredLeads / limit);
-
-                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
+                    sortingAndResponseForAdmin(allLeads, res);
                 break;
 
 
@@ -69,35 +94,13 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
-
-                    filteredLeads = allLeads.sort((a, b) => {
-                        if (a.newContact === b.newContact) {
-                            return new Date(b.createdAt) - new Date(a.createdAt);
-                        }
-                        return a.newContact ? -1 : 1;
-                    });
-
-                    totalFilteredLeads = filteredLeads.length;
-                    totalPages = Math.ceil(totalFilteredLeads / limit);
-
-                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
+                    sortingAndResponseForAdmin(allLeads, res);
                 break;
 
 
                 default: 
-                allLeads = await Leads.find()
-
-                filteredLeads = allLeads.sort((a, b) => {
-                    if (a.newContact === b.newContact) {
-                        return new Date(b.createdAt) - new Date(a.createdAt);
-                    }
-                    return a.newContact ? -1 : 1;
-                });
-
-                totalFilteredLeads = filteredLeads.length;
-                totalPages = Math.ceil(totalFilteredLeads / limit);
-
-                result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
+                    allLeads = await Leads.find();
+                    sortingAndResponseForAdmin(allLeads, res);
             };
         break;
 
@@ -116,13 +119,7 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     }); 
-                    
-                    filteredLeads = allLeads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-                    totalFilteredLeads = filteredLeads.length;
-                    totalPages = Math.ceil(totalFilteredLeads / limit);
-    
-                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
+                    sortingAndResponse(allLeads, res);
                 break;
 
 
@@ -134,13 +131,7 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
-                    
-                    filteredLeads = allLeads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-                    totalFilteredLeads = filteredLeads.length;
-                    totalPages = Math.ceil(totalFilteredLeads / limit);
-    
-                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
+                    sortingAndResponse(allLeads, res);
                 break;
 
 
@@ -148,13 +139,7 @@ const getAll = async (req, res) => {
                     allLeads = await Office1Leads.find({
                         $or: [{conAgentId: authId}, {'owner.id': authId}]
                     });
-                    
-                    filteredLeads = allLeads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-                    totalFilteredLeads = filteredLeads.length;
-                    totalPages = Math.ceil(totalFilteredLeads / limit);
-    
-                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
+                    sortingAndResponse(allLeads, res);
                 break;
 
 
@@ -177,14 +162,8 @@ const getAll = async (req, res) => {
                     .populate({
                         path: 'conAgentId',
                         select: 'username'
-                    }); 
-                    
-                    filteredLeads = allLeads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-                    totalFilteredLeads = filteredLeads.length;
-                    totalPages = Math.ceil(totalFilteredLeads / limit);
-    
-                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
+                    });
+                    sortingAndResponse(allLeads, res);
                 break;
 
 
@@ -196,13 +175,7 @@ const getAll = async (req, res) => {
                         path: 'conAgentId',
                         select: 'username'
                     });
-                    
-                    filteredLeads = allLeads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-                    totalFilteredLeads = filteredLeads.length;
-                    totalPages = Math.ceil(totalFilteredLeads / limit);
-    
-                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
+                    sortingAndResponse(allLeads, res);
                 break;
 
 
@@ -210,13 +183,7 @@ const getAll = async (req, res) => {
                     allLeads = await Office2Leads.find({
                         $or: [{conAgentId: authId}, {'owner.id': authId}]
                     });
-                    
-                    filteredLeads = allLeads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-                    totalFilteredLeads = filteredLeads.length;
-                    totalPages = Math.ceil(totalFilteredLeads / limit);
-    
-                    result = filteredLeads.slice(parseInt(skip), parseInt(skip) + parseInt(limit));
+                    sortingAndResponse(allLeads, res);
                 break;
 
 
@@ -227,9 +194,6 @@ const getAll = async (req, res) => {
         default:
             return res.status(400).send({ message: 'Authorization branch is invalid' });
     };
-
-
-    res.status(200).send({totalPages, result, totalFilteredLeads});
 };
 
 
