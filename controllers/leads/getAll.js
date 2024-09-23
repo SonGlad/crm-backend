@@ -72,11 +72,11 @@ const getAll = async (req, res) => {
             if (createdAt) {
                 const [year, month, day] = createdAt.split('-');
                 const startDate = new Date(year, month - 1, day);
-                const endDate = new Date(year, month - 1, day + 1);
+                const endDate = new Date(year, month - 1, day);
         
                 filteredLeads = filteredLeads.filter(lead => {
                     const leadDate = new Date(lead.createdAt);
-                    return leadDate >= startDate && leadDate < endDate;
+                    return leadDate >= startDate && leadDate <= endDate;
                 });
             }
             if (openFilter) {
@@ -159,32 +159,32 @@ const getAll = async (req, res) => {
                 } else {
                     const [year, month, day] = nextCall.split('-');
                     const startDate = new Date(year, month - 1, day);
-                    const endDate = new Date(year, month - 1, day + 1);
+                    const endDate = new Date(year, month - 1, day);
             
                     filteredLeads = filteredLeads.filter(lead => {
                         const leadDate = new Date(lead.nextCall);
-                        return leadDate >= startDate && leadDate < endDate;
+                        return leadDate >= startDate && leadDate <= endDate;
                     });
                 }
             }
             if (createdAt) {
                 const [year, month, day] = createdAt.split('-');
                 const startDate = new Date(year, month - 1, day);
-                const endDate = new Date(year, month - 1, day + 1);
+                const endDate = new Date(year, month - 1, day);
         
                 filteredLeads = filteredLeads.filter(lead => {
                     const leadDate = new Date(lead.createdAt);
-                    return leadDate >= startDate && leadDate < endDate;
+                    return leadDate >= startDate && leadDate <= endDate;
                 });
             }
             if (lastUpdate) {
                 const [year, month, day] = lastUpdate.split('-');
                 const startDate = new Date(year, month - 1, day);
-                const endDate = new Date(year, month - 1, day + 1);
+                const endDate = new Date(year, month - 1, day);
         
                 filteredLeads = filteredLeads.filter(lead => {
                     const leadDate = new Date(lead.lastUpdate);
-                    return leadDate >= startDate && leadDate < endDate;
+                    return leadDate >= startDate && leadDate <= endDate;
                 });
             }
             if (openFilter) {
