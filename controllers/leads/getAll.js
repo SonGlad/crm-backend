@@ -7,7 +7,17 @@ const { ctrlWrapper } = require("../../helpers/index");
 const getAll = async (req, res) => {
     const {role: userRole, branch: userBranch} = req.user;
     const {role: authRole, branch: authBranch, id: authId} = req.auth;
-    const { branch, page, limit } = req.query;
+    const { 
+        branch, 
+        page, 
+        limit, 
+        resource, 
+        createdAt, 
+        conManager, 
+        conAgent, 
+        office, 
+        openFilter
+    } = req.query;
 
 
     if (authRole !== userRole || authBranch !== userBranch) {
@@ -22,13 +32,55 @@ const getAll = async (req, res) => {
     let filteredLeads;
     let totalFilteredLeads;
 
-    
+
 
     const sortingAndResponseForAdmin = (allLeads, res) => {
         if(!allLeads || allLeads.length === 0){
             return res.status(404).send({message: `No Leads Found`});
         } else {
-            filteredLeads = allLeads.sort((a, b) => {
+            filteredLeads = allLeads;
+            if (resource) {
+                filteredLeads = filteredLeads.filter(lead => lead.resource === resource);
+            }
+            if (conManager) {
+                if (conManager === "Not Defined") {
+                    filteredLeads = filteredLeads.filter(lead => !lead.conManager || lead.conManager.name === "");
+                } else {
+                    filteredLeads = filteredLeads.filter(lead => lead.conManager.name === conManager);
+                }
+            }
+            if (conAgent) {
+                if (conAgent === "Not Defined") {
+                    filteredLeads = filteredLeads.filter(lead => !lead.conAgent || lead.conAgent.name === "");
+                } else {
+                    filteredLeads = filteredLeads.filter(lead => lead.conAgent.name === conAgent);
+                }
+            }
+            if (office) {
+                filteredLeads = filteredLeads.filter(lead => lead.assignedOffice === office);
+            }
+            if (createdAt) {
+                const [year, month, day] = createdAt.split('-');
+                const startDate = new Date(year, month - 1, day);
+                const endDate = new Date(year, month - 1, day + 1);
+        
+                filteredLeads = filteredLeads.filter(lead => {
+                    const leadDate = new Date(lead.createdAt);
+                    return leadDate >= startDate && leadDate < endDate;
+                });
+            }
+            if (openFilter) {
+                const regex = new RegExp(openFilter, "i")
+                filteredLeads = filteredLeads.filter(lead => {
+                    return regex.test(lead.name) || 
+                    regex.test(lead.lastName) || 
+                    regex.test(lead.email) || 
+                    regex.test(lead.phone);
+                });
+            }
+
+
+            filteredLeads = filteredLeads.sort((a, b) => {
                 if (a.newContact === b.newContact) {
                     return new Date(b.createdAt) - new Date(a.createdAt);
                 }
@@ -44,6 +96,8 @@ const getAll = async (req, res) => {
     };
 
 
+
+
     const sortingAndResponse = (allLeads, res) => {
         if(!allLeads || allLeads.length === 0){
             return res.status(404).send({message: `No Leads Found`});
@@ -57,6 +111,8 @@ const getAll = async (req, res) => {
             res.status(200).send({totalPages, result, totalFilteredLeads});
         }
     };
+
+
 
 
     switch(authBranch){
