@@ -70,7 +70,7 @@ const getAll = async (req, res) => {
                 filteredLeads = filteredLeads.filter(lead => lead.assignedOffice === office);
             }
             if (createdAt) {
-                const [year, month, day] = nextCall.split('-');
+                const [year, month, day] = createdAt.split('-');
                 const startDate = new Date(Date.UTC(year, month - 1, day));
                 const endDate = new Date(Date.UTC(year, month - 1, day, 23, 59, 59));
         
@@ -168,7 +168,7 @@ const getAll = async (req, res) => {
                 }
             }
             if (createdAt) {
-                const [year, month, day] = nextCall.split('-');
+                const [year, month, day] = createdAt.split('-');
                 const startDate = new Date(Date.UTC(year, month - 1, day));
                 const endDate = new Date(Date.UTC(year, month - 1, day, 23, 59, 59));
         
@@ -178,12 +178,12 @@ const getAll = async (req, res) => {
                 });
             }
             if (lastUpdate) {
-                const [year, month, day] = nextCall.split('-');
+                const [year, month, day] = lastUpdate.split('-');
                 const startDate = new Date(Date.UTC(year, month - 1, day));
                 const endDate = new Date(Date.UTC(year, month - 1, day, 23, 59, 59));
         
                 filteredLeads = filteredLeads.filter(lead => {
-                    const leadDate = new Date(lead.lastUpdate);
+                    const leadDate = new Date(lead.updatedAt);
                     return leadDate >= startDate && leadDate <= endDate;
                 });
             }
