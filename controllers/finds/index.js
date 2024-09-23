@@ -6,7 +6,6 @@ const getAllLastUpdate = require('./getAllLastUpdate');
 const getAllCreatedAt = require('./getAllCreatedAt');
 const getAllAgent = require('./getAllAgent');
 const getAllNextCall = require('./getAllNextCall');
-const getAllResults = require('./getAllResults');
 const getAllTimeZones = require('./getAllTimeZones');
 const getAllStatuses = require('./getAllStatuses');
 const getAllOffices = require('./getAllOffices');
@@ -22,7 +21,6 @@ module.exports = {
     getAllCreatedAt,
     getAllAgent,
     getAllNextCall,
-    getAllResults,
     getAllTimeZones,
     getAllStatuses,
     getAllOffices,

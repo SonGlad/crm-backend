@@ -9,7 +9,6 @@ const {
   getAllCreatedAt,
   getAllAgent,
   getAllNextCall,
-  getAllResults,
   getAllTimeZones,
   getAllStatuses,
   getAllOffices,
@@ -36,8 +35,6 @@ router.get("/lastupdate", authenticate, getAllLastUpdate.getAllLastUpdate);
 router.get("/created", authenticate, getAllCreatedAt.getAllCreatedAt);
 
 router.get("/nextcall", authenticate, getAllNextCall.getAllNextCall);
-
-router.get("/results", authenticate, getAllResults.getAllResults);
 
 router.get("/offices", authenticate, getAllOffices.getAllOffices);
 
